@@ -83,13 +83,21 @@ region_tabs_len = len(region_tabs)
 # mimic clicking on each tab to get the ETF list
 for idx in range(region_tabs_len):
     driver.switch_to.window(original_window)
-    # wait for the tabs to be visible
-    WebDriverWait(driver, 10).until(EC.element_to_be_clickable(
-        (By.CSS_SELECTOR, "#etf-overview-region .tab-wrapper > button")))
+
     region_tabs = driver.find_elements(
         By.CSS_SELECTOR, "#etf-overview-region .tab-wrapper > button")
     print(region_tabs[idx].text)
+
+    # Scroll the element into view
+    driver.execute_script(
+        "arguments[0].scrollIntoView(true);", region_tabs[idx])
+    # Adjust the scroll position slightly: move it up by half the window's height approximately
+    driver.execute_script("window.scrollBy(0, -window.innerHeight / 2);")
+    time.sleep(1)
+
     region_tabs[idx].click()
+    # driver.execute_script(
+    #     f"document.querySelectorAll('#etf-overview-region .tab-wrapper > button')[{idx}].click();")
     time.sleep(1)
     # wait for the ETF list of specific region to be visible
     WebDriverWait(driver, 10).until(EC.visibility_of_element_located(
@@ -98,11 +106,11 @@ for idx in range(region_tabs_len):
     # get all the ETFs in the list
     etf_elements = driver.find_elements(
         By.CSS_SELECTOR, "#etf-overview-region div.table-body-wrapper > ul > li a")
-    etf_limit = 2
+    # etf_limit = 2
     for etf in etf_elements:
-        if etf_limit == 0:
-            break
-        etf_limit -= 1
+        # if etf_limit == 0:
+        #     break
+        # etf_limit -= 1
         each_etf = {}
         driver.switch_to.window(original_window)
         etf.click()
@@ -203,7 +211,7 @@ for idx in range(region_tabs_len):
 
         # etf performance data
         each_performance_data = {
-            "symbol": symbol, "updated_date": updated_date_performance, "crawler_date": today}
+            "symbol": symbol, "data_updated_date": updated_date_performance, "crawler_date": today}
         if performance_data_elements:
             for idx, each in enumerate(performance_data_elements):
                 if "trend-up" in each.get_attribute("class"):
@@ -219,6 +227,8 @@ for idx in range(region_tabs_len):
         else:
             etf_performance.append({
                 "symbol": symbol,
+                "data_updated_date": updated_date_performance,
+                "crawler_date": today,
                 "1_week": "NULL",
                 "1_month": "NULL",
                 "3_month": "NULL",
@@ -228,12 +238,12 @@ for idx in range(region_tabs_len):
                 "2_year": "NULL",
                 "3_year": "NULL",
                 "5_year": "NULL",
-                "10_year": "NULL",
-                "updated_date": updated_date_performance,
-                "crawler_date": today
+                "10_year": "NULL"
             })
             print({
                 "symbol": symbol,
+                "data_updated_date": updated_date_performance,
+                "crawler_date": today,
                 "1_week": "NULL",
                 "1_month": "NULL",
                 "3_month": "NULL",
@@ -243,9 +253,7 @@ for idx in range(region_tabs_len):
                 "2_year": "NULL",
                 "3_year": "NULL",
                 "5_year": "NULL",
-                "10_year": "NULL",
-                "updated_date": updated_date_performance,
-                "crawler_date": today
+                "10_year": "NULL"
             })
 
         ### get industry and stock composition data ###
@@ -292,30 +300,30 @@ for idx in range(region_tabs_len):
                         "symbol": symbol,
                         "industry": industry,
                         "ratio": ratio,
-                        "crawler_date": today,
-                        "updated_date": updated_date_industry
+                        "data_updated_date": updated_date_industry,
+                        "crawler_date": today
                     })
                     print({
                         "symbol": symbol,
                         "industry": industry,
                         "ratio": ratio,
-                        "crawler_date": today,
-                        "updated_date": updated_date_industry
+                        "data_updated_date": updated_date_industry,
+                        "crawler_date": today
                     })
         else:
             etf_industry.append({
                 "symbol": symbol,
                 "industry": "NULL",
                 "ratio": "NULL",
-                "crawler_date": today,
-                "updated_date": updated_date_industry
+                "data_updated_date": updated_date_industry,
+                "crawler_date": today
             })
             print({
                 "symbol": symbol,
                 "industry": "NULL",
                 "ratio": "NULL",
-                "crawler_date": today,
-                "updated_date": updated_date_industry
+                "data_updated_date": updated_date_industry,
+                "crawler_date": today
             })
 
         # etf top 10 stock composition data
@@ -359,41 +367,41 @@ for idx in range(region_tabs_len):
                 match = pattern.match(text)
                 if match:
                     ranking = match.group(1).strip()
-                    company = match.group(2).strip()
+                    stock_name = match.group(2).strip()
                     ratio = match.group(3).strip()
 
                     etf_stock_composition.append({
                         "symbol": symbol,
                         "ranking": ranking,
-                        "company": company,
+                        "stock_name": stock_name,
                         "ratio": ratio,
-                        "crawler_date": today,
-                        "updated_date": updated_date_stock_composition
+                        "data_updated_date": updated_date_stock_composition,
+                        "crawler_date": today
                     })
                 print({
                     "symbol": symbol,
                     "ranking": ranking,
-                    "company": company,
+                    "stock_name": stock_name,
                     "ratio": ratio,
-                    "crawler_date": today,
-                    "updated_date": updated_date_stock_composition
+                    "data_updated_date": updated_date_stock_composition,
+                    "crawler_date": today
                 })
         else:
             etf_stock_composition.append({
                 "symbol": symbol,
                 "ranking": "NULL",
-                "company": "NULL",
+                "stock_name": "NULL",
                 "ratio": "NULL",
-                "crawler_date": today,
-                "updated_date": updated_date_stock_composition
+                "updated_date": updated_date_stock_composition,
+                "crawler_date": today
             })
             print({
                 "symbol": symbol,
                 "ranking": "NULL",
-                "company": "NULL",
+                "stock_name": "NULL",
                 "ratio": "NULL",
-                "crawler_date": today,
-                "updated_date": updated_date_stock_composition
+                "data_updated_date": updated_date_stock_composition,
+                "crawler_date": today
             })
 
         ### organize the data ###
