@@ -118,7 +118,6 @@ sites_to_crawl = [
         "title_selector": ".story__headline",
         "date_selector": ".story__content > time"
     }
-
 ]
 
 try:
