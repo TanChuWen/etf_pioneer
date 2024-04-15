@@ -76,7 +76,7 @@ if response.status_code == 200:
                     "stock_name": stock_name,
                     "listed_or_OTC": listed_or_OTC,
                     "industry_category": industry_category,
-                    "data_updated_time": data_updated_time,
+                    "data_updated_date": data_updated_time,
                     "crawler_date": today
                 })
 else:
