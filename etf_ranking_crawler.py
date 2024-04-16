@@ -46,6 +46,11 @@ def upload_file_to_s3(filepath, bucket_name, s3_directory):
         print(f"Failed to upload {filepath}. Error: {str(e)}")
 
 
+def ensure_local_directory_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
 ##### ETF Ranking Crawler #####
 driver = webdriver.Chrome(service=ChromeService(
     ChromeDriverManager().install()))
@@ -227,11 +232,7 @@ files_and_data = [
 ]
 
 
-def ensure_local_directory_exists(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    # Loop through each pair, save to JSON, and upload to S3
+# Loop through each pair, save to JSON, and upload to S3
 for filename, data in files_and_data:
     local_directory = 'json_files'
     ensure_local_directory_exists(local_directory)

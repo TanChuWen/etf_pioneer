@@ -45,6 +45,11 @@ def upload_file_to_s3(filepath, bucket_name, s3_directory):
         print(f"Failed to upload {filepath}. Error: {str(e)}")
 
 
+def ensure_local_directory_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
 performance_map = [
     "1_week",
     "1_month",
@@ -417,11 +422,6 @@ for idx in range(region_tabs_len):
 # print(etf_data)
 
 driver.quit()
-
-
-def ensure_local_directory_exists(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
 
 
 local_directory = 'json_files'

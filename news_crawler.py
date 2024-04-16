@@ -13,7 +13,7 @@ import datetime
 import re
 import boto3
 import os
-from database import get_db_connection
+from database import get_db_connection, insert_news_data
 
 # Load environment variables from .env file
 load_dotenv()
@@ -43,6 +43,11 @@ def upload_file_to_s3(filepath, bucket_name, s3_directory):
         print(f"Successfully uploaded")
     except Exception as e:
         print(f"Failed to upload {filepath}. Error: {str(e)}")
+
+
+def ensure_local_directory_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 
 driver = webdriver.Chrome(service=ChromeService(
@@ -82,6 +87,9 @@ def fetch_news_titles(driver, url, title_selector, date_selector):
         driver.get(url)
         WebDriverWait(driver, 30).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, title_selector)))
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, date_selector)))
+
         title_elements = driver.find_elements(By.CSS_SELECTOR, title_selector)
         date_elements = driver.find_elements(By.CSS_SELECTOR, date_selector)
 
@@ -135,11 +143,6 @@ finally:
     driver.quit()
 
 
-def ensure_local_directory_exists(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-
 # Save the data to a JSON file and upload to S3
 local_directory = 'json_files'
 s3_directory = 'news_data'
@@ -151,6 +154,16 @@ local_filepath = os.path.join(local_directory, filename)
 save_data_to_json(news_data, local_filepath)
 upload_file_to_s3(local_filepath, BUCKET_NAME, s3_directory)
 
+# Insert the news data into the database
+connection = get_db_connection()
+if connection:
+    try:
+        for news_item in news_data:
+            insert_news_data(connection, news_item)
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+    finally:
+        connection.close()
 
 # # 使用jieba將新聞「標題」斷詞
 # etf_title = [yahoo_title, ]

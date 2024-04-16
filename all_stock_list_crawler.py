@@ -7,7 +7,9 @@ from dotenv import load_dotenv
 import datetime
 import time
 import re
-from database import get_db_connection
+import pymysql
+from database import get_db_connection, truncate_table_all_stock_list, insert_new_records_all_stock_list
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -42,6 +44,11 @@ def upload_file_to_s3(filepath, bucket_name, s3_directory):
         print(f"Failed to upload {filepath}. Error: {str(e)}")
 
 
+def ensure_local_directory_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
 ##### Fetch stock list from TWSE website #####
 url = "https://isin.twse.com.tw/isin/C_public.jsp?strMode=2"
 response = requests.get(url)
@@ -59,9 +66,9 @@ if response.status_code == 200:
             break
 
     if date_str:
-        data_updated_time = date_str
+        data_update_date = date_str
     else:
-        data_updated_time = "NULL"
+        data_update_date = "NULL"
 
     for row in rows:
         cells = row.find_all('td')
@@ -79,16 +86,11 @@ if response.status_code == 200:
                     "stock_name": stock_name,
                     "listed_or_OTC": listed_or_OTC,
                     "industry_category": industry_category,
-                    "data_updated_date": data_updated_time,
+                    "data_update_date": data_update_date,
                     "crawler_date": today
                 })
 else:
     print("Failed to fetch data from TWSE website.")
-
-
-def ensure_local_directory_exists(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
 
 
 # Save the data to a JSON file and upload to S3
@@ -101,3 +103,12 @@ local_filepath = os.path.join(local_directory, filename)
 
 save_data_to_json(stock_list, local_filepath)
 upload_file_to_s3(local_filepath, BUCKET_NAME, s3_directory)
+
+# Insert the data into the database
+connection = get_db_connection()
+if connection:
+    truncate_table_all_stock_list(connection)
+    insert_data = [(stock['stock_code'], stock['stock_name'], stock['listed_or_OTC'],
+                    stock['industry_category'], stock['data_update_date'], stock['crawler_date']) for stock in stock_list]
+    insert_new_records_all_stock_list(connection, insert_data)
+    connection.close()
