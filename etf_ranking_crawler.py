@@ -34,14 +34,16 @@ def save_data_to_json(data, filename):
     print(f"Data has been written to {filename}")
 
 
-def upload_file_to_s3(filename, BUCKET_NAME):
+def upload_file_to_s3(filepath, bucket_name, s3_directory):
     """Uploads a file to an S3 bucket."""
     s3_client = boto3.client('s3')
+    s3_key = os.path.join(s3_directory, os.path.basename(filepath))
+    print(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
     try:
-        s3_client.upload_file(filename, BUCKET_NAME, filename)
-        print(f"Successfully uploaded {filename} to S3 bucket {BUCKET_NAME}")
+        s3_client.upload_file(filepath, bucket_name, s3_key)
+        print(f"Successfully uploaded")
     except Exception as e:
-        print(f"Failed to upload {filename}. Error: {str(e)}")
+        print(f"Failed to upload {filepath}. Error: {str(e)}")
 
 
 ##### ETF Ranking Crawler #####
@@ -199,8 +201,14 @@ def insert_data_to_db(data, table_name):
                     field_mapping[key]: value for key, value in item.items() if key in field_mapping}
                 columns = ', '.join(f"`{key}`" for key in mapped_item.keys())
                 placeholders = ', '.join(['%s'] * len(mapped_item))
-                sql = f"""INSERT INTO `{table_name}` ({columns}) VALUES ({
-                    placeholders})"""
+                updates = ', '.join(
+                    f"`{key}` = VALUES(`{key}`)" for key in mapped_item.keys())
+
+                sql = f"""
+                INSERT INTO `{table_name}` ({columns})
+                VALUES ({placeholders})
+                ON DUPLICATE KEY UPDATE {updates}
+                """
                 cursor.execute(sql, list(mapped_item.values()))
         connection.commit()
     except Exception as e:
@@ -218,10 +226,35 @@ files_and_data = [
     (f'etf_ranking_performance_{today_file}.json', data4)
 ]
 
-# Loop through each pair, save to JSON, and upload to S3
+
+def ensure_local_directory_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    # Loop through each pair, save to JSON, and upload to S3
 for filename, data in files_and_data:
-    save_data_to_json(data, filename)  # Save the data to a JSON file
-    upload_file_to_s3(filename, BUCKET_NAME)  # Upload the file to S3
+    local_directory = 'json_files'
+    ensure_local_directory_exists(local_directory)
+    local_filepath = os.path.join(local_directory, filename)
+    save_data_to_json(data, local_filepath)  # Save the data to JSON file
+
+    # Determine the S3 directory based on the filename
+    if 'volume' in filename:
+        s3_directory = 'etf_ranking_volume'
+    elif 'assets' in filename:
+        s3_directory = 'etf_ranking_assets'
+    elif 'holders' in filename:
+        s3_directory = 'etf_ranking_holders'
+    elif 'performance' in filename:
+        s3_directory = 'etf_ranking_performance'
+    else:
+        s3_directory = 'other_data'
+
+    # Upload the file to S3
+    upload_file_to_s3(local_filepath, BUCKET_NAME,
+                      s3_directory)  # Upload the file to S3
+
+    # Insert the data into the database
     table_name = filename.split(
         '_')[0]+'_'+filename.split('_')[1]+'_'+filename.split('_')[2]
     insert_data_to_db(data, table_name)

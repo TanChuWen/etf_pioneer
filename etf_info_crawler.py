@@ -13,6 +13,7 @@ import re
 import boto3
 import os
 from dotenv import load_dotenv
+from database import get_db_connection
 
 # Load environment variables from .env file
 load_dotenv()
@@ -32,14 +33,16 @@ def save_data_to_json(data, filename):
     print(f"Data has been written to {filename}")
 
 
-def upload_file_to_s3(filename, BUCKET_NAME):
+def upload_file_to_s3(filepath, bucket_name, s3_directory):
     """Uploads a file to an S3 bucket."""
     s3_client = boto3.client('s3')
+    s3_key = os.path.join(s3_directory, os.path.basename(filepath))
+    print(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
     try:
-        s3_client.upload_file(filename, BUCKET_NAME, filename)
-        print(f"Successfully uploaded {filename} to S3 bucket {BUCKET_NAME}")
+        s3_client.upload_file(filepath, bucket_name, s3_key)
+        print(f"Successfully uploaded")
     except Exception as e:
-        print(f"Failed to upload {filename}. Error: {str(e)}")
+        print(f"Failed to upload {filepath}. Error: {str(e)}")
 
 
 performance_map = [
@@ -416,14 +419,24 @@ for idx in range(region_tabs_len):
 driver.quit()
 
 
+def ensure_local_directory_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
+local_directory = 'json_files'
+ensure_local_directory_exists(local_directory)
+
 files_and_data = [
-    (f'etf_overview_data_{today_file}.json', etf_data),
-    (f'etf_performance_data_{today_file}.json', etf_performance),
-    (f'etf_industry_data_{today_file}.json', etf_industry),
-    (f'etf_stock_composition_data_{today_file}.json', etf_stock_composition)
+    (f'etf_overview_{today_file}.json', etf_data, 'etf_overview_data'),
+    (f'etf_performance_{today_file}.json',
+     etf_performance, 'etf_performance_data'),
+    (f'etf_industry_{today_file}.json', etf_industry, 'etf_industry_data'),
+    (f'etf_stock_composition_{today_file}.json',
+     etf_stock_composition, 'etf_stock_composition_data')
 ]
 
-# Loop through each pair, save to JSON, and upload to S3
-for filename, data in files_and_data:
-    save_data_to_json(data, filename)  # Save the data to a JSON file
-    upload_file_to_s3(filename, BUCKET_NAME)  # Upload the file to S3
+for filename, data, s3_folder in files_and_data:
+    local_filepath = os.path.join(local_directory, filename)
+    save_data_to_json(data, local_filepath)
+    upload_file_to_s3(local_filepath, BUCKET_NAME, s3_folder)

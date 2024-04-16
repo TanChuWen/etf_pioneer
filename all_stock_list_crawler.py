@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import datetime
 import time
 import re
+from database import get_db_connection
 
 # Load environment variables from .env file
 load_dotenv()
@@ -29,14 +30,16 @@ def save_data_to_json(data, filename):
     print(f"Data has been written to {filename}")
 
 
-def upload_file_to_s3(filename, BUCKET_NAME):
+def upload_file_to_s3(filepath, bucket_name, s3_directory):
     """Uploads a file to an S3 bucket."""
     s3_client = boto3.client('s3')
+    s3_key = os.path.join(s3_directory, os.path.basename(filepath))
+    print(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
     try:
-        s3_client.upload_file(filename, BUCKET_NAME, filename)
-        print(f"Successfully uploaded {filename} to S3 bucket {BUCKET_NAME}")
+        s3_client.upload_file(filepath, bucket_name, s3_key)
+        print(f"Successfully uploaded")
     except Exception as e:
-        print(f"Failed to upload {filename}. Error: {str(e)}")
+        print(f"Failed to upload {filepath}. Error: {str(e)}")
 
 
 ##### Fetch stock list from TWSE website #####
@@ -83,7 +86,18 @@ else:
     print("Failed to fetch data from TWSE website.")
 
 
-# Save data to a JSON file
-filename = f"stock_list_{today_file}.json"
-save_data_to_json(stock_list, filename)
-upload_file_to_s3(filename, BUCKET_NAME)
+def ensure_local_directory_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
+# Save the data to a JSON file and upload to S3
+local_directory = 'json_files'
+s3_directory = 'stock_list'
+
+ensure_local_directory_exists(local_directory)
+filename = f'stock_list_{today_file}.json'
+local_filepath = os.path.join(local_directory, filename)
+
+save_data_to_json(stock_list, local_filepath)
+upload_file_to_s3(local_filepath, BUCKET_NAME, s3_directory)

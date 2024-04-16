@@ -13,7 +13,7 @@ import datetime
 import re
 import boto3
 import os
-
+from database import get_db_connection
 
 # Load environment variables from .env file
 load_dotenv()
@@ -33,14 +33,16 @@ def save_data_to_json(data, filename):
     print(f"Data has been written to {filename}")
 
 
-def upload_file_to_s3(filename, BUCKET_NAME):
+def upload_file_to_s3(filepath, bucket_name, s3_directory):
     """Uploads a file to an S3 bucket."""
     s3_client = boto3.client('s3')
+    s3_key = os.path.join(s3_directory, os.path.basename(filepath))
+    print(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
     try:
-        s3_client.upload_file(filename, BUCKET_NAME, filename)
-        print(f"Successfully uploaded {filename} to S3 bucket {BUCKET_NAME}")
+        s3_client.upload_file(filepath, bucket_name, s3_key)
+        print(f"Successfully uploaded")
     except Exception as e:
-        print(f"Failed to upload {filename}. Error: {str(e)}")
+        print(f"Failed to upload {filepath}. Error: {str(e)}")
 
 
 driver = webdriver.Chrome(service=ChromeService(
@@ -118,6 +120,11 @@ sites_to_crawl = [
         "title_selector": ".story__headline",
         "date_selector": ".story__content > time"
     }
+    # {
+    #     "url": "https://www.moneydj.com/funddj/ya/YP051000.djhtm",
+    #     "title_selector": "tr td.t3n1 a",
+    #     "date_selector": "td[class*='t3n0c1']"
+    # }
 ]
 
 try:
@@ -127,6 +134,44 @@ try:
 finally:
     driver.quit()
 
+
+def ensure_local_directory_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
+# Save the data to a JSON file and upload to S3
+local_directory = 'json_files'
+s3_directory = 'news_data'
+
+ensure_local_directory_exists(local_directory)
 filename = f'news_data_{today_file}.json'
-save_data_to_json(news_data, filename)
-upload_file_to_s3(filename, BUCKET_NAME)
+local_filepath = os.path.join(local_directory, filename)
+
+save_data_to_json(news_data, local_filepath)
+upload_file_to_s3(local_filepath, BUCKET_NAME, s3_directory)
+
+
+# # 使用jieba將新聞「標題」斷詞
+# etf_title = [yahoo_title, ]
+
+
+# # 使用wordcloud製作文字雲，STOPWORDS可以排除常見的無意義詞彙
+# stopwords = set(STOPWORDS)
+# stopwords.add("可以")
+# stopwords.add("快訊")
+# stopwords.add("新聞")
+# stopwords.add("報導")
+# stopwords.add("影音")
+# stopwords.add("影片")
+# stopwords.add("直播")
+# stopwords.add("獨家")
+# stopwords.add("專訪")
+# stopwords.add("專家")
+
+# cloud = WordCloud(width=1000, stopwords=stopwords, height=500,
+#                   max_words=20, background_color='white').generate(cut_text)
+# plt.imshow(cloud)
+# plt.axis
+# plt.show()
+# cloud.to_file('wordcloud.png')
