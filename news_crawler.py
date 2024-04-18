@@ -1,11 +1,3 @@
-import logging
-from database import get_db_connection, insert_news_data
-import os
-import boto3
-import re
-import datetime
-import json
-import time
 from dotenv import load_dotenv
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
