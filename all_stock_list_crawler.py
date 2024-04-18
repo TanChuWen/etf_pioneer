@@ -8,7 +8,7 @@ import datetime
 import time
 import re
 import pymysql
-from database import get_db_connection, truncate_table_all_stock_list, insert_new_records_all_stock_list
+from database import get_db_connection, clear_table_all_stock_list, insert_new_records_all_stock_list
 
 
 # Load environment variables from .env file
@@ -107,7 +107,7 @@ upload_file_to_s3(local_filepath, BUCKET_NAME, s3_directory)
 # Insert the data into the database
 connection = get_db_connection()
 if connection:
-    truncate_table_all_stock_list(connection)
+    clear_table_all_stock_list(connection)
     insert_data = [(stock['stock_code'], stock['stock_name'], stock['listed_or_OTC'],
                     stock['industry_category'], stock['data_update_date'], stock['crawler_date']) for stock in stock_list]
     insert_new_records_all_stock_list(connection, insert_data)

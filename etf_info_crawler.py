@@ -13,7 +13,7 @@ import re
 import boto3
 import os
 from dotenv import load_dotenv
-from database import get_db_connection
+from database import get_db_connection, insert_etf_overview_data, insert_etf_performance_data, insert_industry_data, insert_top10_stock_composition_data
 
 # Load environment variables from .env file
 load_dotenv()
@@ -117,7 +117,7 @@ for idx in range(region_tabs_len):
     # etf_limit = 2
     for etf in etf_elements:
         # if etf_limit == 0:
-        #     break
+        #    break
         # etf_limit -= 1
         each_etf = {}
         driver.switch_to.window(original_window)
@@ -135,12 +135,12 @@ for idx in range(region_tabs_len):
         WebDriverWait(driver, 10).until(EC.presence_of_element_located(
             (By.ID, "main-0-QuoteHeader-Proxy")))
 
-        name = driver.find_element(
+        etf_name = driver.find_element(
             By.CSS_SELECTOR, "#main-0-QuoteHeader-Proxy h1").text
         # symbol is the first span
         symbol = driver.find_element(
             By.CSS_SELECTOR, "#main-0-QuoteHeader-Proxy span").text
-        price = driver.find_elements(
+        price_today = driver.find_elements(
             By.CSS_SELECTOR, "#main-0-QuoteHeader-Proxy span")[2].text
         up_down = ''
         up_down_class = driver.find_elements(
@@ -180,9 +180,9 @@ for idx in range(region_tabs_len):
             data_updated_date = "NULL"
 
         each_etf = {
-            "name": name,
+            "etf_name": etf_name,
             "symbol": symbol,
-            "price": price,
+            "price_today": price_today,
             "up_down": up_down,
             "up_down_change": up_down_change,
             "up_down_percentage": up_down_percentage,
@@ -190,7 +190,7 @@ for idx in range(region_tabs_len):
             "crawler_date": today
         }
         etf_data.append(each_etf)
-        print(each_etf)
+        # print(each_etf)
 
         ### get the performance, industry and stock composition data ###
         full_symbol = driver.current_url.split('/')[-1]
@@ -200,7 +200,7 @@ for idx in range(region_tabs_len):
 
         # get the performance data
         driver.get(performance_url)
-        WebDriverWait(driver, 10).until(lambda d: "績效表現" in d.title)
+        # WebDriverWait(driver, 10).until(lambda d: "績效表現" in d.title)
 
         # get the data updated date
         try:
@@ -220,6 +220,9 @@ for idx in range(region_tabs_len):
         # etf performance data
         each_performance_data = {
             "symbol": symbol, "data_updated_date": updated_date_performance, "crawler_date": today}
+        for each in performance_map:
+            each_performance_data[each] = "NULL"
+
         if performance_data_elements:
             for idx, each in enumerate(performance_data_elements):
                 if "trend-up" in each.get_attribute("class"):
@@ -248,25 +251,10 @@ for idx in range(region_tabs_len):
                 "5_year": "NULL",
                 "10_year": "NULL"
             })
-            print({
-                "symbol": symbol,
-                "data_updated_date": updated_date_performance,
-                "crawler_date": today,
-                "1_week": "NULL",
-                "1_month": "NULL",
-                "3_month": "NULL",
-                "6_month": "NULL",
-                "YTD": "NULL",
-                "1_year": "NULL",
-                "2_year": "NULL",
-                "3_year": "NULL",
-                "5_year": "NULL",
-                "10_year": "NULL"
-            })
 
         ### get industry and stock composition data ###
         driver.get(holding_url)
-        WebDriverWait(driver, 10).until(lambda d: "持股分析" in d.title)
+        # WebDriverWait(driver, 10).until(lambda d: "持股分析" in d.title)
 
         each_industry_data = {"symbol": symbol}
 
@@ -311,22 +299,8 @@ for idx in range(region_tabs_len):
                         "data_updated_date": updated_date_industry,
                         "crawler_date": today
                     })
-                    print({
-                        "symbol": symbol,
-                        "industry": industry,
-                        "ratio": ratio,
-                        "data_updated_date": updated_date_industry,
-                        "crawler_date": today
-                    })
         else:
             etf_industry.append({
-                "symbol": symbol,
-                "industry": "NULL",
-                "ratio": "NULL",
-                "data_updated_date": updated_date_industry,
-                "crawler_date": today
-            })
-            print({
                 "symbol": symbol,
                 "industry": "NULL",
                 "ratio": "NULL",
@@ -386,24 +360,8 @@ for idx in range(region_tabs_len):
                         "data_updated_date": updated_date_stock_composition,
                         "crawler_date": today
                     })
-                print({
-                    "symbol": symbol,
-                    "ranking": ranking,
-                    "stock_name": stock_name,
-                    "ratio": ratio,
-                    "data_updated_date": updated_date_stock_composition,
-                    "crawler_date": today
-                })
         else:
             etf_stock_composition.append({
-                "symbol": symbol,
-                "ranking": "NULL",
-                "stock_name": "NULL",
-                "ratio": "NULL",
-                "updated_date": updated_date_stock_composition,
-                "crawler_date": today
-            })
-            print({
                 "symbol": symbol,
                 "ranking": "NULL",
                 "stock_name": "NULL",
@@ -440,3 +398,9 @@ for filename, data, s3_folder in files_and_data:
     local_filepath = os.path.join(local_directory, filename)
     save_data_to_json(data, local_filepath)
     upload_file_to_s3(local_filepath, BUCKET_NAME, s3_folder)
+
+# Insert data into the database
+# insert_etf_overview_data(etf_data)
+# insert_etf_performance_data(etf_performance)
+insert_industry_data(etf_industry)
+# insert_top10_stock_composition_data(etf_stock_composition)

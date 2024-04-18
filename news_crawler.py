@@ -67,7 +67,10 @@ def standardize_date(date_str):
                 return date_str
             elif fmt in ("%m-%d", "%m/%d"):
                 date_obj = datetime.datetime.strptime(date_str, fmt)
-                return datetime.datetime.now().year + '/' + date_obj.strftime("%m/%d")
+                current_year = datetime.datetime.now().year
+                formatted_date_str = f"{
+                    current_year}/{date_obj.month:02d}/{date_obj.day:02d}"
+                return formatted_date_str
             elif fmt == "%H:%M":
                 return today
             else:
@@ -128,11 +131,6 @@ sites_to_crawl = [
         "title_selector": ".story__headline",
         "date_selector": ".story__content > time"
     }
-    # {
-    #     "url": "https://www.moneydj.com/funddj/ya/YP051000.djhtm",
-    #     "title_selector": "tr td.t3n1 a",
-    #     "date_selector": "td[class*='t3n0c1']"
-    # }
 ]
 
 try:
@@ -164,27 +162,3 @@ if connection:
         print(f"An error occurred: {str(e)}")
     finally:
         connection.close()
-
-# # 使用jieba將新聞「標題」斷詞
-# etf_title = [yahoo_title, ]
-
-
-# # 使用wordcloud製作文字雲，STOPWORDS可以排除常見的無意義詞彙
-# stopwords = set(STOPWORDS)
-# stopwords.add("可以")
-# stopwords.add("快訊")
-# stopwords.add("新聞")
-# stopwords.add("報導")
-# stopwords.add("影音")
-# stopwords.add("影片")
-# stopwords.add("直播")
-# stopwords.add("獨家")
-# stopwords.add("專訪")
-# stopwords.add("專家")
-
-# cloud = WordCloud(width=1000, stopwords=stopwords, height=500,
-#                   max_words=20, background_color='white').generate(cut_text)
-# plt.imshow(cloud)
-# plt.axis
-# plt.show()
-# cloud.to_file('wordcloud.png')

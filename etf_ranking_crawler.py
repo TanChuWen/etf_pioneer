@@ -190,34 +190,47 @@ field_mappings = {
 }
 
 
-def insert_data_to_db(data, table_name):
+def insert_data_etf_ranking(data, history_table_name, today_table_name):
     connection = get_db_connection()
     if connection is None:
-        print("Error: Could not connect to the database.")
+        print("錯誤：無法連接到資料庫。")
         return
-    field_mapping = field_mappings[table_name]
+    field_mapping = field_mappings[history_table_name]
     if not field_mapping:
-        print(f"Error: No field mapping found for table {table_name}")
+        print(f"錯誤：找不到 {history_table_name} 的字段映射。")
         return
     try:
         with connection.cursor() as cursor:
+            # Truncate today's table
+            cursor.execute(f"TRUNCATE TABLE {today_table_name}")
+            # Insert data into history table and today's table
             for item in data:
                 mapped_item = {
-                    field_mapping[key]: value for key, value in item.items() if key in field_mapping}
+                    field_mapping[key]: value for key, value in item.items() if key in field_mapping
+                }
                 columns = ', '.join(f"`{key}`" for key in mapped_item.keys())
                 placeholders = ', '.join(['%s'] * len(mapped_item))
                 updates = ', '.join(
                     f"`{key}` = VALUES(`{key}`)" for key in mapped_item.keys())
 
+                # Insert data into history table
                 sql = f"""
-                INSERT INTO `{table_name}` ({columns})
+                INSERT INTO `{history_table_name}` ({columns})
                 VALUES ({placeholders})
                 ON DUPLICATE KEY UPDATE {updates}
                 """
                 cursor.execute(sql, list(mapped_item.values()))
+
+                # Insert data into today's table
+                sql_today = f"""
+                    INSERT INTO `{today_table_name}` ({columns})
+                    VALUES ({placeholders})
+                    """
+                cursor.execute(sql_today, list(mapped_item.values()))
+
         connection.commit()
     except Exception as e:
-        print(f"Error inserting data to database: {e}")
+        print(f"錯誤：插入數據到資料庫時出現錯誤: {e}")
     finally:
         if connection:
             connection.close()
@@ -258,4 +271,11 @@ for filename, data in files_and_data:
     # Insert the data into the database
     table_name = filename.split(
         '_')[0]+'_'+filename.split('_')[1]+'_'+filename.split('_')[2]
-    insert_data_to_db(data, table_name)
+    insert_data_etf_ranking(
+        clean_data1, 'etf_ranking_volume', 'etf_ranking_volume_today')
+    insert_data_etf_ranking(
+        clean_data2, 'etf_ranking_assets', 'etf_ranking_assets_today')
+    insert_data_etf_ranking(
+        clean_data3, 'etf_ranking_holders', 'etf_ranking_holders_today')
+    insert_data_etf_ranking(data4, 'etf_ranking_performance',
+                            'etf_ranking_performance_today')
