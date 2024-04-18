@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>ETF Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js" charset="utf-8"></script>
+    <style>
+    .dashboard-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 10px;
+    padding: 10px;}
+    .chart {
+    border: 1px solid #cccccc;
+    padding: 10px;}
+</style>
+</head>
+<body>
+<div id="dashboard-container">
+<div id="volume-chart" style="width:600px;height:400px;"></div>
+<div id="assets-chart" style="width:600px;height:400px;"></div>
+<div id="holders-chart" style="width:600px;height:400px;"></div>
+<div id="performance-chart" style="width:600px;height:400px;"></div>
+
+
+</div>
+<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+
+</body>
+</html>
