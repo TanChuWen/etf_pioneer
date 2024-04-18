@@ -5,7 +5,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from wordcloud import WordCloud, STOPWORDS
 from dotenv import load_dotenv
 import time
 import json
@@ -14,6 +13,7 @@ import re
 import boto3
 import os
 from database import get_db_connection, insert_news_data
+
 
 # Load environment variables from .env file
 load_dotenv()
