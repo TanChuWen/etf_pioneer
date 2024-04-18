@@ -9,10 +9,22 @@ import time
 import re
 import pymysql
 from database import get_db_connection, clear_table_all_stock_list, insert_new_records_all_stock_list
-
+import logging
 
 # Load environment variables from .env file
 load_dotenv()
+
+##### logging  #####
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('all_stock_list_crawler.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.info('Start all_stock_list_crawler.py')
 
 #####
 s3 = boto3.client('s3',
@@ -29,19 +41,19 @@ today_file = datetime.datetime.now().strftime("%Y-%m-%d")
 def save_data_to_json(data, filename):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-    print(f"Data has been written to {filename}")
+    logger.info(f"Data has been written to {filename}")
 
 
 def upload_file_to_s3(filepath, bucket_name, s3_directory):
     """Uploads a file to an S3 bucket."""
     s3_client = boto3.client('s3')
     s3_key = os.path.join(s3_directory, os.path.basename(filepath))
-    print(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
+    logger.info(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
     try:
         s3_client.upload_file(filepath, bucket_name, s3_key)
-        print(f"Successfully uploaded")
+        logger.info(f"Successfully uploaded")
     except Exception as e:
-        print(f"Failed to upload {filepath}. Error: {str(e)}")
+        logger.error(f"Failed to upload {filepath}. Error: {str(e)}")
 
 
 def ensure_local_directory_exists(directory):
@@ -90,7 +102,7 @@ if response.status_code == 200:
                     "crawler_date": today
                 })
 else:
-    print("Failed to fetch data from TWSE website.")
+    logger.error("Failed to fetch data from TWSE website")
 
 
 # Save the data to a JSON file and upload to S3

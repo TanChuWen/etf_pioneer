@@ -1,3 +1,4 @@
+import logging
 import ipdb
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
@@ -17,6 +18,19 @@ from database import get_db_connection
 # Load environment variables from .env file
 load_dotenv()
 
+##### logging  #####
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('etf_ranking_crawler.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.info('Start etf_ranking_crawler.py')
+
+
 #####
 s3 = boto3.client('s3',
                   aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
@@ -31,19 +45,19 @@ today_file = datetime.datetime.now().strftime("%Y-%m-%d")
 def save_data_to_json(data, filename):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-    print(f"Data has been written to {filename}")
+    logger.info(f"Data has been written to {filename}")
 
 
 def upload_file_to_s3(filepath, bucket_name, s3_directory):
     """Uploads a file to an S3 bucket."""
     s3_client = boto3.client('s3')
     s3_key = os.path.join(s3_directory, os.path.basename(filepath))
-    print(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
+    logger.info(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
     try:
         s3_client.upload_file(filepath, bucket_name, s3_key)
-        print(f"Successfully uploaded")
+        logger.info(f"Successfully uploaded")
     except Exception as e:
-        print(f"Failed to upload {filepath}. Error: {str(e)}")
+        logger.error(f"Failed to upload {filepath}. Error: {str(e)}")
 
 
 def ensure_local_directory_exists(directory):
@@ -104,8 +118,6 @@ for item in data1:
         ',', '') if "成交" in key else value for key, value in item.items()}
     clean_data1.append(item_clean)
 
-# print(clean_data1)
-
 # second tab
 second_tab = driver.find_element(
     By.CSS_SELECTOR, 'section#ranking.tabs > ul.nav > li:nth-child(2)')
@@ -116,8 +128,6 @@ for item in data2:
     item_clean = {key: value.replace(
         ',', '') if "今" in key else value for key, value in item.items()}
     clean_data2.append(item_clean)
-
-# print(clean_data2)
 
 # third tab
 third_tab = driver.find_element(
@@ -130,14 +140,11 @@ for item in data3:
         ',', '') if "人" in key else value for key, value in item.items()}
     clean_data3.append(item_clean)
 
-# print(clean_data3)
-
 # fourth tab
 fourth_tab = driver.find_element(
     By.CSS_SELECTOR, 'section#ranking.tabs > ul.nav > li:nth-child(4)')
 fourth_tab.click()
 data4 = scrape_table_data()
-print(data4)
 driver.quit()
 
 # data mapping
@@ -193,11 +200,12 @@ field_mappings = {
 def insert_data_etf_ranking(data, history_table_name, today_table_name):
     connection = get_db_connection()
     if connection is None:
-        print("錯誤：無法連接到資料庫。")
+        logger.error("Failed to connect to the database.")
         return
     field_mapping = field_mappings[history_table_name]
     if not field_mapping:
-        print(f"錯誤：找不到 {history_table_name} 的字段映射。")
+        logger.error(
+            f"Failed to find field mapping for table {history_table_name}")
         return
     try:
         with connection.cursor() as cursor:
@@ -230,7 +238,8 @@ def insert_data_etf_ranking(data, history_table_name, today_table_name):
 
         connection.commit()
     except Exception as e:
-        print(f"錯誤：插入數據到資料庫時出現錯誤: {e}")
+        logger.error(
+            f"Error occurred while inserting data into the database: {e}")
     finally:
         if connection:
             connection.close()
