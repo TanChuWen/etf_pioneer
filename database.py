@@ -59,35 +59,38 @@ def insert_new_records_all_stock_list(connection, data):
 
 
 # News data table
+
+
 def insert_news_data(connection, news_item):
     try:
         with connection.cursor() as cursor:
-            query = """
-            SELECT EXISTS(
-                SELECT 1 FROM news_data 
-                WHERE news_title = %s AND news_date = STR_TO_DATE(%s, '%%Y/%%m/%%d') 
-            )
+            # Prepare the INSERT statement without the existence check.
+            insert_query = """
+            INSERT INTO news_data (news_title, news_date, website, crawler_date)
+            VALUES (%s, STR_TO_DATE(%s, '%%Y/%%m/%%d'), %s, STR_TO_DATE(%s, '%%Y/%%m/%%d'))
             """
-            cursor.execute(
-                query, (news_item['news_title'], news_item['news_date']))
-            result = cursor.fetchone()
-            # Check if the news title already exists in the database
-            exists = result.get(
-                'EXISTS( SELECT 1 FROM news_data WHERE news_title = %s AND news_date = STR_TO_DATE(%s, \'%%Y/%%m/%%d\') )')
-            if exists:
-                print(f"Skipped duplicate: {news_item['news_title']}")
-            else:
-                insert_query = """
-                INSERT INTO news_data (news_title, news_date, website, crawler_date)
-                VALUES (%s, STR_TO_DATE(%s, '%%Y/%%m/%%d'), %s, STR_TO_DATE(%s, '%%Y/%%m/%%d'))
-                """
-
+            try:
+                # Attempt to insert the new record.
                 cursor.execute(
-                    insert_query, (news_item['news_title'], news_item['news_date'], news_item['website'], news_item['crawler_date']))
+                    insert_query,
+                    (
+                        news_item['news_title'],
+                        news_item['news_date'],
+                        news_item['website'],
+                        news_item['crawler_date']
+                    )
+                )
                 connection.commit()
                 print(f"Inserted: {news_item['news_title']}")
+            except pymysql.err.IntegrityError as e:
+                # This block will be executed if a duplicate entry is attempted.
+                print(f"""Skipped duplicate: {
+                      news_item['news_title']}, Error: {e}""")
     except Exception as e:
         print(f"Unexpected error: {e}")
+        # Rollback the transaction in case of any other error
+        connection.rollback()
+
 
 # ETF profile table
 
