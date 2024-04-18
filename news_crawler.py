@@ -1,3 +1,12 @@
+import logging
+from database import get_db_connection, insert_news_data
+import os
+import boto3
+import re
+import datetime
+import json
+import time
+from dotenv import load_dotenv
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -5,7 +14,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from wordcloud import WordCloud, STOPWORDS
 from dotenv import load_dotenv
 import time
 import json
@@ -14,9 +22,23 @@ import re
 import boto3
 import os
 from database import get_db_connection, insert_news_data
+import logging
 
 # Load environment variables from .env file
 load_dotenv()
+
+##### logging  #####
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('news_crawler.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.info('Start news_crawler.py')
+
 
 #####
 s3 = boto3.client('s3',
@@ -30,19 +52,19 @@ BUCKET_NAME = os.getenv("BUCKET_NAME")
 def save_data_to_json(data, filename):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-    print(f"Data has been written to {filename}")
+    logger.info(f"Data has been written to {filename}")
 
 
 def upload_file_to_s3(filepath, bucket_name, s3_directory):
     """Uploads a file to an S3 bucket."""
     s3_client = boto3.client('s3')
     s3_key = os.path.join(s3_directory, os.path.basename(filepath))
-    print(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
+    logger.info(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
     try:
         s3_client.upload_file(filepath, bucket_name, s3_key)
-        print(f"Successfully uploaded")
+        logger.info(f"Successfully uploaded")
     except Exception as e:
-        print(f"Failed to upload {filepath}. Error: {str(e)}")
+        logger.error(f"Failed to upload {filepath}. Error: {str(e)}")
 
 
 def ensure_local_directory_exists(directory):
@@ -107,9 +129,9 @@ def fetch_news_titles(driver, url, title_selector, date_selector):
             news_items.append(news_item)
 
     except TimeoutException:
-        print(f"Timeout while waiting for page to load: {url}")
+        logger.error(f"Timeout while waiting for page to load: {url}")
     except Exception as e:
-        print(f"Error fetching news from {url}: {str(e)}")
+        logger.error(f"Error fetching news from {url}: {str(e)}")
 
     return news_items
 
@@ -159,6 +181,6 @@ if connection:
         for news_item in news_data:
             insert_news_data(connection, news_item)
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
+        logger.error(f"An error occurred: {str(e)}")
     finally:
         connection.close()

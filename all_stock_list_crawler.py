@@ -7,9 +7,24 @@ from dotenv import load_dotenv
 import datetime
 import time
 import re
+import pymysql
+from database import get_db_connection, clear_table_all_stock_list, insert_new_records_all_stock_list
+import logging
 
 # Load environment variables from .env file
 load_dotenv()
+
+##### logging  #####
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('all_stock_list_crawler.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.info('Start all_stock_list_crawler.py')
 
 #####
 s3 = boto3.client('s3',
@@ -26,17 +41,24 @@ today_file = datetime.datetime.now().strftime("%Y-%m-%d")
 def save_data_to_json(data, filename):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-    print(f"Data has been written to {filename}")
+    logger.info(f"Data has been written to {filename}")
 
 
-def upload_file_to_s3(filename, BUCKET_NAME):
+def upload_file_to_s3(filepath, bucket_name, s3_directory):
     """Uploads a file to an S3 bucket."""
     s3_client = boto3.client('s3')
+    s3_key = os.path.join(s3_directory, os.path.basename(filepath))
+    logger.info(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
     try:
-        s3_client.upload_file(filename, BUCKET_NAME, filename)
-        print(f"Successfully uploaded {filename} to S3 bucket {BUCKET_NAME}")
+        s3_client.upload_file(filepath, bucket_name, s3_key)
+        logger.info(f"Successfully uploaded")
     except Exception as e:
-        print(f"Failed to upload {filename}. Error: {str(e)}")
+        logger.error(f"Failed to upload {filepath}. Error: {str(e)}")
+
+
+def ensure_local_directory_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 
 ##### Fetch stock list from TWSE website #####
@@ -56,9 +78,9 @@ if response.status_code == 200:
             break
 
     if date_str:
-        data_updated_time = date_str
+        data_update_date = date_str
     else:
-        data_updated_time = "NULL"
+        data_update_date = "NULL"
 
     for row in rows:
         cells = row.find_all('td')
@@ -76,14 +98,29 @@ if response.status_code == 200:
                     "stock_name": stock_name,
                     "listed_or_OTC": listed_or_OTC,
                     "industry_category": industry_category,
-                    "data_updated_time": data_updated_time,
+                    "data_update_date": data_update_date,
                     "crawler_date": today
                 })
 else:
-    print("Failed to fetch data from TWSE website.")
+    logger.error("Failed to fetch data from TWSE website")
 
 
-# Save data to a JSON file
-filename = f"stock_list_{today_file}.json"
-save_data_to_json(stock_list, filename)
-upload_file_to_s3(filename, BUCKET_NAME)
+# Save the data to a JSON file and upload to S3
+local_directory = 'json_files'
+s3_directory = 'stock_list'
+
+ensure_local_directory_exists(local_directory)
+filename = f'stock_list_{today_file}.json'
+local_filepath = os.path.join(local_directory, filename)
+
+save_data_to_json(stock_list, local_filepath)
+upload_file_to_s3(local_filepath, BUCKET_NAME, s3_directory)
+
+# Insert the data into the database
+connection = get_db_connection()
+if connection:
+    clear_table_all_stock_list(connection)
+    insert_data = [(stock['stock_code'], stock['stock_name'], stock['listed_or_OTC'],
+                    stock['industry_category'], stock['data_update_date'], stock['crawler_date']) for stock in stock_list]
+    insert_new_records_all_stock_list(connection, insert_data)
+    connection.close()

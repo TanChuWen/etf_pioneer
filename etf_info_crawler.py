@@ -13,9 +13,23 @@ import re
 import boto3
 import os
 from dotenv import load_dotenv
+from database import get_db_connection, insert_etf_overview_data, insert_etf_performance_data, insert_industry_data, insert_top10_stock_composition_data
+import logging
 
 # Load environment variables from .env file
 load_dotenv()
+
+##### logging  #####
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('etf_info_crawler.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.info('Start etf_info_crawler.py')
 
 #####
 s3 = boto3.client('s3',
@@ -29,17 +43,25 @@ BUCKET_NAME = os.getenv("BUCKET_NAME")
 def save_data_to_json(data, filename):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-    print(f"Data has been written to {filename}")
+    logger.info(f"Data has been written to {filename}")
 
 
-def upload_file_to_s3(filename, BUCKET_NAME):
+def upload_file_to_s3(filepath, bucket_name, s3_directory):
     """Uploads a file to an S3 bucket."""
     s3_client = boto3.client('s3')
+    s3_key = os.path.join(s3_directory, os.path.basename(filepath))
+    logger.info(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
     try:
-        s3_client.upload_file(filename, BUCKET_NAME, filename)
-        print(f"Successfully uploaded {filename} to S3 bucket {BUCKET_NAME}")
+        s3_client.upload_file(filepath, bucket_name, s3_key)
+        logger.info(f"Successfully uploaded")
     except Exception as e:
-        print(f"Failed to upload {filename}. Error: {str(e)}")
+        logger.error(f"Failed to upload {filepath}. Error: {str(e)}")
+
+
+def ensure_local_directory_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        logger.info(f"Directory {directory} has been created")
 
 
 performance_map = [
@@ -86,7 +108,7 @@ for idx in range(region_tabs_len):
 
     region_tabs = driver.find_elements(
         By.CSS_SELECTOR, "#etf-overview-region .tab-wrapper > button")
-    print(region_tabs[idx].text)
+    logger.info(f"Clicking on tab {idx}")
 
     # Scroll the element into view
     driver.execute_script(
@@ -109,7 +131,7 @@ for idx in range(region_tabs_len):
     # etf_limit = 2
     for etf in etf_elements:
         # if etf_limit == 0:
-        #     break
+        #    break
         # etf_limit -= 1
         each_etf = {}
         driver.switch_to.window(original_window)
@@ -127,12 +149,12 @@ for idx in range(region_tabs_len):
         WebDriverWait(driver, 10).until(EC.presence_of_element_located(
             (By.ID, "main-0-QuoteHeader-Proxy")))
 
-        name = driver.find_element(
+        etf_name = driver.find_element(
             By.CSS_SELECTOR, "#main-0-QuoteHeader-Proxy h1").text
         # symbol is the first span
         symbol = driver.find_element(
             By.CSS_SELECTOR, "#main-0-QuoteHeader-Proxy span").text
-        price = driver.find_elements(
+        price_today = driver.find_elements(
             By.CSS_SELECTOR, "#main-0-QuoteHeader-Proxy span")[2].text
         up_down = ''
         up_down_class = driver.find_elements(
@@ -172,9 +194,9 @@ for idx in range(region_tabs_len):
             data_updated_date = "NULL"
 
         each_etf = {
-            "name": name,
+            "etf_name": etf_name,
             "symbol": symbol,
-            "price": price,
+            "price_today": price_today,
             "up_down": up_down,
             "up_down_change": up_down_change,
             "up_down_percentage": up_down_percentage,
@@ -182,7 +204,7 @@ for idx in range(region_tabs_len):
             "crawler_date": today
         }
         etf_data.append(each_etf)
-        print(each_etf)
+        logger.info(f"ETF data for {symbol} has been added")
 
         ### get the performance, industry and stock composition data ###
         full_symbol = driver.current_url.split('/')[-1]
@@ -192,7 +214,7 @@ for idx in range(region_tabs_len):
 
         # get the performance data
         driver.get(performance_url)
-        WebDriverWait(driver, 10).until(lambda d: "績效表現" in d.title)
+        # WebDriverWait(driver, 10).until(lambda d: "績效表現" in d.title)
 
         # get the data updated date
         try:
@@ -212,6 +234,9 @@ for idx in range(region_tabs_len):
         # etf performance data
         each_performance_data = {
             "symbol": symbol, "data_updated_date": updated_date_performance, "crawler_date": today}
+        for each in performance_map:
+            each_performance_data[each] = "NULL"
+
         if performance_data_elements:
             for idx, each in enumerate(performance_data_elements):
                 if "trend-up" in each.get_attribute("class"):
@@ -223,7 +248,7 @@ for idx in range(region_tabs_len):
                     each_performance_data[performance_map[idx]] = "NULL"
 
             etf_performance.append(each_performance_data)
-            print(each_performance_data)
+            logger.info(f"Performance data for {symbol} has been added")
         else:
             etf_performance.append({
                 "symbol": symbol,
@@ -240,25 +265,11 @@ for idx in range(region_tabs_len):
                 "5_year": "NULL",
                 "10_year": "NULL"
             })
-            print({
-                "symbol": symbol,
-                "data_updated_date": updated_date_performance,
-                "crawler_date": today,
-                "1_week": "NULL",
-                "1_month": "NULL",
-                "3_month": "NULL",
-                "6_month": "NULL",
-                "YTD": "NULL",
-                "1_year": "NULL",
-                "2_year": "NULL",
-                "3_year": "NULL",
-                "5_year": "NULL",
-                "10_year": "NULL"
-            })
+            logger.info(f"Performance data for {symbol} has been added")
 
         ### get industry and stock composition data ###
         driver.get(holding_url)
-        WebDriverWait(driver, 10).until(lambda d: "持股分析" in d.title)
+        # WebDriverWait(driver, 10).until(lambda d: "持股分析" in d.title)
 
         each_industry_data = {"symbol": symbol}
 
@@ -303,13 +314,7 @@ for idx in range(region_tabs_len):
                         "data_updated_date": updated_date_industry,
                         "crawler_date": today
                     })
-                    print({
-                        "symbol": symbol,
-                        "industry": industry,
-                        "ratio": ratio,
-                        "data_updated_date": updated_date_industry,
-                        "crawler_date": today
-                    })
+                    logger.info(f"Industry data for {symbol} has been added")
         else:
             etf_industry.append({
                 "symbol": symbol,
@@ -318,13 +323,7 @@ for idx in range(region_tabs_len):
                 "data_updated_date": updated_date_industry,
                 "crawler_date": today
             })
-            print({
-                "symbol": symbol,
-                "industry": "NULL",
-                "ratio": "NULL",
-                "data_updated_date": updated_date_industry,
-                "crawler_date": today
-            })
+            logger.info(f"Industry data for {symbol} has been added")
 
         # etf top 10 stock composition data
         each_stock_composition_data = {"symbol": symbol}
@@ -378,24 +377,10 @@ for idx in range(region_tabs_len):
                         "data_updated_date": updated_date_stock_composition,
                         "crawler_date": today
                     })
-                print({
-                    "symbol": symbol,
-                    "ranking": ranking,
-                    "stock_name": stock_name,
-                    "ratio": ratio,
-                    "data_updated_date": updated_date_stock_composition,
-                    "crawler_date": today
-                })
+                    logger.info(f"""Stock composition data for {
+                                symbol} has been added""")
         else:
             etf_stock_composition.append({
-                "symbol": symbol,
-                "ranking": "NULL",
-                "stock_name": "NULL",
-                "ratio": "NULL",
-                "updated_date": updated_date_stock_composition,
-                "crawler_date": today
-            })
-            print({
                 "symbol": symbol,
                 "ranking": "NULL",
                 "stock_name": "NULL",
@@ -403,27 +388,32 @@ for idx in range(region_tabs_len):
                 "data_updated_date": updated_date_stock_composition,
                 "crawler_date": today
             })
+            logger.info(f"Stock composition data for {symbol} has been added")
 
-        ### organize the data ###
-
-        # print(each_etf)
-        # print(each_performance_data)
-        # print(each_industry_data)
         driver.close()
-
-# print(etf_data)
 
 driver.quit()
 
 
+local_directory = 'json_files'
+ensure_local_directory_exists(local_directory)
+
 files_and_data = [
-    (f'etf_overview_data_{today_file}.json', etf_data),
-    (f'etf_performance_data_{today_file}.json', etf_performance),
-    (f'etf_industry_data_{today_file}.json', etf_industry),
-    (f'etf_stock_composition_data_{today_file}.json', etf_stock_composition)
+    (f'etf_overview_{today_file}.json', etf_data, 'etf_overview_data'),
+    (f'etf_performance_{today_file}.json',
+     etf_performance, 'etf_performance_data'),
+    (f'etf_industry_{today_file}.json', etf_industry, 'etf_industry_data'),
+    (f'etf_stock_composition_{today_file}.json',
+     etf_stock_composition, 'etf_stock_composition_data')
 ]
 
-# Loop through each pair, save to JSON, and upload to S3
-for filename, data in files_and_data:
-    save_data_to_json(data, filename)  # Save the data to a JSON file
-    upload_file_to_s3(filename, BUCKET_NAME)  # Upload the file to S3
+for filename, data, s3_folder in files_and_data:
+    local_filepath = os.path.join(local_directory, filename)
+    save_data_to_json(data, local_filepath)
+    upload_file_to_s3(local_filepath, BUCKET_NAME, s3_folder)
+
+# Insert data into the database
+# insert_etf_overview_data(etf_data)
+# insert_etf_performance_data(etf_performance)
+insert_industry_data(etf_industry)
+# insert_top10_stock_composition_data(etf_stock_composition)
