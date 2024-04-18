@@ -132,7 +132,7 @@ for item in data3:
 
 # print(clean_data3)
 
-# forth tab
+# fourth tab
 fourth_tab = driver.find_element(
     By.CSS_SELECTOR, 'section#ranking.tabs > ul.nav > li:nth-child(4)')
 fourth_tab.click()
