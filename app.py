@@ -1,9 +1,9 @@
-from dotenv import load_dotenv
-import os
-import pymysql
-from flask import Flask, jsonify, render_template, request
-from database import get_db_connection
 import logging
+from database import get_db_connection
+from flask import Flask, jsonify, render_template, request
+import pymysql
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
@@ -89,6 +89,113 @@ def get_holders_data():
 @app.route('/etf-pioneer/api/ranking/performance', methods=['GET'])
 def get_performance_data():
     return get_data('etf_ranking_performance')
+
+
+# Route to search for an ETF
+@app.route('/etf-pioneer/api/overview', methods=['POST'])
+def search_etf_overview():
+    data = request.get_json()
+    symbol = data.get('symbol', '請輸入正確的ETF代號')
+    if not symbol:
+        return jsonify({"error": "Symbol is required"}), 400
+    connection = get_db_connection()
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("""
+                SELECT etf_name, symbol, price_today, up_down_change, up_down_percentage, data_updated_date
+                    FROM etf_overview_data 
+                    WHERE symbol = %s
+                """, (symbol,))
+            result = cursor.fetchone()
+
+            return jsonify(result)
+    except Exception as e:
+        logging.error(str(e))
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+
+# Route to get performance data for ETFs
+
+
+@app.route('/etf-pioneer/api/performance', methods=['POST'])
+def get_etf_performance():
+    data = request.get_json()
+    symbol = data.get('symbol', '請輸入正確的ETF代號')
+    if not symbol:
+        return jsonify({"error": "Symbol is required"}), 400
+    connection = get_db_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("""
+                SELECT symbol, 1_week, 1_month, 3_month, 6_month, YTD, 1_year, 2_year, 3_year, 5_year, 10_year, data_updated_date
+                FROM etf_performance
+                WHERE symbol = %s
+                """, (symbol,))
+            result = cursor.fetchone()
+            if not result:
+                return jsonify({"error": "No data found"}), 404
+            return jsonify(result)
+    except Exception as e:
+        logging.error(str(e))
+    finally:
+        connection.close()
+
+
+# Route to get top industry data for ETFs
+@app.route('/etf-pioneer/api/top-industry', methods=['POST'])
+def get_top_industry():
+    data = request.get_json()
+    symbol = data.get('symbol', '請輸入正確的ETF代號')
+    if not symbol:
+        return jsonify({"error": "Symbol is required"}), 400
+    connection = get_db_connection()
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("""
+                SELECT symbol, industry, ratio, data_updated_date 
+                FROM top_industry 
+                WHERE symbol = %s
+                """, (symbol,))
+            results = cursor.fetchall()
+            if not results:
+                return jsonify({"error": "No data found"}), 404
+            return jsonify(results)
+    except Exception as e:
+        logging.error(str(e))
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+
+
+# Route to get top10 stock data for ETFs
+@app.route('/etf-pioneer/api/top10-stock', methods=['POST'])
+def get_top10_stock():
+    data = request.get_json()
+    symbol = data.get('symbol', '請輸入正確的ETF代號')
+    if not symbol:
+        return jsonify({"error": "Symbol is required"}), 400
+    connection = get_db_connection()
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("""
+                SELECT symbol, ranking, stock_name, ratio, data_updated_date 
+                FROM top10_stock 
+                WHERE symbol = %s
+                """, (symbol,))
+            results = cursor.fetchall()
+            if not results:
+                return jsonify({"error": "No data found"}), 404
+            return jsonify(results)
+    except Exception as e:
+        logging.error(str(e))
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
 
 
 if __name__ == '__main__':
