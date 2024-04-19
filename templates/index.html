@@ -11,16 +11,28 @@
     gap: 10px;
     padding: 10px;}
     .chart {
-    border: 1px solid #cccccc;
+    border: 1px solid hwb(0 80% 20%);
     padding: 10px;}
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
+
 <body>
 <div id="dashboard-container">
 <div id="volume-chart" style="width:600px;height:400px;"></div>
 <div id="assets-chart" style="width:600px;height:400px;"></div>
 <div id="holders-chart" style="width:600px;height:400px;"></div>
 <div id="performance-chart" style="width:600px;height:400px;"></div>
+<!-- Search Bar for '搜尋 ETF' -->
+<h1>Enter ETF Symbol</h1>
+    <form id="etfSearchForm">
+        <input type="text" id="symbolInput" name="symbol" required>
+        <button type="button" onclick="fetchETFOverview()">Search</button>
+
+    </form>
+    <div id="resultsContainer"></div>
+
 
 
 </div>

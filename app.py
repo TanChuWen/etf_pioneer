@@ -3,11 +3,16 @@ import os
 import pymysql
 from flask import Flask, jsonify, render_template, request
 from database import get_db_connection
+import logging
 
 app = Flask(__name__)
 
 # Load environment variables from .env file
 load_dotenv()
+
+##### logging #####
+logging.basicConfig(filename='app.log', level=logging.DEBUG,
+                    format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 # Database config
 DB_HOST = os.getenv('DB_HOST')
@@ -35,12 +40,12 @@ def dashboard():
     return render_template('index.html')
 
 
-# Route to get data from a generic table
+# Route to get data from ETF ranking tables
 ALLOWED_TABLES = ['etf_ranking_volume', 'etf_ranking_assets',
                   'etf_ranking_holders', 'etf_ranking_performance']
 
 
-@app.route('/etf-pioneer/data/<string:table_name>', methods=['GET'])
+@app.route('/etf-pioneer/api/ranking/<string:table_name>', methods=['GET'])
 def get_data(table_name):
     if table_name not in ALLOWED_TABLES:
         return jsonify({"error": "Table not allowed"}), 403
@@ -63,6 +68,27 @@ def get_data(table_name):
     finally:
         if connection:
             connection.close()
+
+
+# Route to get ranking data by type
+@app.route('/etf-pioneer/api/ranking/volume', methods=['GET'])
+def get_volume_data():
+    return get_data('etf_ranking_volume')
+
+
+@app.route('/etf-pioneer/api/ranking/assets', methods=['GET'])
+def get_assets_data():
+    return get_data('etf_ranking_assets')
+
+
+@app.route('/etf-pioneer/api/ranking/holders', methods=['GET'])
+def get_holders_data():
+    return get_data('etf_ranking_holders')
+
+
+@app.route('/etf-pioneer/api/ranking/performance', methods=['GET'])
+def get_performance_data():
+    return get_data('etf_ranking_performance')
 
 
 if __name__ == '__main__':
