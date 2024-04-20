@@ -1,79 +1,89 @@
-// fetchETFOverview function is called when the user clicks the "Search" button
-function fetchETFOverview() {
+function fetchETFData() {
     const symbol = document.getElementById('symbolInput').value;
     if (symbol) {
-        fetch(`/etf-pioneer/api/overview`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json',},
-            body: JSON.stringify({ symbol: symbol })})
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('resultsContainer').innerHTML = `
-                <h1>ETF: ${data.symbol}</h1>
-                <p>ETF 名稱: ${data.etf_name}</p>
-                <p>ETF 代號: ${data.symbol}</p>
-                <p>今天價格: ${data.price_today}</p>
-                <p>與前一個交易日價格差距: ${data.up_down_change}</p>
-                <p>與前一個交易日價格差距百分比: ${data.up_down_percentage}</p>
-                <p>來源資料更新時間: ${data.data_updated_date}</p>
-            `;
-        })
-        .catch(error => console.error('Error:', error));
-    }
-    else {
-        document.getElementById('resultsContainer').innerHTML = '請輸入正確 ETF 代號，以及 ETF 代號不能為空。';
+        fetchDataAndDisplay(symbol, 'resultsContainer', 'performance-table', 'industry-chart', 'stock-chart', 'performance-data-updated-time', 'industry-data-updated-time', 'stock-data-updated-time');
+    } else {
+        alert("請輸入ETF代號");
     }
 }
-// Table for ETF performance function is called when the user clicks the "Search" button
-function fetchPerformance() {
-    const symbol = document.getElementById('symbolInput').value;
-    if (symbol){
-        fetch(`/etf-pioneer/api/performance`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ symbol: symbol })
-        })
-        .then(response => response.json())
-        .then(data => {
-            let tableData = [{
-                type: 'table',
-                columnwidth: [400, 500],
-                header: {
-                    values: [["<b>期間</b>"], ["<b>績效</b>"]],
-                    align: "center",
-                    line: {width: 1, color: 'black'},
-                    fill: {color: "skyblue"},
-                    font: {family: "Arial", size: 12, color: "white"}
-                },
-                cells: {
-                    values: [
-                        ['今年至今', '1 Week', '1 Month', '3 Months', '6 Months', '1 Year', '2 Years', '3 Years', '5 Years', '10 Years'],
-                        [data['YTD'], data['1_week'], data['1_month'], data['3_month'], data['6_month'], data['1_year'],
-                        data['2_year'], data['3_year'], data['5_year'], data['10_year']]
-                    ],
-                    align: "center",
-                    line: {color: "blue", width: 1},
-                    font: {family: "Arial", size: 11, color: ["black"]}
-                }
-                
-            }];
 
-            Plotly.newPlot('performance-table', tableData,{title: 'ETF 績效表現'},{responsive: true});
-            let updateTime = data.data_updated_date || '未知'; 
-            document.getElementById('performance-data-updated-time').textContent = `來源資料更新時間：${updateTime}`;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById('performance-table').innerHTML = '表格加載失敗。';
-            document.getElementById('performance-data-updated-time').textContent = '來源資料更新時間：無法獲取';
-        });
+function fetchCompareETFData() {
+    const symbol = document.getElementById('compareInput').value;
+    if (symbol) {
+        // show the second ETF container
+        document.getElementById('etf2-container').style.display = 'block';
+        
+        fetchDataAndDisplay(symbol, 'resultsContainer2', 'performance-table2', 'industry-chart2', 'stock-chart2', 'performance-data-updated-time2', 'industry-data-updated-time2', 'stock-data-updated-time2');
+    } else {
+        alert("請輸入要比較的第二個ETF代號");
     }
 }
 
 
-// PieChart for top_industry function is called when the user clicks the "Search" button
-function fetchTopIndustry() {
-    const symbol = document.getElementById('symbolInput').value;
+function fetchDataAndDisplay(symbol, resultsId, perfTableId, industryChartId, stockChartId, perfUpdateTimeId, industryUpdateTimeId, stockUpdateTimeId) {
+    fetch(`/etf-pioneer/api/overview`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ symbol: symbol })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById(resultsId).innerHTML = `
+            <h1>ETF: ${data.symbol}</h1>
+            <p>ETF 名稱: ${data.etf_name}</p>
+            <p>ETF 代號: ${data.symbol}</p>
+            <p>今天價格: ${data.price_today}</p>
+            <p>與前一個交易日價格差距: ${data.up_down_change}</p>
+            <p>與前一個交易日價格差距百分比: ${data.up_down_percentage}</p>
+            <p>來源資料更新時間: ${data.data_updated_date}</p>
+        `;
+    })
+    .catch(error => {
+        console.error('Error fetching ETF overview:', error);
+        document.getElementById(resultsId).innerHTML = '無法加載ETF概覽數據。';
+    });
+    fetchPerformance(symbol, perfTableId, perfUpdateTimeId);
+    fetchTopIndustry(symbol, industryChartId, industryUpdateTimeId);
+    fetchTop10Stock(symbol, stockChartId, stockUpdateTimeId);
+}
+
+function fetchPerformance(symbol, tableId, updateTimeId) {
+    fetch(`/etf-pioneer/api/performance`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ symbol: symbol })
+    })
+    .then(response => response.json())
+    .then(data => {
+        let tableData = {
+            type: 'table',
+            header: {
+                values: [["期間"], ["績效"]],
+                align: "center",
+                line: {width: 1, color: 'black'},
+                fill: {color: "skyblue"},
+                font: {family: "Arial", size: 12, color: "white"}
+            },
+            cells: {
+                values: [
+                    ['今年至今', '1 Week', '1 Month', '3 Months', '6 Months', '1 Year', '2 Years', '3 Years', '5 Years', '10 Years'],
+                    [data.YTD, data['1_week'], data['1_month'], data['3_month'], data['6_month'], data['1_year'], data['2_year'], data['3_year'], data['5_year'], data['10_year']]
+                ],
+                align: "center",
+                line: {color: "blue", width: 1},
+                font: {family: "Arial", size: 11, color: ["black"]}
+            }
+        };
+        Plotly.newPlot(tableId, [tableData]);
+        document.getElementById(updateTimeId).textContent = `來源資料更新時間：${data.data_updated_date}`;
+    })
+    .catch(error => {
+        console.error('Error fetching performance data:', error);
+        document.getElementById(tableId).innerHTML = '性能數據加載失敗。';
+    });
+}
+
+function fetchTopIndustry(symbol, chartId, updateTimeId) {
     fetch(`/etf-pioneer/api/top-industry`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -81,31 +91,31 @@ function fetchTopIndustry() {
     })
     .then(response => response.json())
     .then(data => {
+        let industryData = data.map(item => ({
+            label: item.industry,
+            value: parseFloat(item.ratio)
+        }));
+        let layout = {
+            title: 'ETF 產業分布',
+            responsive: true
+        };
         let industryPieChart = {
-            values: data.map(item => parseFloat(item.ratio)),  // each item has a 'ratio' property
-            labels: data.map(item => item.industry), // each item has an 'industry' property
+            values: industryData.map(item => item.value),
+            labels: industryData.map(item => item.label),
             type: 'pie'
         };
-
-        Plotly.newPlot('industry-chart', [industryPieChart], {title: 'ETF 產業分布'},{responsive: true});
-        let updateTime;
-        if (data.length > 0 && data[0].data_updated_date) {
-            updateTime = data[0].data_updated_date; // use the first item's 'data_updated_date' as the update time
-        } else {
-            updateTime = '未知'; 
-        }
-        document.getElementById('industry-data-updated-time').textContent = `來源資料更新時間：${updateTime}`;
+        Plotly.newPlot(chartId, [industryPieChart], layout);
+        let updateTime = data.length > 0 ? data[0].data_updated_date : '未知';
+        document.getElementById(updateTimeId).textContent = `來源資料更新時間：${updateTime}`;
     })
     .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('industry-chart').innerHTML = '圖表加載失敗。';
-        document.getElementById('industry-data-updated-time').textContent = '來源資料更新時間：無法獲取';
+        console.error('Error fetching industry data:', error);
+        document.getElementById(chartId).innerHTML = '產業分布數據加載失敗。';
+        document.getElementById(updateTimeId).textContent = '來源資料更新時間：無法獲取';
     });
 }
 
-// PieChart for top10_stock function is called when the user clicks the "Search" button
-function fetchTop10Stock() {
-    const symbol = document.getElementById('symbolInput').value;
+function fetchTop10Stock(symbol, chartId, updateTimeId) {
     fetch(`/etf-pioneer/api/top10-stock`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -113,32 +123,26 @@ function fetchTop10Stock() {
     })
     .then(response => response.json())
     .then(data => {
+        let stockData = data.map(item => ({
+            label: item.stock_name,
+            value: parseFloat(item.ratio)
+        }));
+        let layout = {
+            title: 'ETF 前十大持股',
+            responsive: true
+        };
         let topStockPieChart = {
-            values: data.map(item => parseFloat(item.ratio)),  // each item has a 'ratio' property
-            labels: data.map(item => item.stock_name), // each item has a 'stock_name' property
+            values: stockData.map(item => item.value),
+            labels: stockData.map(item => item.label),
             type: 'pie'
         };
-
-        Plotly.newPlot('stock-chart', [topStockPieChart], {title: 'ETF 前十大持股'},{responsive: true});
-        let updateTime;
-        if (data.length > 0 && data[0].data_updated_date) {
-            updateTime = data[0].data_updated_date; // use the first item's 'data_updated_date' as the update time
-        } else {
-            updateTime = '未知'; 
-        }
-        document.getElementById('stock-data-updated-time').textContent = `來源資料更新時間：${updateTime}`;
+        Plotly.newPlot(chartId, [topStockPieChart], layout);
+        let updateTime = data.length > 0 ? data[0].data_updated_date : '未知';
+        document.getElementById(updateTimeId).textContent = `來源資料更新時間：${updateTime}`;
     })
     .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('stock-chart').innerHTML = '圖表加載失敗。';
-        document.getElementById('stock-data-updated-time').textContent = '來源資料更新時間：無法獲取';
+        console.error('Error fetching top 10 stocks data:', error);
+        document.getElementById(chartId).innerHTML = '前十大持股數據加載失敗。';
+        document.getElementById(updateTimeId).textContent = '來源資料更新時間：無法獲取';
     });
-}
-// Table for ETF reverse lookup function is called when the user clicks the "Search" button
-
-function fetchETFData(){
-    fetchETFOverview();
-    fetchPerformance();
-    fetchTopIndustry();
-    fetchTop10Stock();
 }

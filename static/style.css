@@ -1,9 +1,22 @@
-#dashboard-container {
+ #dashboard-container {
+        display: flex;
+        flex-direction: row;  /* 確保水平方向排列 */
+        flex-wrap: wrap;      /* 允許容器內部元素換行 */
+}
+#etf1-container, #etf2-container {
+        flex-basis: 50%;      /* 每個容器佔用50%的空間 */
+        min-width: 300px;     /* 最小寬度設置，防止過度擠壓 */
+        box-sizing: border-box; /* 確保padding和border不會增加元素寬度 */
+        padding: 10px;       /* 適當的間距 */
+}
+
+.chart-flex-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: center; 
     padding: 10px;
 }
+
 
 .chart-row {
     display: flex;
@@ -36,6 +49,9 @@
 .search-buttons button:hover {
     background-color: #73bcf0; 
 }
+
+
+/* Responsive Design */
 
 /* 對於小於或等於 600px 的屏幕寬度 */
 @media screen and (max-width: 600px) {

@@ -10,24 +10,20 @@
 </head>
 
 <body>
-<div id="dashboard-container">
-    <!-- Search Bar for 'search an ETF' -->
-    <div class="search-buttons">
+<div class="search-buttons">
         <p>Enter ETF Symbol</p>
         <form id="etfSearchForm">
-        <input type="text" id="symbolInput" name="symbol" required>
-        <button type="button" onclick="fetchETFData()">Search</button>
+            <input type="text" id="symbolInput" name="symbol" required>
+            <button type="button" onclick="fetchETFData()">Search</button>
         </form>
-
-        <p>Enter ETF Symbols</p>
+        <p>Enter another ETF Symbol to compare</p>
         <form id="etfCompareForm">
-        <input type="text" id="compareInput" name="symbols" required>
-        <button type="button" onclick="fetchETFCompareData()">Add</button>
+            <input type="text" id="compareInput" name="compareSymbol" required>
+            <button type="button" onclick="fetchCompareETFData()">Compare</button>
         </form>
-
-
     </div>
 
+<!-- Display ETF ranking charts by different index -->
     <div class="chart-row">
         <div id="volume-chart" class="chart"></div>
         <div id="assets-chart" class="chart"></div>
@@ -37,13 +33,14 @@
         <div id="performance-chart" class="chart"></div>
     </div>
 
+<!-- Display ETF data -->
+<div id="dashboard-container" style="display: flex; flex-wrap: wrap;">
     
     <!-- Search Bar for 'search an ETF' -->
-
+    <div id="etf1-container" style="flex: 1; min-width: 50%;">
     <div id="resultsContainer"></div>
-
     <div id="chartContainer" style="position: relative;">
-
+    
     <div class="chart-flex-container">
         <div id="performance-table" style="max-height: 600px; overflow-y: auto;"></div>
         <div id="performance-data-updated-time" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
@@ -57,6 +54,28 @@
     <div class="chart-flex-container">
         <div id="stock-chart" style="max-height: 600px; overflow-y: auto;"></div>
         <div id="stock-data-updated-time" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div>
+    </div>
+
+    <!-- Search Bar for 'compare two ETFs' -->
+    <div id="etf2-container" style="flex: 1; min-width: 50%; display: none;">
+    <div id="resultsContainer2"></div>
+    <div id="chartContainer2" style="position: relative;">
+
+    <div class="chart-flex-container">
+        <div id="performance-table2" style="max-height: 600px; overflow-y: auto;"></div>
+        <div id="performance-data-updated-time2" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div>
+    
+    <div class="chart-flex-container">
+        <div id="industry-chart2" style="max-height: 600px; overflow-y: auto;"></div>
+        <div id="industry-data-updated-time2" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div>
+
+    <div class="chart-flex-container">
+        <div id="stock-chart2" style="max-height: 600px; overflow-y: auto;"></div>
+        <div id="stock-data-updated-time2" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div>
     </div>
 
     </div>
