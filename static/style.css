@@ -1,0 +1,63 @@
+#dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+}
+
+.chart-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.chart {
+    border: 1px solid #ccc;
+    padding: 10px;
+    flex-basis: calc(50% - 1px); /* Adjust the width for two charts per row, accounting for the gap */
+    height: 220px; 
+}
+
+.search-buttons {
+    display: flex;
+    justify-content: center; 
+    gap: 5px; 
+}
+
+.search-buttons button {
+    padding: 10px 20px; 
+    background-color: #0675f4; 
+    color: white; 
+    border: 10px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+}
+
+.search-buttons button:hover {
+    background-color: #73bcf0; 
+}
+
+/* 對於小於或等於 600px 的屏幕寬度 */
+@media screen and (max-width: 600px) {
+    .chart {
+        width: 100%;
+        height: auto;
+    }
+}
+
+/* 對於介於 601px 和 800px 之間的屏幕寬度 */
+@media screen and (min-width: 601px) and (max-width: 800px) {
+    .chart {
+        width: 50%;
+        height: auto;
+    }
+}
+
+/* 對於大於 800px 的屏幕寬度 */
+@media screen and (min-width: 801px) {
+    .chart {
+        width: 25%;
+        height: auto;
+    }
+}
+

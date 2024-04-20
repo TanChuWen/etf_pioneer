@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ETF Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js" charset="utf-8"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</head>
+
+<body>
+<div id="dashboard-container">
+    <!-- Search Bar for 'search an ETF' -->
+    <div class="search-buttons">
+        <p>Enter ETF Symbol</p>
+        <form id="etfSearchForm">
+        <input type="text" id="symbolInput" name="symbol" required>
+        <button type="button" onclick="fetchETFData()">Search</button>
+        </form>
+
+    </div>
+
+    <div class="chart-row">
+        <div id="volume-chart" class="chart"></div>
+        <div id="assets-chart" class="chart"></div>
+    </div>
+    <div class="chart-row">
+        <div id="holders-chart" class="chart"></div>
+        <div id="performance-chart" class="chart"></div>
+    </div>
+
+    
+    <!-- Search Bar for 'search an ETF' -->
+
+    <div id="resultsContainer"></div>
+
+    <div id="chartContainer" style="position: relative;">
+
+    <div class="chart-flex-container">
+        <div id="performance-table" style="max-height: 600px; overflow-y: auto;"></div>
+        <div id="performance-data-updated-time" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div>
+    
+    <div class="chart-flex-container">
+        <div id="industry-chart" style="max-height: 600px; overflow-y: auto;"></div>
+        <div id="industry-data-updated-time" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div>
+
+    <div class="chart-flex-container">
+        <div id="stock-chart" style="max-height: 600px; overflow-y: auto;"></div>
+        <div id="stock-data-updated-time" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div>
+
+    </div>
+
+
+
+</div>
+<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+
+</body>
+</html>
+
+
