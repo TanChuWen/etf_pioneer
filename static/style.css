@@ -1,13 +1,13 @@
  #dashboard-container {
         display: flex;
-        flex-direction: row;  /* 確保水平方向排列 */
-        flex-wrap: wrap;      /* 允許容器內部元素換行 */
+        flex-direction: row;  
+        flex-wrap: wrap;      
 }
 #etf1-container, #etf2-container {
-        flex-basis: 50%;      /* 每個容器佔用50%的空間 */
-        min-width: 300px;     /* 最小寬度設置，防止過度擠壓 */
-        box-sizing: border-box; /* 確保padding和border不會增加元素寬度 */
-        padding: 10px;       /* 適當的間距 */
+        flex-basis: 50%;      
+        min-width: 300px;     
+        box-sizing: border-box;
+        padding: 10px;
 }
 
 .chart-flex-container {
@@ -52,16 +52,12 @@
 
 
 /* Responsive Design */
-
-/* 對於小於或等於 600px 的屏幕寬度 */
 @media screen and (max-width: 600px) {
-    .chart {
-        width: 100%;
-        height: auto;
-    }
+    #etf1-container, #etf2-container {
+      flex-basis: 100%;
+  }
 }
 
-/* 對於介於 601px 和 800px 之間的屏幕寬度 */
 @media screen and (min-width: 601px) and (max-width: 800px) {
     .chart {
         width: 50%;
@@ -69,7 +65,6 @@
     }
 }
 
-/* 對於大於 800px 的屏幕寬度 */
 @media screen and (min-width: 801px) {
     .chart {
         width: 25%;

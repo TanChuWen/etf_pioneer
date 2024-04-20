@@ -74,7 +74,7 @@ function fetchPerformance(symbol, tableId, updateTimeId) {
                 font: {family: "Arial", size: 11, color: ["black"]}
             }
         };
-        Plotly.newPlot(tableId, [tableData]);
+        Plotly.newPlot(tableId, [tableData],layout);
         document.getElementById(updateTimeId).textContent = `來源資料更新時間：${data.data_updated_date}`;
     })
     .catch(error => {
@@ -97,7 +97,7 @@ function fetchTopIndustry(symbol, chartId, updateTimeId) {
         }));
         let layout = {
             title: 'ETF 產業分布',
-            responsive: true
+            responsive: true,
         };
         let industryPieChart = {
             values: industryData.map(item => item.value),
