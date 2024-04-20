@@ -64,7 +64,7 @@ function fetchPerformance() {
         })
         .catch(error => {
             console.error('Error:', error);
-            document.getElementById('performance-table').innerHTML = '表格加載失敗。';
+            document.getElementById('performance-table').innerHTML = '表格讀取失敗。';
             document.getElementById('performance-data-updated-time').textContent = '來源資料更新時間：無法獲取';
         });
     }
@@ -98,7 +98,7 @@ function fetchTopIndustry() {
     })
     .catch(error => {
         console.error('Error:', error);
-        document.getElementById('industry-chart').innerHTML = '圖表加載失敗。';
+        document.getElementById('industry-chart').innerHTML = '圖表讀取失敗。';
         document.getElementById('industry-data-updated-time').textContent = '來源資料更新時間：無法獲取';
     });
 }
@@ -130,7 +130,7 @@ function fetchTop10Stock() {
     })
     .catch(error => {
         console.error('Error:', error);
-        document.getElementById('stock-chart').innerHTML = '圖表加載失敗。';
+        document.getElementById('stock-chart').innerHTML = '圖表讀取失敗。';
         document.getElementById('stock-data-updated-time').textContent = '來源資料更新時間：無法獲取';
     });
 }
