@@ -413,7 +413,7 @@ for filename, data, s3_folder in files_and_data:
     upload_file_to_s3(local_filepath, BUCKET_NAME, s3_folder)
 
 # Insert data into the database
-# insert_etf_overview_data(etf_data)
-# insert_etf_performance_data(etf_performance)
+insert_etf_overview_data(etf_data)
+insert_etf_performance_data(etf_performance)
 insert_industry_data(etf_industry)
-# insert_top10_stock_composition_data(etf_stock_composition)
+insert_top10_stock_composition_data(etf_stock_composition)

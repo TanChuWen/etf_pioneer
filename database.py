@@ -117,12 +117,12 @@ def insert_etf_overview_data(data):
 
     try:
         with connection.cursor() as cursor:
-            # 創建臨時表
+            # create a temporary table
             cursor.execute("""
                 CREATE TEMPORARY TABLE temp_etf_overview_data LIKE etf_overview_data;
             """)
 
-            # 插入數據到臨時表
+            # insert data into the temporary table
             for item in data:
                 sql = """
                 INSERT INTO temp_etf_overview_data (etf_name, symbol, price_today, up_down, up_down_change, up_down_percentage, data_updated_date, crawler_date)
@@ -132,13 +132,14 @@ def insert_etf_overview_data(data):
                 cursor.execute(sql, (item['etf_name'], item['symbol'], item['price_today'], item['up_down'],
                                item['up_down_change'], item['up_down_percentage'], item['data_updated_date'], item['crawler_date']))
 
-            # 更新主表數據
+            # update the main table data
             cursor.execute("DELETE FROM etf_overview_data;")
             cursor.execute(
                 "INSERT INTO etf_overview_data SELECT * FROM temp_etf_overview_data;")
 
-            # 提交更改
+            # commit the transaction
             connection.commit()
+            logger.info("Data inserted into etf_overview_data table.")
     except Exception as e:
         logger.error(f"Error inserting data into etf_overview_data table: {e}")
     finally:
@@ -172,6 +173,7 @@ def insert_etf_performance_data(data):
             cursor.execute("DELETE FROM etf_performance;")
             cursor.execute(
                 "INSERT INTO etf_performance SELECT * FROM temp_etf_performance;")
+            logger.info("Data inserted into etf_performance table.")
 
             connection.commit()
     except Exception as e:

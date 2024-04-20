@@ -1,9 +1,10 @@
-from dotenv import load_dotenv
-import os
-import pymysql
-from flask import Flask, jsonify, render_template, request
-from database import get_db_connection
 import logging
+from database import get_db_connection
+from flask import Flask, jsonify, render_template, request
+import pymysql
+import os
+from dotenv import load_dotenv
+
 
 app = Flask(__name__)
 
