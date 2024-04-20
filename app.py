@@ -198,6 +198,36 @@ def get_top10_stock():
         if connection:
             connection.close()
 
+# Route to use stock symbol to search ETF
+
+
+@app.route('/etf-pioneer/api/stock', methods=['POST'])
+def search_etf_by_stock():
+    data = request.get_json()
+    stock_code = data.get('stock_code', '請輸入正確的股票代號')
+    if not stock_code:
+        return jsonify({"error": "Stock name is required"}), 400
+    connection = get_db_connection()
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            # join top10_stock and all_stock_list tables to get the stock_code
+            cursor.execute("""
+                SELECT T.symbol, T.stock_name, T.ratio, T.data_updated_date, A.stock_code
+                FROM top10_stock AS T 
+                LEFT JOIN all_stock_list AS A ON T.stock_name = A.stock_name
+                WHERE A.stock_code = %s)
+                """, (stock_code,))
+            results = cursor.fetchall()
+            if not results:
+                return jsonify({"error": "No data found"}), 404
+            return jsonify(results)
+    except Exception as e:
+        logging.error(str(e))
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5008)

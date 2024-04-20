@@ -146,3 +146,4 @@ function fetchTop10Stock(symbol, chartId, updateTimeId) {
         document.getElementById(updateTimeId).textContent = '來源資料更新時間：無法獲取';
     });
 }
+
