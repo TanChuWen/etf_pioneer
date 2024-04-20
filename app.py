@@ -91,8 +91,9 @@ def get_holders_data():
 def get_performance_data():
     return get_data('etf_ranking_performance')
 
-
 # Route to search for an ETF
+
+
 @app.route('/etf-pioneer/api/overview', methods=['POST'])
 def search_etf_overview():
     data = request.get_json()

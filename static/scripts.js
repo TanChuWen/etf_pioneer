@@ -40,7 +40,7 @@ function fetchDataAndDisplay(symbol, resultsId, perfTableId, industryChartId, st
     })
     .catch(error => {
         console.error('Error fetching ETF overview:', error);
-        document.getElementById(resultsId).innerHTML = '無法讀取ETF概覽數據。';
+        document.getElementById(resultsId).innerHTML = '無法加載ETF概覽數據。';
     });
     fetchPerformance(symbol, perfTableId, perfUpdateTimeId);
     fetchTopIndustry(symbol, industryChartId, industryUpdateTimeId);
@@ -79,7 +79,7 @@ function fetchPerformance(symbol, tableId, updateTimeId) {
     })
     .catch(error => {
         console.error('Error fetching performance data:', error);
-        document.getElementById(tableId).innerHTML = '績效數據讀取失敗。';
+        document.getElementById(tableId).innerHTML = '性能數據加載失敗。';
     });
 }
 
@@ -110,7 +110,7 @@ function fetchTopIndustry(symbol, chartId, updateTimeId) {
     })
     .catch(error => {
         console.error('Error fetching industry data:', error);
-        document.getElementById(chartId).innerHTML = '產業分布數據讀取失敗。';
+        document.getElementById(chartId).innerHTML = '產業分布數據加載失敗。';
         document.getElementById(updateTimeId).textContent = '來源資料更新時間：無法獲取';
     });
 }
@@ -142,7 +142,7 @@ function fetchTop10Stock(symbol, chartId, updateTimeId) {
     })
     .catch(error => {
         console.error('Error fetching top 10 stocks data:', error);
-        document.getElementById(chartId).innerHTML = '前十大持股數據讀取失敗。';
+        document.getElementById(chartId).innerHTML = '前十大持股數據加載失敗。';
         document.getElementById(updateTimeId).textContent = '來源資料更新時間：無法獲取';
     });
 }
