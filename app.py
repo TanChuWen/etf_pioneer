@@ -91,9 +91,31 @@ def get_holders_data():
 def get_performance_data():
     return get_data('etf_ranking_performance')
 
+# Route to get news data
+
+
+@app.route('/etf-pioneer/api/news-wordcloud', methods=['GET'])
+def get_news_data():
+    connection = get_db_connection()
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            # fetch data from news_data table where news_date is 7 days ago
+            cursor.execute(
+                "SELECT news_title FROM news_data WHERE news_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)")
+            results = cursor.fetchall()
+            if not results:
+                logging.error("No data found")
+                return jsonify({"error": "No data found"}), 404
+            return jsonify(results)
+    except Exception as e:
+        logging.error(str(e))
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+
+
 # Route to search for an ETF
-
-
 @app.route('/etf-pioneer/api/overview', methods=['POST'])
 def search_etf_overview():
     data = request.get_json()
