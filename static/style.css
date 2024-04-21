@@ -50,6 +50,13 @@
     background-color: #73bcf0; 
 }
 
+#stock-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    padding: 10px;
+}
+
 
 /* Responsive Design */
 @media screen and (max-width: 600px) {

@@ -205,7 +205,7 @@ def get_top10_stock():
 @app.route('/etf-pioneer/api/stock', methods=['POST'])
 def search_etf_by_stock():
     data = request.get_json()
-    stock_code = data.get('stock_code', '請輸入正確的股票代號')
+    stock_code = data.get('stockSymbol', '請輸入正確的股票代號')
     if not stock_code:
         return jsonify({"error": "Stock name is required"}), 400
     connection = get_db_connection()
@@ -213,10 +213,10 @@ def search_etf_by_stock():
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             # join top10_stock and all_stock_list tables to get the stock_code
             cursor.execute("""
-                SELECT T.symbol, T.stock_name, T.ratio, T.data_updated_date, A.stock_code
+                SELECT T.symbol, T.stock_name, T.ratio, T.data_updated_date, A.stock_code, A.listed_or_OTC, A.industry_category
                 FROM top10_stock AS T 
                 LEFT JOIN all_stock_list AS A ON T.stock_name = A.stock_name
-                WHERE A.stock_code = %s)
+                WHERE A.stock_code = %s
                 """, (stock_code,))
             results = cursor.fetchall()
             if not results:
