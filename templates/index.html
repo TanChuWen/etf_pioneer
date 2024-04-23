@@ -26,6 +26,9 @@
             <input type="text" id="stockInput" name="stock_code" required>
             <button type="button" onclick="fetchStockETFData()">Search</button>
         </form>
+        <label for="startDate">選擇起始日期：</label>
+        <input type="date" id="startDate" name="startDate">
+        <button onclick="fetchNewsTitlesForWordCloud()"> 查看 ETF 新聞趨勢</button>
     </div>
 
 <!-- Display ETF ranking charts by different index -->
@@ -91,13 +94,13 @@
 <div id="dashboard-container2" style="display: flex; flex-wrap: wrap;">
     <div id="stock-container" style="flex:1;">
         <div id="stock-to-ETF-table" style="max-height: 2000px; overflow-y: auto;"></div>
-    
-    
     </div>
-
-
-
 </div>
+
+<div id="wordcloud-container" style="display: flex;">
+    <div id="wordcloud-chart" style="max-height: 500px; overflow-y: auto;"></div>
+</div>
+
 <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
 
 </body>

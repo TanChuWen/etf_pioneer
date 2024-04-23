@@ -210,7 +210,40 @@ function fetchStockETFData(){
         })
         .catch(error => {
             console.error('Error fetching stock data:', error);
-            document.getElementById("stock-to-ETF-table").innerHTML = '數據讀取失敗。';
+            document.getElementById("stock-to-ETF-table").innerHTML = '本支股票不是任何一支 ETF 的前十大成分股。';
         });
     }
 }
+
+// Choose a date to see an ETF news word cloud
+function fetchNewsTitlesForWordCloud() {
+    const startDateInput = document.getElementById('startDate');
+    const startDate = startDateInput.value;
+    if (!startDate) {
+        alert('請選擇一個起始日期。');
+        return;
+    }
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 7); // 7 days after the start date
+    const formattedEndDate = endDate.toISOString().split('T')[0];
+
+    // Fetch news data for the selected date range
+    fetch(`/etf-pioneer/api/news-wordcloud?start_date=${startDate}&end_date=${formattedEndDate}`)
+        .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+        })
+        .then(data => {
+        if (data.image_data) {
+            document.getElementById('wordcloud-container').innerHTML = `<img src="${data.image_data}" alt="Word Cloud">`;
+        } else {
+            console.error('No word cloud image URL returned from the server.');
+        }
+        })
+        .catch(error => {
+        console.error('Error fetching news data:', error);
+        document.getElementById('wordcloud-container').innerHTML = 'Error loading the word cloud.';
+        });
+    }
