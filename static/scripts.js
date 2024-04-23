@@ -236,14 +236,17 @@ function fetchNewsTitlesForWordCloud() {
         return response.json();
         })
         .then(data => {
+        const titleElement = document.getElementById('wordcloud-title');
+        
         if (data.image_data) {
-            document.getElementById('wordcloud-container').innerHTML = `<img src="${data.image_data}" alt="Word Cloud">`;
+            titleElement.innerHTML = `<h2> ETF 新聞趨勢文字雲 (${startDate} - ${formattedEndDate})</h2>`;
+            document.getElementById('wordcloud-chart').innerHTML = `<img src="${data.image_data}" alt="Word Cloud">`;
         } else {
             console.error('No word cloud image URL returned from the server.');
         }
         })
         .catch(error => {
         console.error('Error fetching news data:', error);
-        document.getElementById('wordcloud-container').innerHTML = 'Error loading the word cloud.';
+        document.getElementById('wordcloud-container').innerHTML = '無法讀取期間文字雲資訊，請重新選擇日期。';
         });
     }

@@ -63,7 +63,7 @@ fetch('/etf-pioneer/api/ranking/performance')
       },
       name: '績效表現'
     };
-    Plotly.newPlot('performance-chart', [performanceChart], {title: 'ETF 年初至今績效排名'});
+    Plotly.newPlot('performance-chart', [performanceChart], {title: 'ETF 年初至今績效排名（%）'});
   });
 
 
