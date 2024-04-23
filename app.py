@@ -29,33 +29,6 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.info('Start app.py')
 
-#####
-s3 = boto3.client('s3',
-                  aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-                  aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-                  region_name=os.getenv("S3_BUCKET_REGION"))
-BUCKET_NAME = os.getenv("BUCKET_NAME")
-#####
-
-
-def upload_file_to_s3(filepath, bucket_name, s3_directory):
-    """Uploads a file to an S3 bucket."""
-    s3_client = boto3.client('s3')
-    s3_key = os.path.join(s3_directory, os.path.basename(filepath))
-    logger.info(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
-    try:
-        s3_client.upload_file(filepath, bucket_name, s3_key,
-                              ExtraArgs={'ACL': 'public-read'})
-        logger.info(f"Successfully uploaded")
-    except Exception as e:
-        logger.error(f"Failed to upload {filepath}. Error: {str(e)}")
-
-
-def ensure_local_directory_exists(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-
 # Database config
 DB_HOST = os.getenv('DB_HOST')
 DB_USER = os.getenv('DB_USER')
@@ -154,6 +127,7 @@ def generate_and_upload_wordcloud(text):
     wordcloud.to_image().save(img, format='PNG')
     img.seek(0)
     return base64.b64encode(img.getvalue()).decode()
+
 # Route to get news data and generate wordcloud
 
 

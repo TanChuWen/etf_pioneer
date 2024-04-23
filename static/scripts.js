@@ -29,9 +29,7 @@ function fetchDataAndDisplay(symbol, resultsId, perfTableId, industryChartId, st
     .then(response => response.json())
     .then(data => {
         document.getElementById(resultsId).innerHTML = `
-            <h1>ETF: ${data.symbol}</h1>
-            <p>ETF 名稱: ${data.etf_name}</p>
-            <p>ETF 代號: ${data.symbol}</p>
+            <h1>ETF 名稱: ${data.etf_name} ｜ 代號: ${data.symbol}</h1>
             <p>今天價格: ${data.price_today}</p>
             <p>與前一個交易日價格差距: ${data.up_down_change}</p>
             <p>與前一個交易日價格差距百分比: ${data.up_down_percentage}</p>
@@ -55,8 +53,9 @@ function fetchPerformance(symbol, tableId, updateTimeId) {
     })
     .then(response => response.json())
     .then(data => {
+        
         const numRows = data.length;
-        const rowHeight =50;
+        const rowHeight =30;
         const graphHeight = numRows * rowHeight;
 
         let layout = {
@@ -67,11 +66,15 @@ function fetchPerformance(symbol, tableId, updateTimeId) {
         let tableData = {
             type: 'table',
             header: {
-                values: [["期間"], ["績效"]],
+                values: [["期 間"], ["績 效"]],
                 align: "center",
-                line: {width: 1, color: 'black'},
+                line: {width: 2, color: 'black'},
                 fill: {color: "skyblue"},
-                font: {family: "Arial", size: 12, color: "white"}
+                font: {family: "Arial", size: 20, color: "white"},
+                width: [1, 1],
+                height: 30
+
+
             },
             cells: {
                 values: [
@@ -79,8 +82,10 @@ function fetchPerformance(symbol, tableId, updateTimeId) {
                     [data.YTD, data['1_week'], data['1_month'], data['3_month'], data['6_month'], data['1_year'], data['2_year'], data['3_year'], data['5_year'], data['10_year']]
                 ],
                 align: "center",
-                line: {color: "blue", width: 1},
-                font: {family: "Arial", size: 11, color: ["black"]}
+                line: {color: "blue", width: 2},
+                font: {family: "Arial", size: 18, color: ["black"]},
+                width: [1, 1],
+                height: 30
             }
         };
         Plotly.newPlot(tableId, [tableData], layout);
@@ -100,6 +105,11 @@ function fetchTopIndustry(symbol, chartId, updateTimeId) {
     })
     .then(response => response.json())
     .then(data => {
+        let hoverTexts = data.map(item => {
+            return `ETF 代號：${item.symbol}<br>` +
+             `產業名稱：${item.industry}<br>` +
+             `產業佔比：${item.ratio}<br>`;
+    });
         let industryData = data.map(item => ({
             label: item.industry,
             value: parseFloat(item.ratio)
@@ -112,7 +122,10 @@ function fetchTopIndustry(symbol, chartId, updateTimeId) {
         let industryPieChart = {
             values: industryData.map(item => item.value),
             labels: industryData.map(item => item.label),
-            type: 'pie'
+            type: 'pie',
+            hovertext: hoverTexts,
+            hoverinfo: 'text',
+            name: '產業分布'
         };
         Plotly.newPlot(chartId, [industryPieChart], layout);
         let updateTime = data.length > 0 ? data[0].data_updated_date : '未知';
@@ -133,18 +146,26 @@ function fetchTop10Stock(symbol, chartId, updateTimeId) {
     })
     .then(response => response.json())
     .then(data => {
+        let hoverTexts = data.map(item => {
+            return `前十大成分股排行：${item.ranking}<br>` +
+             `股票名稱：${item.stock_name}<br>`+
+             `佔 ETF 比例：${item.ratio}<br>`;
+    });
         let stockData = data.map(item => ({
             label: item.stock_name,
             value: parseFloat(item.ratio)
         }));
         let layout = {
-            title: 'ETF 前十大持股',
+            title: 'ETF 前十大成分股',
             responsive: true
         };
         let topStockPieChart = {
             values: stockData.map(item => item.value),
             labels: stockData.map(item => item.label),
-            type: 'pie'
+            type: 'pie',
+            hovertext: hoverTexts,
+            hoverinfo: 'text',
+            name: '前十大成分股'
         };
         Plotly.newPlot(chartId, [topStockPieChart], layout);
         let updateTime = data.length > 0 ? data[0].data_updated_date : '未知';
@@ -152,7 +173,7 @@ function fetchTop10Stock(symbol, chartId, updateTimeId) {
     })
     .catch(error => {
         console.error('Error fetching top 10 stocks data:', error);
-        document.getElementById(chartId).innerHTML = '前十大持股數據讀取失敗。';
+        document.getElementById(chartId).innerHTML = '前十大成分股數據讀取失敗。';
         document.getElementById(updateTimeId).textContent = '來源資料更新時間：無法獲取';
     });
 }
@@ -169,12 +190,12 @@ function fetchStockETFData(){
     .then(response => response.json())
     .then(data => {
         const sortedData = data.sort((a, b) => {
-            const ratioA = parseFloat(a.ratio.replace('%', ''));
-            const ratioB = parseFloat(b.ratio.replace('%', ''));
-            return ratioB - ratioA; // sort in descending order
+        const ratioA = parseFloat(a.ratio.replace('%', ''));
+        const ratioB = parseFloat(b.ratio.replace('%', ''));
+        return ratioB - ratioA; // sort in descending order
         });
         const numRows = sortedData.length;
-        const rowHeight =50;
+        const rowHeight =30;
         const graphHeight = numRows * rowHeight;
 
         let layout = {
@@ -182,16 +203,22 @@ function fetchStockETFData(){
             responsive: true,
             height: graphHeight
         };
+
+        let headerValues = [["輸入之股票"],["股票代號"],["ETF 代號"],["佔 ETF 比例"], ["來源資料更新時間"]];
+    
+        let columnWidths = headerValues.map(header => Math.max(header[0].length * 20, 100));
+
         let tableData = {
                 type: 'table',
-                autosize: true,
-                columnwidth:[20,20,20,30,25],
+                columnwidth: columnWidths,
                 header: {
-                    values: [["輸入股票名稱"],["輸入股票代號"],["ETF 代號"],["輸入股票佔 ETF 比例"], ["來源資料更新時間"]],
+                    values: headerValues,
                     align: "center",
-                    line: {width: 1, color: 'black'},
+                    line: {width: 2, color: 'black'},
                     fill: {color: "skyblue"},
-                    font: {family: "Arial", size: 12, color: "white"}
+                    font: {family: "Arial", size: 20, color: "white"},
+                    width: columnWidths,
+                    height: 30
                 },
                 cells: {
                     values: [
@@ -202,8 +229,9 @@ function fetchStockETFData(){
                         sortedData.map(item => item.data_updated_date)
                     ],
                     align: "center",
-                    line: {color: "blue", width: 1},
-                    font: {family: "Arial", size: 11, color: ["black"]}
+                    line: {color: "blue", width: 2},
+                    font: {family: "Arial", size: 18, color: ["black"]},
+                    height: 30
                 }
             };
             Plotly.newPlot("stock-to-ETF-table", [tableData], layout);
@@ -220,7 +248,7 @@ function fetchNewsTitlesForWordCloud() {
     const startDateInput = document.getElementById('startDate');
     const startDate = startDateInput.value;
     if (!startDate) {
-        alert('請選擇一個起始日期。');
+        alert('請選擇日期。');
         return;
     }
     const endDate = new Date(startDate);
@@ -239,7 +267,7 @@ function fetchNewsTitlesForWordCloud() {
         const titleElement = document.getElementById('wordcloud-title');
         
         if (data.image_data) {
-            titleElement.innerHTML = `<h2> ETF 新聞趨勢文字雲 (${startDate} - ${formattedEndDate})</h2>`;
+            titleElement.innerHTML = `<h2> ETF 新聞趨勢文字雲 (${startDate})</h2>`;
             document.getElementById('wordcloud-chart').innerHTML = `<img src="${data.image_data}" alt="Word Cloud">`;
         } else {
             console.error('No word cloud image URL returned from the server.');
@@ -247,6 +275,6 @@ function fetchNewsTitlesForWordCloud() {
         })
         .catch(error => {
         console.error('Error fetching news data:', error);
-        document.getElementById('wordcloud-container').innerHTML = '無法讀取期間文字雲資訊，請重新選擇日期。';
+        document.getElementById('wordcloud-container').innerHTML = '無法讀取選取日期之文字雲資訊，請重新選擇日期。';
         });
     }
