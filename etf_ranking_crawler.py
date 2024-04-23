@@ -13,7 +13,7 @@ import re
 import boto3
 import os
 from dotenv import load_dotenv
-from database import get_db_connection
+from database import get_db_connection, insert_data_etf_ranking
 
 # Load environment variables from .env file
 load_dotenv()
@@ -155,95 +155,6 @@ data_table_mapping = [
     (data4, 'etf_ranking_performance')
 ]
 
-field_mappings = {
-    'etf_ranking_volume': {
-        '排名': 'ranking',
-        '股票代號': 'symbol',
-        "ETF名稱": "etf_name",
-        "今日成交值(元)": "today_deal_value",
-        "日均成交值(元)(年初至今)": "avg_deal_value",
-        "日均成交量(股)(年初至今)": "avg_deal_volume",
-        "data_updated_date": "data_updated_date",
-        "crawler_date": "crawler_date"
-    },
-    'etf_ranking_assets': {
-        "排名": "ranking",
-        "股票代號": "symbol",
-        "ETF名稱": "etf_name",
-        "今日資產規模(元)": "today_total_assets",
-        "年初至今淨增減（新台幣）": "YTD_adjustment",
-        "變動率": "adjustment_rate",
-        "data_updated_date": "data_updated_date",
-        "crawler_date": "crawler_date"
-    },
-    'etf_ranking_holders': {
-        "排名": "ranking",
-        "股票代號": "symbol",
-        "ETF名稱": "etf_name",
-        "受益人數(人)": "holders",
-        "年初至今淨增減(人)": "YTD_adjustment",
-        "變動率": "adjustment_rate",
-        "data_updated_date": "data_updated_date",
-        "crawler_date": "crawler_date"
-    },
-    'etf_ranking_performance': {
-        "排名": "ranking",
-        "股票代號": "symbol",
-        "ETF名稱": "etf_name",
-        "年初至今績效(%)": "YTD_performance_rate",
-        "data_updated_date": "data_updated_date",
-        "crawler_date": "crawler_date"
-    }
-}
-
-
-def insert_data_etf_ranking(data, history_table_name, today_table_name):
-    connection = get_db_connection()
-    if connection is None:
-        logger.error("Failed to connect to the database.")
-        return
-    field_mapping = field_mappings[history_table_name]
-    if not field_mapping:
-        logger.error(
-            f"Failed to find field mapping for table {history_table_name}")
-        return
-    try:
-        with connection.cursor() as cursor:
-            # Truncate today's table
-            cursor.execute(f"TRUNCATE TABLE {today_table_name}")
-            # Insert data into history table and today's table
-            for item in data:
-                mapped_item = {
-                    field_mapping[key]: value for key, value in item.items() if key in field_mapping
-                }
-                columns = ', '.join(f"`{key}`" for key in mapped_item.keys())
-                placeholders = ', '.join(['%s'] * len(mapped_item))
-                updates = ', '.join(
-                    f"`{key}` = VALUES(`{key}`)" for key in mapped_item.keys())
-
-                # Insert data into history table
-                sql = f"""
-                INSERT INTO `{history_table_name}` ({columns})
-                VALUES ({placeholders})
-                ON DUPLICATE KEY UPDATE {updates}
-                """
-                cursor.execute(sql, list(mapped_item.values()))
-
-                # Insert data into today's table
-                sql_today = f"""
-                    INSERT INTO `{today_table_name}` ({columns})
-                    VALUES ({placeholders})
-                    """
-                cursor.execute(sql_today, list(mapped_item.values()))
-
-        connection.commit()
-    except Exception as e:
-        logger.error(
-            f"Error occurred while inserting data into the database: {e}")
-    finally:
-        if connection:
-            connection.close()
-
 
 # Save data to a JSON file
 files_and_data = [
@@ -281,10 +192,9 @@ for filename, data in files_and_data:
     table_name = filename.split(
         '_')[0]+'_'+filename.split('_')[1]+'_'+filename.split('_')[2]
     insert_data_etf_ranking(
-        clean_data1, 'etf_ranking_volume', 'etf_ranking_volume_today')
+        clean_data1,  'etf_ranking_volume')
     insert_data_etf_ranking(
-        clean_data2, 'etf_ranking_assets', 'etf_ranking_assets_today')
+        clean_data2,  'etf_ranking_assets')
     insert_data_etf_ranking(
-        clean_data3, 'etf_ranking_holders', 'etf_ranking_holders_today')
-    insert_data_etf_ranking(data4, 'etf_ranking_performance',
-                            'etf_ranking_performance_today')
+        clean_data3,  'etf_ranking_holders')
+    insert_data_etf_ranking(data4, 'etf_ranking_performance')

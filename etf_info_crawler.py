@@ -76,7 +76,7 @@ performance_map = [
     "5_year",
     "10_year"]
 
-
+### Start the web driver ###
 driver = webdriver.Chrome(service=ChromeService(
     ChromeDriverManager().install()))
 driver.get("https://tw.stock.yahoo.com/tw-etf/")
