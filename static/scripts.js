@@ -124,6 +124,7 @@ function fetchTopIndustry(symbol, chartId, updateTimeId) {
             type: 'pie',
             hovertext: hoverTexts,
             hoverinfo: 'text',
+            hole: 0.6, // donut chart
             name: '產業分布'
         };
         Plotly.newPlot(chartId, [industryPieChart], layout);
@@ -164,6 +165,7 @@ function fetchTop10Stock(symbol, chartId, updateTimeId) {
             type: 'pie',
             hovertext: hoverTexts,
             hoverinfo: 'text',
+            hole: 0.6, // donut chart
             name: '前十大成分股'
         };
         Plotly.newPlot(chartId, [topStockPieChart], layout);
