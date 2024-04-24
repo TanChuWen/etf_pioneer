@@ -237,6 +237,27 @@ def get_top_industry():
                             )
                 """, (symbol, symbol))
             results = cursor.fetchall()
+
+            # calculate the total ratio of top industries and other industries
+            cursor.execute("""
+                            SELECT SUM(ratio) as total_ratio
+                            FROM top_industry
+                            WHERE symbol = %s AND crawler_date = (
+                            SELECT MAX(crawler_date) FROM top_industry WHERE symbol = %s
+                            )
+                            """, (symbol, symbol))
+            # get the total ratio of top industries
+            total_ratio = cursor.fetchone()
+            if total_ratio:
+                total_ratio = total_ratio['total_ratio']
+            else:
+                total_ratio = 0
+
+            # calculate the ratio of other industries
+            other_ratio = max(100 - total_ratio, 0)
+            formatted_other_ratio = f"{other_ratio:.2f}%"
+            results.append({'symbol': symbol, 'industry': '其他', 'ratio': formatted_other_ratio,
+                            'data_updated_date': results[0]['data_updated_date']})
             if not results:
                 return jsonify({"error": "No data found"}), 404
             return jsonify(results)
@@ -265,10 +286,31 @@ def get_top10_stock():
                            SELECT MAX(crawler_date) FROM top10_stock WHERE symbol = %s
                            )
                 """, (symbol, symbol))
-            results = cursor.fetchall()
-            if not results:
+            top10_results = cursor.fetchall()
+            # calculate the total ratio of top10 stocks and other stocks
+            cursor.execute("""
+                           SELECT SUM(ratio) as total_ratio
+                           FROM top10_stock
+                           WHERE symbol = %s AND crawler_date =(
+                           SELECT MAX(crawler_date) FROM top10_stock WHERE symbol = %s
+                           )
+            """, (symbol, symbol))
+            # get the total ratio of top10 stocks
+            total_ratio = cursor.fetchone()
+            if total_ratio:
+                total_ratio = total_ratio['total_ratio']
+            else:
+                total_ratio = 0
+
+            # calculate the ratio of other stocks
+            other_ratio = max(100 - total_ratio, 0)
+            formatted_other_ratio = f"{other_ratio:.2f}%"
+            top10_results.append({'symbol': symbol, 'ranking': '其他', 'stock_name': '其他',
+                                 'ratio': formatted_other_ratio, 'data_updated_date': top10_results[0]['data_updated_date']})
+            if not top10_results:
                 return jsonify({"error": "No data found"}), 404
-            return jsonify(results)
+
+            return jsonify(top10_results)
     except Exception as e:
         logger.error(str(e))
         return jsonify({"error": str(e)}), 500
@@ -291,7 +333,14 @@ def search_etf_by_stock():
             # max_crawler_date is the latest date of the stock data
             # join top10_stock and all_stock_list tables to get the stock_code
             cursor.execute("""
-                SELECT T.symbol, T.stock_name, T.ratio, T.data_updated_date, A.stock_code, A.listed_or_OTC, A.industry_category
+                SELECT T.symbol, 
+                        T.stock_name AS component_stock_name, 
+                        T.ratio, 
+                        T.data_updated_date, 
+                        A.stock_code, 
+                        A.listed_or_OTC,
+                        A.industry_category,
+                        ETF.etf_name AS etf_name
                 FROM top10_stock AS T
                 INNER JOIN (
                     SELECT stock_name, MAX(crawler_date) AS max_crawler_date
@@ -299,6 +348,7 @@ def search_etf_by_stock():
                     GROUP BY stock_name
                 ) AS TM ON T.stock_name = TM.stock_name AND T.crawler_date = TM.max_crawler_date
                 LEFT JOIN all_stock_list AS A ON T.stock_name = A.stock_name
+                LEFT JOIN etf_overview_data AS ETF ON T.symbol = ETF.symbol
                 WHERE A.stock_code = %s
                 """, (stock_code,))
             results = cursor.fetchall()

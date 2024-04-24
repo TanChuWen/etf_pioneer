@@ -31,7 +31,7 @@ fetch('/etf-pioneer/api/ranking/volume')
         title: '今日成交值（新臺幣元）'
       },
       hoverlabel:{
-        bgcolor: 'yellow',
+        bgcolor: 'lightgrey',
         bordercolor: 'blue'
       }
     };
@@ -69,7 +69,7 @@ fetch('/etf-pioneer/api/ranking/assets')
         title: '今日資產規模（新臺幣元）'
       },
        hoverlabel:{
-        bgcolor: 'yellow',
+        bgcolor: 'lightgrey',
         bordercolor: 'blue'
       }
     };
@@ -107,7 +107,7 @@ fetch('/etf-pioneer/api/ranking/holders')
         title: '受益人數（人）'
       },
        hoverlabel:{
-        bgcolor: 'yellow',
+        bgcolor: 'lightgrey',
         bordercolor: 'blue'
       }
     };
@@ -145,7 +145,7 @@ fetch('/etf-pioneer/api/ranking/performance')
         title: '年初至今績效排名（%）'
       },
        hoverlabel:{
-        bgcolor: 'yellow',
+        bgcolor: 'lightgrey',
         bordercolor: 'blue'
       }
     };

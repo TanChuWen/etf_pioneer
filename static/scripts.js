@@ -78,7 +78,7 @@ function fetchPerformance(symbol, tableId, updateTimeId) {
             },
             cells: {
                 values: [
-                    ['今年至今', '1 Week', '1 Month', '3 Months', '6 Months', '1 Year', '2 Years', '3 Years', '5 Years', '10 Years'],
+                    ['今年至今', '1 週', '1 個月', '3 個月', '6 個月', '1 年（年化報酬率）', '2 年（年化報酬率）', '3 年（年化報酬率）', '5 年（年化報酬率）', '10 年（年化報酬率）'],
                     [data.YTD, data['1_week'], data['1_month'], data['3_month'], data['6_month'], data['1_year'], data['2_year'], data['3_year'], data['5_year'], data['10_year']]
                 ],
                 align: "center",
@@ -107,8 +107,7 @@ function fetchTopIndustry(symbol, chartId, updateTimeId) {
     .then(data => {
         let hoverTexts = data.map(item => {
             return `ETF 代號：${item.symbol}<br>` +
-             `產業名稱：${item.industry}<br>` +
-             `產業佔比：${item.ratio}<br>`;
+             `產業名稱：${item.industry}<br>`;
     });
         let industryData = data.map(item => ({
             label: item.industry,
@@ -194,19 +193,24 @@ function fetchStockETFData(){
         const ratioB = parseFloat(b.ratio.replace('%', ''));
         return ratioB - ratioA; // sort in descending order
         });
+        const stockName = sortedData[0].component_stock_name;
+        const stockCode = sortedData[0].stock_code;
+        // Set the table height based on the number of rows
         const numRows = sortedData.length;
         const rowHeight =30;
         const graphHeight = numRows * rowHeight;
+        // Set the column width based on the length of the ETF names
+        const maxNameLength = Math.max(...sortedData.map(item => item.etf_name.length));
+        const nameColumnWidth = Math.min(maxNameLength * 30, 300);
+        let columnWidths = [150, nameColumnWidth, 180, 200];
 
         let layout = {
-            title: '股票對應 ETF 佔比表',
+            title: `${stockName}（代號：${stockCode}）股票對應 ETF 佔比表`,
             responsive: true,
             height: graphHeight
         };
 
-        let headerValues = [["輸入之股票"],["股票代號"],["ETF 代號"],["佔 ETF 比例"], ["來源資料更新時間"]];
-    
-        let columnWidths = headerValues.map(header => Math.max(header[0].length * 20, 100));
+        let headerValues = [["ETF 代號"],["ETF 名稱"],["佔 ETF 比例"], ["來源資料更新時間"]];
 
         let tableData = {
                 type: 'table',
@@ -216,15 +220,14 @@ function fetchStockETFData(){
                     align: "center",
                     line: {width: 2, color: 'black'},
                     fill: {color: "skyblue"},
-                    font: {family: "Arial", size: 20, color: "white"},
+                    font: {family: "Arial", size: 14, color: "white"},
                     width: columnWidths,
                     height: 30
                 },
                 cells: {
                     values: [
-                        sortedData.map(item => item.stock_name),
-                        sortedData.map(item => item.stock_code),
                         sortedData.map(item => item.symbol),
+                        sortedData.map(item => item.etf_name),
                         sortedData.map(item => item.ratio),
                         sortedData.map(item => item.data_updated_date)
                     ],
@@ -267,7 +270,7 @@ function fetchNewsTitlesForWordCloud() {
         const titleElement = document.getElementById('wordcloud-title');
         
         if (data.image_data) {
-            titleElement.innerHTML = `<h2> ETF 新聞趨勢文字雲 (${startDate})</h2>`;
+            titleElement.innerHTML = `<h3> ETF 新聞趨勢文字雲 (${startDate})</h3>`;
             document.getElementById('wordcloud-chart').innerHTML = `<img src="${data.image_data}" alt="Word Cloud">`;
         } else {
             console.error('No word cloud image URL returned from the server.');
