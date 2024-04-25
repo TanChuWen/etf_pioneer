@@ -181,74 +181,17 @@ function fetchTop10Stock(symbol, chartId, updateTimeId) {
 
 
 function fetchStockETFData(){
-    const stockSymbol = document.getElementById('stockInput').value;
-    if (stockSymbol){
-        fetch(`/etf-pioneer/api/stock`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ stockSymbol: stockSymbol })
-    })
-    .then(response => response.json())
-    .then(data => {
-        const sortedData = data.sort((a, b) => {
-        const ratioA = parseFloat(a.ratio.replace('%', ''));
-        const ratioB = parseFloat(b.ratio.replace('%', ''));
-        return ratioB - ratioA; // sort in descending order
-        });
-        const stockName = sortedData[0].component_stock_name;
-        const stockCode = sortedData[0].stock_code;
-        // Set the table height based on the number of rows
-        const numRows = sortedData.length;
-        const rowHeight =30;
-        const graphHeight = numRows * rowHeight;
-        // Set the column width based on the length of the ETF names
-        const maxNameLength = Math.max(...sortedData.map(item => item.etf_name.length));
-        const nameColumnWidth = Math.min(maxNameLength * 30, 300);
-        let columnWidths = [150, nameColumnWidth, 180, 200];
-
-        let layout = {
-            title: `${stockName}（代號：${stockCode}）股票對應 ETF 佔比表`,
-            responsive: true,
-            height: graphHeight
-        };
-
-        let headerValues = [["ETF 代號"],["ETF 名稱"],["佔 ETF 比例"], ["來源資料更新時間"]];
-
-        let tableData = {
-                type: 'table',
-                columnwidth: columnWidths,
-                header: {
-                    values: headerValues,
-                    align: "center",
-                    line: {width: 2, color: 'black'},
-                    fill: {color: "skyblue"},
-                    font: {family: "Arial", size: 14, color: "white"},
-                    width: columnWidths,
-                    height: 30
-                },
-                cells: {
-                    values: [
-                        sortedData.map(item => item.symbol),
-                        sortedData.map(item => item.etf_name),
-                        sortedData.map(item => item.ratio),
-                        sortedData.map(item => item.data_updated_date)
-                    ],
-                    align: "center",
-                    line: {color: "blue", width: 2},
-                    font: {family: "Arial", size: 18, color: ["black"]},
-                    height: 30
-                }
-            };
-            Plotly.newPlot("stock-to-ETF-table", [tableData], layout);
-        })
-        .catch(error => {
-            console.error('Error fetching stock data:', error);
-            document.getElementById("stock-to-ETF-table").innerHTML = '本支股票不是任何一支 ETF 的前十大成分股。';
-        });
+    console.log("fetchStockETFData called");
+    const stockCode = document.getElementById('stockInput').value;
+    if (!stockCode) {
+        alert("請輸入股票代號");
+        return;
     }
+    // redirect to the stock to ETF page
+    window.location.href = `/etf-pioneer/api/stock-to-etf?stock_code=${stockCode}`;
 }
 
-// Choose a date to see an ETF news word cloud
+
 function fetchNewsTitlesForWordCloud() {
     const startDateInput = document.getElementById('startDate');
     const startDate = startDateInput.value;
@@ -259,27 +202,7 @@ function fetchNewsTitlesForWordCloud() {
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 7); // 7 days after the start date
     const formattedEndDate = endDate.toISOString().split('T')[0];
-
-    // Fetch news data for the selected date range
-    fetch(`/etf-pioneer/api/news-wordcloud?start_date=${startDate}&end_date=${formattedEndDate}`)
-        .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-        })
-        .then(data => {
-        const titleElement = document.getElementById('wordcloud-title');
-        
-        if (data.image_data) {
-            titleElement.innerHTML = `<h3> ETF 新聞趨勢文字雲 (${startDate})</h3>`;
-            document.getElementById('wordcloud-chart').innerHTML = `<img src="${data.image_data}" alt="Word Cloud">`;
-        } else {
-            console.error('No word cloud image URL returned from the server.');
-        }
-        })
-        .catch(error => {
-        console.error('Error fetching news data:', error);
-        document.getElementById('wordcloud-container').innerHTML = '無法讀取選取日期之文字雲資訊，請重新選擇日期。';
-        });
-    }
+    
+    // redirect to the news page
+    window.location.href = `/etf-pioneer/api/news-wordcloud?start_date=${startDate}&end_date=${formattedEndDate}`;
+}

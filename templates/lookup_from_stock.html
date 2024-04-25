@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Find ETF From Stock</title>
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script type="text/javascript">
+        let stockData = {{ stock_data | tojson | safe }};
+    </script>
+</head>
+<body>
+<nav>
+<div class="search-buttons">
+        <p>Enter ETF Symbol</p>
+        <form id="etfSearchForm">
+            <input type="text" id="symbolInput" name="symbol" required>
+            <button type="button" onclick="fetchETFData()">Search</button>
+        </form>
+        <p>Enter another ETF Symbol to compare</p>
+        <form id="etfCompareForm">
+            <input type="text" id="compareInput" name="compareSymbol" required>
+            <button type="button" onclick="fetchCompareETFData()">Compare</button>
+        </form>
+        <p>Enter Stock Symbol</p>
+        <form id="stockSearchForm">
+            <input type="text" id="stockInput" name="stock_code" required>
+            <button type="button" onclick="fetchStockETFData()">Search</button>
+        </form>
+        <label for="startDate">選擇日期：</label>
+        <input type="date" id="startDate" name="startDate">
+        <button onclick="fetchNewsTitlesForWordCloud()"> 查看 ETF 新聞趨勢</button>
+    </div>
+</nav>
+<main>
+    <div id="stock-to-ETF-table"></div>
+</main>
+<script>
+    // Render the table using Plotly
+    function renderPlotlyTable(stockData) {
+        const layout = {
+            title: stockData[0].component_stock_name + '（代號：' + stockData[0].stock_code + '）股票對應 ETF 佔比表',
+            responsive: true
+        };
+
+        const headerValues = [['ETF 代號'], ['ETF 名稱'], ['佔 ETF 比例'], ['來源資料更新時間']];
+        const cellValues = [
+            stockData.map(item => item.symbol),
+            stockData.map(item => item.etf_name),
+            stockData.map(item => item.ratio),
+            stockData.map(item => item.data_updated_date)
+        ];
+
+        const data = [{
+            type: 'table',
+            header: {
+                values: headerValues,
+                align: 'center',
+                line: {width: 2, color: 'black'},
+                fill: {color: 'skyblue'},
+                font: {family: 'Arial', size: 14, color: 'white'}
+            },
+            cells: {
+                values: cellValues,
+                align: 'center',
+                line: {color: 'black', width: 2},
+                font: {family: 'Arial', size: 20, color: ['black']}
+            }
+        }];
+
+        Plotly.newPlot('stock-to-ETF-table', data, layout);
+    }
+    
+    // start the process when the page is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        if (stockData) {
+            renderPlotlyTable(stockData);
+        }
+    });
+</script>
+</body>
+</html>

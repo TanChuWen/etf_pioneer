@@ -47,7 +47,7 @@ def get_db_connection():
         cursorclass=pymysql.cursors.DictCursor
     )
 
-# Route to see HTML dashboard
+# Route to see HTML dashboard as the main page
 
 
 @app.route('/')
@@ -120,13 +120,14 @@ def generate_and_upload_wordcloud(text):
         width=1000,
         height=500,
         stopwords=stopwords,
-        max_words=50,
+        max_words=30,
         background_color='black'
     ).generate(text)
     img = BytesIO()
     wordcloud.to_image().save(img, format='PNG')
     img.seek(0)
-    return base64.b64encode(img.getvalue()).decode()
+    img_data = base64.b64encode(img.getvalue()).decode()
+    return f"data:image/png;base64,{img_data}"
 
 # Route to get news data and generate wordcloud
 
@@ -155,11 +156,12 @@ def get_news_data():
                 text += " ".join(words) + " "  # Add a space between each word
 
             # Generate wordcloud
-            img_data = generate_and_upload_wordcloud(text)
-            return jsonify({'image_data': f"data:image/png;base64,{img_data}"})
+            image_data = generate_and_upload_wordcloud(text)
+            logger.info(f"Wordcloud generated from {start_date} to {end_date}")
+            return render_template('news_trend.html', image_data=image_data, start_date=start_date, end_date=end_date)
     except Exception as e:
         logger.error(str(e))
-        return jsonify({"error": str(e)}), 500
+        return render_template('error.html', error=str(e), start_date=start_date, end_date=end_date)
     finally:
         if connection:
             connection.close()
@@ -178,7 +180,7 @@ def search_etf_overview():
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             cursor.execute("""
                 SELECT etf_name, symbol, price_today, up_down_change, up_down_percentage, data_updated_date
-                    FROM etf_overview_data 
+                    FROM etf_overview_data
                     WHERE symbol = %s
                 """, (symbol,))
             result = cursor.fetchone()
@@ -230,7 +232,7 @@ def get_top_industry():
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             cursor.execute("""
-                SELECT symbol, industry, ratio, data_updated_date 
+                SELECT symbol, industry, ratio, data_updated_date
                 FROM top_industry
                 WHERE symbol = %s AND crawler_date = (
                             SELECT MAX(crawler_date) FROM top_industry WHERE symbol = %s
@@ -280,8 +282,8 @@ def get_top10_stock():
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             cursor.execute("""
-                SELECT symbol, ranking, stock_name, ratio, data_updated_date 
-                FROM top10_stock 
+                SELECT symbol, ranking, stock_name, ratio, data_updated_date
+                FROM top10_stock
                 WHERE symbol = %s AND crawler_date = (
                            SELECT MAX(crawler_date) FROM top10_stock WHERE symbol = %s
                            )
@@ -321,23 +323,24 @@ def get_top10_stock():
 # Route to use stock symbol to search ETF
 
 
-@app.route('/etf-pioneer/api/stock', methods=['POST'])
+@app.route('/etf-pioneer/api/stock-to-etf', methods=['GET'])
 def search_etf_by_stock():
-    data = request.get_json()
-    stock_code = data.get('stockSymbol', '請輸入正確的股票代號')
+    stock_code = request.args.get('stock_code')
     if not stock_code:
-        return jsonify({"error": "Stock name is required"}), 400
-    connection = get_db_connection()
+        logger.error("Stock code is required")
+        return render_template('error.html', error="Stock code is required")
+
     try:
+        connection = get_db_connection()
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             # max_crawler_date is the latest date of the stock data
             # join top10_stock and all_stock_list tables to get the stock_code
             cursor.execute("""
-                SELECT T.symbol, 
-                        T.stock_name AS component_stock_name, 
-                        T.ratio, 
-                        T.data_updated_date, 
-                        A.stock_code, 
+                SELECT T.symbol,
+                        T.stock_name AS component_stock_name,
+                        T.ratio,
+                        T.data_updated_date,
+                        A.stock_code,
                         A.listed_or_OTC,
                         A.industry_category,
                         ETF.etf_name AS etf_name
@@ -353,11 +356,12 @@ def search_etf_by_stock():
                 """, (stock_code,))
             results = cursor.fetchall()
             if not results:
-                return jsonify({"error": "No data found"}), 404
-            return jsonify(results)
+                return render_template('error.html', error="No data found")
+            return render_template('lookup_from_stock.html', stock_data=results)
+            # return results
     except Exception as e:
         logger.error(str(e))
-        return jsonify({"error": str(e)}), 500
+        return render_template('error.html', error=str(e))
     finally:
         if connection:
             connection.close()

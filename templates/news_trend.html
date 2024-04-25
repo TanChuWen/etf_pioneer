@@ -1,14 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ETF Dashboard</title>
+    <title>ETF News Trend</title>
     <script src="https://cdn.plot.ly/plotly-2.30.0.min.js" charset="utf-8"></script>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
-
 <body>
 <nav>
 <div class="search-buttons">
@@ -32,23 +29,18 @@
         <button onclick="fetchNewsTitlesForWordCloud()"> 查看 ETF 新聞趨勢</button>
     </div>
 </nav>
-<!-- Display ETF ranking charts by different index -->
+<main>
+    <h1>ETF 新聞趨勢文字雲({{start_date}} - {{end_date}})</h1>
+
+    {% if image_data %}
+    <img src="{{image_data}}" alt="Word Cloud" style="max-height: 500px; overflow-y: auto;">
     
-    <div class="chart-row">
-        <div id="volume-chart" class="chart"></div>
-        <div id="assets-chart" class="chart"></div>
-    </div>
-    <div class="chart-row">
-        <div id="holders-chart" class="chart"></div>
-        <div id="performance-chart" class="chart"></div>
-    </div>
+    {%elif error%}
+        <p>{{ error }}</p>
 
-
-<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
-
+    {% else %}
+    <p>無法讀取選取日期({{start_date}})之文字雲資訊，請重新選擇日期。</p>
+   {% endif %}
+</main>
 </body>
 </html>
-
-
-
-

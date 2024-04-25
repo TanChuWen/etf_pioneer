@@ -50,18 +50,12 @@
     background-color: #73bcf0; 
 }
 
-#dashboard-container2 {
-    display: flex;
-    flex-direction: row;  
-    flex-wrap: wrap;      
-}
-
-#stock-container {
+/* #stock-container {
     display: flex;
     flex-direction: column;
     align-items: center; 
     padding: 10px;
-}
+} */
 
 #stock-to-ETF-table{
     display: flex;
