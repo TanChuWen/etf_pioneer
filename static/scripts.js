@@ -1,3 +1,167 @@
+// ETF volume ranking
+fetch('/etf-pioneer/api/ranking/volume')
+  .then(response => response.json())
+  .then(volumeData => {
+    volumeData.sort((a, b) => b.today_deal_value - a.today_deal_value);
+    let hoverTexts = volumeData.map(item => {
+      return `ETF 名稱：${item.etf_name}<br>` +
+             `ETF 代號：${item.symbol}<br>` +
+             `今日成交值（新臺幣百萬元）：${(item.today_deal_value/1000000).toLocaleString()}<br>` +
+             `日均成交值（新臺幣百萬元）（年初至今）：${(item.avg_deal_value/1000000).toLocaleString()}<br>` +
+             `日均成交量（百萬股）（年初至今）：${(item.avg_deal_volume/1000000).toLocaleString()}`;
+    });
+    let volumeChart = {
+      x: volumeData.map(item => item.symbol),
+      y: volumeData.map(item => item.today_deal_value/1000000),
+      type: 'bar',
+      marker: {
+        color: 'skyblue'
+      },
+      hovertext: hoverTexts,
+      hoverinfo: 'text',
+      name: '成交量'
+    };
+    let layout={
+      title: 'ETF 成交金額排行',
+      xaxis:{
+        type: 'category',
+        title: 'ETF 代號'
+      },
+      yaxis:{
+        title: '今日成交值（新臺幣百萬元）'
+      },
+      hoverlabel:{
+        bgcolor: 'lightgrey',
+        bordercolor: 'blue'
+      }
+    };
+    let updateTime = volumeData.length > 0 ? volumeData[0].data_updated_date : '未知';
+    Plotly.newPlot('volume-chart', [volumeChart], layout);
+    document.getElementById('volume-data-updated-time').textContent = `資料來源：臺灣證券交易所，來源資料更新時間：${updateTime}`;
+  });
+
+// ETF assets ranking
+fetch('/etf-pioneer/api/ranking/assets')
+  .then(response => response.json())
+  .then(assetsData => {
+    assetsData.sort((a, b) => b.today_total_assets - a.today_total_assets);
+    let hoverTexts = assetsData.map(item => {
+      return `ETF 名稱：${item.etf_name}<br>` +
+             `ETF 代號：${item.symbol}<br>` +
+             `今日資產規模（新臺幣百萬元）：${(item.today_total_assets/1000000).toLocaleString()}<br>`;
+    });
+    let assetsChart = {
+      x: assetsData.map(item => item.symbol),
+      y: assetsData.map(item => item.today_total_assets/1000000),
+      type: 'bar',
+      marker: {
+        color: 'skyblue'
+      },
+      hovertext: hoverTexts,
+      hoverinfo: 'text',
+      name: '資產總額'
+    };
+    let layout={
+      title: 'ETF 資產規模排行',
+      xaxis:{
+        type: 'category',
+        title: 'ETF 代號'
+      },
+      yaxis:{
+        title: '今日資產規模（新臺幣百萬元）'
+      },
+       hoverlabel:{
+        bgcolor: 'lightgrey',
+        bordercolor: 'blue'
+      }
+    };
+    let updateTime = assetsData.length > 0 ? assetsData[0].data_updated_date : '未知';
+    Plotly.newPlot('assets-chart', [assetsChart], layout);
+    document.getElementById('assets-data-updated-time').textContent = `資料來源：臺灣證券交易所，來源資料更新時間：${updateTime}`;
+  });
+
+// ETF holders ranking
+fetch('/etf-pioneer/api/ranking/holders')
+  .then(response => response.json())
+  .then(holdersData => {
+    holdersData.sort((a, b) => b.holders - a.holders);
+    let hoverTexts = holdersData.map(item => {
+      return `ETF 名稱：${item.etf_name}<br>` +
+             `ETF 代號：${item.symbol}<br>` +
+             `受益人數（千人）：${(item.holders/1000).toLocaleString()}<br>`;
+    });
+    let holdersChart = {
+      x: holdersData.map(item => item.symbol),
+      y: holdersData.map(item => item.holders/1000),
+      type: 'bar',
+      marker: {
+        color: 'skyblue'
+      },
+      hovertext: hoverTexts,
+      hoverinfo: 'text',
+      name: '持有 ETF 受益人'
+    };
+    let layout={
+      title: 'ETF 持有（受益）人數排行',
+      xaxis:{
+        type: 'category',
+        title: 'ETF 代號'
+      },
+      yaxis:{
+        title: '受益人數（千人）'
+      },
+       hoverlabel:{
+        bgcolor: 'lightgrey',
+        bordercolor: 'blue'
+      }
+    };
+    let updatedTime = holdersData.length > 0 ? holdersData[0].data_updated_date : '未知';
+    Plotly.newPlot('holders-chart', [holdersChart], layout);
+    document.getElementById('holders-data-updated-time').textContent = `資料來源：臺灣證券交易所，來源資料更新時間：${updatedTime}`;
+  });
+
+// ETF performance ranking
+fetch('/etf-pioneer/api/ranking/performance')
+  .then(response => response.json())
+  .then(performanceData => {
+    performanceData.sort((a, b) => b.YTD_performance_rate - a.YTD_performance_rate);
+    let hoverTexts = performanceData.map(item => {
+      return `ETF 名稱：${item.etf_name}<br>` +
+             `ETF 代號：${item.symbol}<br>` +
+             `年初至今績效：${item.YTD_performance_rate + "%"} <br>`;
+    });
+    let performanceChart = {
+      x: performanceData.map(item => item.symbol),
+      y: performanceData.map(item => item.YTD_performance_rate),
+      type: 'bar',
+      marker: {
+        color: 'skyblue'
+      },
+      hovertext: hoverTexts,
+      hoverinfo: 'text',
+      name: '績效表現'
+    };
+    let layout={
+      title: 'ETF 年初至今績效排名（%）',
+      xaxis:{
+        type: 'category',
+        title: 'ETF 代號'
+      },
+      yaxis:{
+        title: '年初至今績效排名（%）'
+      },
+       hoverlabel:{
+        bgcolor: 'lightgrey',
+        bordercolor: 'blue'
+      }
+    };
+    let updatedTime = performanceData.length > 0 ? performanceData[0].data_updated_date : '未知';
+    Plotly.newPlot('performance-chart', [performanceChart], layout);
+    document.getElementById('performance-data-updated-time').textContent = `資料來源：臺灣證券交易所，來源資料更新時間：${updatedTime}`;
+  });
+
+
+// search and compare ETFs
 document.addEventListener('DOMContentLoaded', function() {
     const searchForm = document.getElementById('etfSearchForm');
     const compareForm = document.getElementById('etfCompareForm');
@@ -69,7 +233,7 @@ function renderPerformanceTable(data, tableId,updateTimeId) {
         };
         let updateTime = '';
         if (data && data.data_updated_date == 'NULL') {
-    updateTime = '未知';
+            updateTime = '未知';
         } else if (data) {
             updateTime = data.data_updated_date;
         }   
@@ -405,10 +569,13 @@ function setupDropdown(inputId, dropdownId) {
                 if (option.toLowerCase().includes(searchValue)) {
                     let div = document.createElement("div");
                     div.textContent = option;
-                    div.onclick = function () {
-                        input.value = option.match(/^\d+/)[0]; // Extracts only the numeric symbol
-                        dropdown.style.display = "none";
-                    };
+                    div.onclick = function() {
+                        let match = option.match(/【(\d+)】/); // 提取括號內的數字
+                        if (match && match[1]) {
+                            input.value = match[1]; // 設置輸入框的值為數字代號
+                            dropdown.style.display = "none"; // 隱藏下拉選單
+                        }
+                        };
                     dropdown.appendChild(div);
                 }
             });
@@ -438,6 +605,7 @@ function fetchStockETFData(){
     // redirect to the stock to ETF page
     window.location.href = `/etf-pioneer/api/stock-to-etf?stock_code=${stockCode}`;
 }
+
 
 // news page
 function fetchNewsTitlesForWordCloud() {

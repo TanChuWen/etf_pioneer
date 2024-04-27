@@ -14,32 +14,32 @@
 <!-- Display ETF ranking charts by different index -->
 <div id="ranking-dashboard">
         
-    
+    <div class="ranking-row">
         <div id="volume-block">
             <div id="volume-chart" class="chart"></div>
-            <!-- <p>來源資料更新時間：</p> -->
+            <div id="volume-data-updated-time"></div>
         </div>
 
         <div id="assets-block">
             <div id="assets-chart" class="chart"></div>
-            <!-- <p>來源資料更新時間：</p> -->
+            <div id="assets-data-updated-time"></div>
         </div>
+    </div>
 
     
+    <div class="ranking-row">
         <div id="holders-block">
             <div id="holders-chart" class="chart"></div>
-            <!-- <p>來源資料更新時間：</p> -->
+            <div id="holders-data-updated-time"></div>
         </div> 
         <div id="performance-block">
             <div id="performance-chart" class="chart"></div>
-            <!-- <p>來源資料更新時間：</p> -->
+            <div id="performance-data-updated-time"></div>
         </div>
-    
+    </div>
 
 </div>
-
-<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
-
+{% include 'footer.html' %}
 </body>
 </html>
 

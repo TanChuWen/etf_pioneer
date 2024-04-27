@@ -18,8 +18,9 @@
         <p>{{ error }}</p>
 
     {% else %}
-    <p>無法讀取選取日期({{start_date}})之文字雲資訊，請重新選擇日期。</p>
+    <p>無法讀取選取日期({{start_date}} - {{end_date}})之文字雲資訊，請重新選擇日期。</p>
    {% endif %}
+{% include 'footer.html' %}
 </main>
 </body>
 </html>

@@ -14,6 +14,7 @@
 <main>
     <div id="stock-to-ETF-table"></div>
 </main>
+{% include 'footer.html' %}
 <script>
     function sortStockDataByRatio(stockData) {
     return stockData.sort((a, b) => parseFloat(b.ratio.replace('%', '')) - parseFloat(a.ratio.replace('%', '')));
@@ -22,7 +23,7 @@
     function renderPlotlyTable(sortedStockData) {
         const layout = {
             title: stockData[0].component_stock_name + '（代號：' + stockData[0].stock_code + '）股票對應 ETF 佔比表',
-            responsive: true
+            autosize: true
         };
 
         const headerValues = [['ETF 代號'], ['ETF 名稱'], ['佔 ETF 比例'], ['來源資料更新時間']];
@@ -35,6 +36,7 @@
 
         const data = [{
             type: 'table',
+            columnwidth: [80, 220, 80, 200],
             header: {
                 values: headerValues,
                 align: 'center',
@@ -46,7 +48,8 @@
                 values: cellValues,
                 align: 'center',
                 line: {color: 'black', width: 2},
-                font: {family: 'Arial', size: 20, color: ['black']}
+                font: {family: 'Arial', size: 14, color: ['black']},
+                height: 30
             }
         }];
 
