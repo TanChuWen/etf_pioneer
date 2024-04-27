@@ -1,0 +1,42 @@
+<nav>
+<a href = "/">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="logo" class="logo" >
+</a>
+
+<div class="search-container">
+        <div class="search-row">
+            <div class="search-item">
+                <p>請輸入 ETF 代號</p>
+                <form id="etfSearchForm">
+                    <input type="text" id="symbolInput" name="symbol" required>
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+
+            <div class="search-item">
+                <p>比較 ETF 代號</p>
+                <form id="etfCompareForm">
+                    <input type="text" id="compareInput" name="compareSymbol" required>
+                    <button type="submit">Compare</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="search-row">
+            <div class="search-item">
+                <p>請輸入 ETF 成分股代號</p>
+                <form id="stockSearchForm">
+                    <input type="text" id="stockInput" name="stock_code" required>
+                    <button type="button" onclick="fetchStockETFData()">Search</button>
+                </form>
+            </div>
+
+            <div class = "search-item">
+                <label for="startDate">查看 ETF 新聞</label>
+                <input type="date" id="startDate" name="startDate">
+                <button onclick="fetchNewsTitlesForWordCloud()"> Search </button>
+            </div>
+        </div>
+
+    </div>
+</nav>
