@@ -15,12 +15,12 @@
         <p>Enter ETF Symbol</p>
         <form id="etfSearchForm">
             <input type="text" id="symbolInput" name="symbol" required>
-            <button type="button" onclick="fetchETFData()">Search</button>
+            <button type="submit">Search</button>
         </form>
         <p>Enter another ETF Symbol to compare</p>
         <form id="etfCompareForm">
             <input type="text" id="compareInput" name="compareSymbol" required>
-            <button type="button" onclick="fetchCompareETFData()">Compare</button>
+            <button type="submit">Compare</button>
         </form>
         <p>Enter Stock Symbol</p>
         <form id="stockSearchForm">
@@ -36,8 +36,11 @@
     <div id="stock-to-ETF-table"></div>
 </main>
 <script>
+    function sortStockDataByRatio(stockData) {
+    return stockData.sort((a, b) => parseFloat(b.ratio.replace('%', '')) - parseFloat(a.ratio.replace('%', '')));
+}
     // Render the table using Plotly
-    function renderPlotlyTable(stockData) {
+    function renderPlotlyTable(sortedStockData) {
         const layout = {
             title: stockData[0].component_stock_name + '（代號：' + stockData[0].stock_code + '）股票對應 ETF 佔比表',
             responsive: true
@@ -74,7 +77,8 @@
     // start the process when the page is loaded
     document.addEventListener('DOMContentLoaded', function() {
         if (stockData) {
-            renderPlotlyTable(stockData);
+            const sortedStockData = sortStockDataByRatio(stockData);
+            renderPlotlyTable(sortedStockData);
         }
     });
 </script>

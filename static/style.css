@@ -1,4 +1,49 @@
- #dashboard-container {
+/* home page */
+.ranking-dashboard {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+#volume-block, #assets-block, #holders-block, #performance-block{
+    display: inline-block;
+    vertical-align: top;
+    border: 1px solid #ccc;
+    padding: 10px;
+    flex-basis: calc(50% - 1px); /* Adjust the width for two charts per row, accounting for the gap */
+    height: 400px; 
+} 
+
+/* Styles for the dropdown menu */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none; /* Hidden by default */
+    position: absolute;
+    background-color: #f9f9f9; /* Light grey background */
+    min-width: 160px; /* Minimum width */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Shadow for 3D effect */
+    z-index: 1; /* Makes sure dropdown is on top */
+}
+
+.dropdown-content div {
+    padding: 12px 16px; /* Padding for content inside dropdown */
+    text-decoration: none; /* No underline */
+    display: block; /* Changes div to block element, filling the width */
+    cursor: pointer; /* Cursor indicates clickable */
+}
+
+.dropdown-content div:hover {
+    background-color: #f1f1f1; /* Grey background on hover */
+}
+
+
+/* search results */
+ 
+#dashboard-container {
         display: flex;
         flex-direction: row;  
         flex-wrap: wrap;      
@@ -18,18 +63,7 @@
 }
 
 
-.chart-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-.chart {
-    border: 1px solid #ccc;
-    padding: 10px;
-    flex-basis: calc(50% - 1px); /* Adjust the width for two charts per row, accounting for the gap */
-    height: 220px; 
-}
+/* nav bar */
 
 .search-buttons {
     display: flex;
@@ -50,12 +84,8 @@
     background-color: #73bcf0; 
 }
 
-/* #stock-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    padding: 10px;
-} */
+
+/* find ETF from stock */
 
 #stock-to-ETF-table{
     display: flex;
@@ -65,6 +95,7 @@
     column-width: 1000px;
 }
 
+/* news page */
 #wordcloud-container{
     display: flex;
     flex-direction: column;

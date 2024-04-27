@@ -15,12 +15,12 @@
         <p>Enter ETF Symbol</p>
         <form id="etfSearchForm">
             <input type="text" id="symbolInput" name="symbol" required>
-            <button type="button" onclick="fetchETFData()">Search</button>
+            <button type="submit">Search</button>
         </form>
         <p>Enter another ETF Symbol to compare</p>
         <form id="etfCompareForm">
             <input type="text" id="compareInput" name="compareSymbol" required>
-            <button type="button" onclick="fetchCompareETFData()">Compare</button>
+            <button type="submit">Compare</button>
         </form>
         <p>Enter Stock Symbol</p>
         <form id="stockSearchForm">
@@ -33,16 +33,31 @@
     </div>
 </nav>
 <!-- Display ETF ranking charts by different index -->
+<div id="ranking-dashboard">
+        
     
-    <div class="chart-row">
-        <div id="volume-chart" class="chart"></div>
-        <div id="assets-chart" class="chart"></div>
-    </div>
-    <div class="chart-row">
-        <div id="holders-chart" class="chart"></div>
-        <div id="performance-chart" class="chart"></div>
-    </div>
+        <div id="volume-block">
+            <div id="volume-chart" class="chart"></div>
+            <!-- <p>來源資料更新時間：</p> -->
+        </div>
 
+        <div id="assets-block">
+            <div id="assets-chart" class="chart"></div>
+            <!-- <p>來源資料更新時間：</p> -->
+        </div>
+
+    
+        <div id="holders-block">
+            <div id="holders-chart" class="chart"></div>
+            <!-- <p>來源資料更新時間：</p> -->
+        </div> 
+        <div id="performance-block">
+            <div id="performance-chart" class="chart"></div>
+            <!-- <p>來源資料更新時間：</p> -->
+        </div>
+    
+
+</div>
 
 <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
 

@@ -55,7 +55,7 @@ def dashboard():
     return render_template('index.html')
 
 
-# Route to get data from ETF ranking tables
+###### Route to get data from ETF ranking tables ######
 ALLOWED_TABLES = ['etf_ranking_volume', 'etf_ranking_assets',
                   'etf_ranking_holders', 'etf_ranking_performance']
 
@@ -108,7 +108,7 @@ def get_holders_data():
 def get_performance_data():
     return get_data('etf_ranking_performance')
 
-# generate and upload wordcloud
+##### generate and upload wordcloud #####
 
 
 def generate_and_upload_wordcloud(text):
@@ -166,15 +166,48 @@ def get_news_data():
         if connection:
             connection.close()
 
+##### Route to search for an ETF #####
+
+
+@app.route('/search-results', methods=['GET'])
+def search_results():
+    symbol = request.args.get('symbol')
+    symbol_compare = request.args.get('compareSymbol')
+    if not symbol:
+        return render_template('error.html', error="Symbol is required")
+    try:
+        etf_overview_data = {}
+        etf_performance_data = {}
+        top_industry_data = {}
+        top10_stock_data = {}
+
+        # etf_overview_data = get_etf_overview(symbol)
+        etf_overview_data["etf1"] = get_etf_overview(symbol)
+        etf_performance_data["etf1"] = get_etf_performance(symbol)
+        top_industry_data["etf1"] = get_top_industry(symbol)
+        top10_stock_data["etf1"] = get_top10_stock(symbol)
+
+        if symbol_compare:
+            etf_overview_data["etf2"] = get_etf_overview(symbol_compare)
+            etf_performance_data["etf2"] = get_etf_performance(symbol_compare)
+            top_industry_data["etf2"] = get_top_industry(symbol_compare)
+            top10_stock_data["etf2"] = get_top10_stock(symbol_compare)
+        else:
+            etf_overview_data["etf2"] = {}
+            etf_performance_data["etf2"] = {}
+            top_industry_data["etf2"] = {}
+            top10_stock_data["etf2"] = {}
+
+        return render_template('search_results.html', symbol=symbol, etfData=etf_overview_data, etfPerformanceData=etf_performance_data, etfIndustryData=top_industry_data, etfStockData=top10_stock_data)
+
+    except Exception as e:
+        logger.error(str(e))
+        return render_template('error.html', error=str(e))
+
 # Route to search for an ETF
 
 
-@app.route('/etf-pioneer/api/overview', methods=['POST'])
-def search_etf_overview():
-    data = request.get_json()
-    symbol = data.get('symbol', '請輸入正確的ETF代號')
-    if not symbol:
-        return jsonify({"error": "Symbol is required"}), 400
+def fetch_etf_overview(symbol):
     connection = get_db_connection()
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
@@ -184,26 +217,29 @@ def search_etf_overview():
                     WHERE symbol = %s
                 """, (symbol,))
             result = cursor.fetchone()
-
-            return jsonify(result)
+            return result
     except Exception as e:
         logger.error(str(e))
-        return jsonify({"error": str(e)}), 500
+        return None
     finally:
         if connection:
             connection.close()
 
+
+def get_etf_overview(symbol):
+    if not symbol:
+        return jsonify({"error": "Symbol is required"}), 400
+    result = fetch_etf_overview(symbol)
+    if result:
+        return result
+    else:
+        return jsonify({"error": "No data found"}), 404
+
 # Route to get performance data for ETFs
 
 
-@app.route('/etf-pioneer/api/performance', methods=['POST'])
-def get_etf_performance():
-    data = request.get_json()
-    symbol = data.get('symbol', '請輸入正確的ETF代號')
-    if not symbol:
-        return jsonify({"error": "Symbol is required"}), 400
+def fetch_etf_performance(symbol):
     connection = get_db_connection()
-
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             cursor.execute("""
@@ -212,22 +248,28 @@ def get_etf_performance():
                 WHERE symbol = %s
                 """, (symbol,))
             result = cursor.fetchone()
-            if not result:
-                return jsonify({"error": "No data found"}), 404
-            return jsonify(result)
+            return result
     except Exception as e:
         logger.error(str(e))
+        return None
     finally:
-        connection.close()
+        if connection:
+            connection.close()
 
 
-# Route to get top industry data for ETFs
-@app.route('/etf-pioneer/api/top-industry', methods=['POST'])
-def get_top_industry():
-    data = request.get_json()
-    symbol = data.get('symbol', '請輸入正確的ETF代號')
+def get_etf_performance(symbol):
     if not symbol:
         return jsonify({"error": "Symbol is required"}), 400
+    result = fetch_etf_performance(symbol)
+    if result:
+        return result
+    else:
+        return jsonify({"error": "No data found"}), 404
+
+# Route to get top industry data for ETFs
+
+
+def fetch_top_industry(symbol):
     connection = get_db_connection()
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
@@ -239,6 +281,8 @@ def get_top_industry():
                             )
                 """, (symbol, symbol))
             results = cursor.fetchall()
+            if not results:
+                return None
 
             # calculate the total ratio of top industries and other industries
             cursor.execute("""
@@ -260,24 +304,28 @@ def get_top_industry():
             formatted_other_ratio = f"{other_ratio:.2f}%"
             results.append({'symbol': symbol, 'industry': '其他', 'ratio': formatted_other_ratio,
                             'data_updated_date': results[0]['data_updated_date']})
-            if not results:
-                return jsonify({"error": "No data found"}), 404
-            return jsonify(results)
+
+            return results
     except Exception as e:
         logger.error(str(e))
-        return jsonify({"error": str(e)}), 500
+        return None
     finally:
         if connection:
             connection.close()
 
 
-# Route to get top10 stock data for ETFs
-@app.route('/etf-pioneer/api/top10-stock', methods=['POST'])
-def get_top10_stock():
-    data = request.get_json()
-    symbol = data.get('symbol', '請輸入正確的ETF代號')
+def get_top_industry(symbol):
     if not symbol:
         return jsonify({"error": "Symbol is required"}), 400
+    results = fetch_top_industry(symbol)
+    if results:
+        return results
+    else:
+        return jsonify({"error": "No data found"}), 404
+
+
+# Route to get top10 stock data for ETFs
+def fetch_top10_stock(symbol):
     connection = get_db_connection()
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
@@ -289,6 +337,8 @@ def get_top10_stock():
                            )
                 """, (symbol, symbol))
             top10_results = cursor.fetchall()
+            if not top10_results:
+                return None
             # calculate the total ratio of top10 stocks and other stocks
             cursor.execute("""
                            SELECT SUM(ratio) as total_ratio
@@ -309,16 +359,23 @@ def get_top10_stock():
             formatted_other_ratio = f"{other_ratio:.2f}%"
             top10_results.append({'symbol': symbol, 'ranking': '其他', 'stock_name': '其他',
                                  'ratio': formatted_other_ratio, 'data_updated_date': top10_results[0]['data_updated_date']})
-            if not top10_results:
-                return jsonify({"error": "No data found"}), 404
-
-            return jsonify(top10_results)
+            return top10_results
     except Exception as e:
         logger.error(str(e))
-        return jsonify({"error": str(e)}), 500
+        return None
     finally:
         if connection:
             connection.close()
+
+
+def get_top10_stock(symbol):
+    if not symbol:
+        return jsonify({"error": "Symbol is required"}), 400
+    results = fetch_top10_stock(symbol)
+    if results:
+        return results
+    else:
+        return jsonify({"error": "No data found"}), 404
 
 # Route to use stock symbol to search ETF
 

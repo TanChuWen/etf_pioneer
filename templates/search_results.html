@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search And Compare</title>
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script>
+    var etfData = {{ etfData | tojson | safe }};
+    var etfPerformanceData = {{ etfPerformanceData | tojson | safe }};
+    var etfIndustryData = {{ etfIndustryData | tojson | safe }};
+    var etfStockData = {{ etfStockData | tojson | safe }};
+
+
+</script>
+</head>
+<body>
+<nav>
+<div class="search-buttons">
+        <p>Enter ETF Symbol</p>
+        <form id="etfSearchForm">
+            <input type="text" id="symbolInput" name="symbol" required>
+            <button type="submit">Search</button>
+        </form>
+        <p>Enter another ETF Symbol to compare</p>
+        <form id="etfCompareForm">
+            <input type="text" id="compareInput" name="compareSymbol" required>
+            <button type="submit">Compare</button>
+        </form>
+        <p>Enter Stock Symbol</p>
+        <form id="stockSearchForm">
+            <input type="text" id="stockInput" name="stock_code" required>
+            <button type="button" onclick="fetchStockETFData()">Search</button>
+        </form>
+        <label for="startDate">選擇日期：</label>
+        <input type="date" id="startDate" name="startDate">
+        <button onclick="fetchNewsTitlesForWordCloud()"> 查看 ETF 新聞趨勢</button>
+
+    </div>
+</nav>
+<main>
+    <!-- Display ETF data -->
+<div id="dashboard-container" style="display: flex; flex-wrap: wrap;">
+    
+
+    <!-- Search Bar for 'search an ETF' -->
+    <div id="etf1-container" style="flex: 1; min-width: 50%;">
+    <div id="resultsContainer">
+        <h1>ETF 名稱: {{etfData.etf1.etf_name}} ｜ 代號: {{etfData.etf1.symbol}}</h1>
+            <p>今天價格: {{etfData.etf1.price_today}}</p>
+            <p>與前一個交易日價格差距: {{etfData.etf1.up_down_change}}</p>
+            <p>與前一個交易日價格差距百分比: {{etfData.etf1.up_down_percentage}}</p>
+            <p>來源資料更新時間: {{etfData.etf1.data_updated_date}}</p>
+    </div>
+    <div id="chartContainer" style="position: relative;">
+    
+    <div class="chart-flex-container">
+        <div id="performance-table" style="max-height: 520px; overflow-y: auto;"></div>
+        <div id="performance-data-updated-time" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div>
+    
+    <div class="chart-flex-container">
+        <div id="industry-chart" style="max-height: 500px; overflow-y: auto;"></div>
+        <div id="industry-data-updated-time" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div> 
+
+     <div class="chart-flex-container">
+        <div id="stock-chart" style="max-height: 500px; overflow-y: auto;"></div>
+        <div id="stock-data-updated-time" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div> 
+    </div>
+    </div>
+
+    <!-- Search Bar for 'compare two ETFs' -->
+    <div id="etf2-container" style="flex: 1; min-width: 50%; display: none;">
+    <div id="resultsContainer2">
+         <h1>ETF 名稱: {{etfData.etf2.etf_name}} ｜ 代號: {{etfData.etf2.symbol}}</h1>
+            <p>今天價格: {{etfData.etf2.price_today}}</p>
+            <p>與前一個交易日價格差距: {{etfData.etf2.up_down_change}}</p>
+            <p>與前一個交易日價格差距百分比: {{etfData.etf2.up_down_percentage}}</p>
+            <p>來源資料更新時間: {{etfData.etf2.data_updated_date}}</p>
+        `;
+    </div>
+    <div id="chartContainer2" style="position: relative;">
+
+    <div class="chart-flex-container">
+        <div id="performance-table2" style="max-height: 520px; overflow-y: auto;"></div>
+        <div id="performance-data-updated-time2" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div>
+    
+    <div class="chart-flex-container">
+        <div id="industry-chart2" style="max-height: 500px; overflow-y: auto;"></div>
+        <div id="industry-data-updated-time2" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div>
+
+    <div class="chart-flex-container">
+        <div id="stock-chart2" style="max-height: 500px; overflow-y: auto;"></div>
+        <div id="stock-data-updated-time2" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+    </div>
+    </div>
+
+    </div>
+</div>
+</main>
+<script>
+    // Initialize the charts
+    function initializeCharts(){
+        document.querySelector('#etf2-container').style.display = 'none';
+        if(etfData.etf1){
+            console.log(etfData.etf1);
+            renderPerformanceTable(etfPerformanceData["etf1"], 'performance-table', 'performance-data-updated-time');
+            renderTopIndustryChart(etfIndustryData["etf1"], 'industry-chart','industry-data-updated-time');
+            renderTop10StockChart(etfStockData["etf1"], 'stock-chart','stock-data-updated-time');
+            document.querySelector('#symbolInput').value = etfData.etf1.symbol;
+        }
+        
+        if(etfData.etf2.symbol){
+            document.querySelector('#etf2-container').style.display = 'block';
+            renderPerformanceTable(etfPerformanceData["etf2"], 'performance-table2','performance-data-updated-time2');
+            renderTopIndustryChart(etfIndustryData["etf2"], 'industry-chart2','industry-data-updated-time2');
+            renderTop10StockChart(etfStockData["etf2"], 'stock-chart2','stock-data-updated-time2');
+            document.querySelector('#compareInput').value = etfData.etf2.symbol;
+        }
+    }
+    document.addEventListener('DOMContentLoaded',initializeCharts);
+    
+</script>
+</body>
+</html>
