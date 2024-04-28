@@ -170,10 +170,13 @@ document.addEventListener('DOMContentLoaded', function() {
         searchForm.addEventListener('submit', function(event) {
             event.preventDefault();
             const symbol = document.getElementById('symbolInput').value;
-            if (symbol) {
-                window.location.href = `/search-results?symbol=${symbol}`;
-            } else {
+            const isValidOption = optionsList.some(option => option.includes(symbol));
+            if (!symbol) {
                 alert("請輸入正確的ETF代號");
+            } else if (!isValidOption) {
+                alert("請輸入正確的ETF代號");
+            } else {
+                window.location.href = `/search-results?symbol=${symbol}`;
             }
         });
 }
@@ -182,9 +185,17 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             const symbol = document.getElementById('symbolInput').value;
             const compareSymbol = document.getElementById('compareInput').value;
+            const isValidOption = optionsList.some(option => option.includes(symbol));
+            const isValidCompareOption = optionsList.some(option => option.includes(compareSymbol));
             if (symbol && compareSymbol) {
+              if (isValidOption && isValidCompareOption) {
                 window.location.href = `/search-results?symbol=${symbol}&compareSymbol=${compareSymbol}`;
-            } else if(compareSymbol){
+            } else {
+                alert("請輸入正確的ETF代號");
+            }
+            }else if (symbol && isValidOption) {
+                window.location.href = `/search-results?symbol=${symbol}`;
+            } else if (compareSymbol && isValidCompareOption) {
                 window.location.href = `/search-results?symbol=${compareSymbol}`;
             }else{
                 alert("請輸入正確的ETF代號");
@@ -302,20 +313,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setupDropdown("symbolInput", "etfSearchDropdown");
     setupDropdown("compareInput", "etfCompareDropdown");
 });
-
-function setupDropdown(inputId, dropdownId) {
-    let input = document.getElementById(inputId);
-    let dropdown = document.createElement("div");
-    dropdown.id = dropdownId;
-    dropdown.className = "dropdown-content";
-    input.parentNode.insertBefore(dropdown, input.nextSibling);
-    
-    input.addEventListener("input", function () {
-        let searchValue = this.value.toLowerCase();
-        dropdown.innerHTML = ""; // Clear previous options
-        if (searchValue) {
-            // Simulated search results
-            let optionsList = ["元大台灣50【0050】",
+let optionsList = ["元大台灣50【0050】",
                                 "元大中型100【0051】",
                                 "富邦科技【0052】",
                                 "元大電子【0053】",
@@ -563,17 +561,26 @@ function setupDropdown(inputId, dropdownId) {
                                 "群益ESG投等債20+【00937B】",
                                 "統一台灣高息動能【00939】",
                                 "元大台灣價值高息【00940】"];
-
-
+function setupDropdown(inputId, dropdownId) {
+    let input = document.getElementById(inputId);
+    let dropdown = document.createElement("div");
+    dropdown.id = dropdownId;
+    dropdown.className = "dropdown-content";
+    input.parentNode.insertBefore(dropdown, input.nextSibling);
+    
+    input.addEventListener("input", function () {
+        let searchValue = this.value.toLowerCase();
+        dropdown.innerHTML = ""; // clear previous options
+        if (searchValue) {
             optionsList.forEach(function (option) {
                 if (option.toLowerCase().includes(searchValue)) {
                     let div = document.createElement("div");
                     div.textContent = option;
                     div.onclick = function() {
-                        let match = option.match(/【(\d+)】/); // 提取括號內的數字
+                        let match = option.match(/【(\d+)】/); // get the number in the brackets
                         if (match && match[1]) {
-                            input.value = match[1]; // 設置輸入框的值為數字代號
-                            dropdown.style.display = "none"; // 隱藏下拉選單
+                            input.value = match[1]; // set input value to the number
+                            dropdown.style.display = "none"; // hide dropdown list
                         }
                         };
                     dropdown.appendChild(div);
@@ -585,7 +592,7 @@ function setupDropdown(inputId, dropdownId) {
         }
     });
     
-    // Hide dropdown when clicking elsewhere
+    // hide dropdown when clicking elsewhere
     document.addEventListener("click", function(event) {
         if (event.target !== input) {
             dropdown.style.display = "none";
@@ -608,6 +615,8 @@ function fetchStockETFData(){
 
 
 // news page
+
+
 function fetchNewsTitlesForWordCloud() {
     const startDateInput = document.getElementById('startDate');
     const startDate = startDateInput.value;
@@ -622,3 +631,14 @@ function fetchNewsTitlesForWordCloud() {
     // redirect to the news page
     window.location.href = `/etf-pioneer/api/news-wordcloud?start_date=${startDate}&end_date=${formattedEndDate}`;
 }
+
+
+// footer display
+window.addEventListener('scroll', function() {
+  var footer = document.querySelector('.site-footer');
+  if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
+    footer.style.display = 'block';
+  } else {
+    footer.style.display = 'none'; 
+  }
+});

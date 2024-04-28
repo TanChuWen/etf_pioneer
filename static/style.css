@@ -108,13 +108,15 @@ button:hover {
     align-items: center;
     border: 1px solid #ccc;
     flex-basis: calc(50% - 1px); /* Adjust the width for two charts per row, accounting for the gap */
-    height: 400px; 
+    height: 600px; 
+    margin-top: 10px;
+    margin-bottom: 50px;
 } 
 
 #volume-chart, #assets-chart, #holders-chart, #performance-chart{
     align-self: center;
     width: 100%;
-    height: 100%;
+    height: 90%;
 }
 
 #volume-data-updated-time, #assets-data-updated-time, #holders-data-updated-time, #performance-data-updated-time{
@@ -169,6 +171,7 @@ button:hover {
     flex-direction: column;
     align-items: center; 
     padding: 10px;
+    margin-bottom: 100px;
 }
 
 
@@ -180,34 +183,38 @@ button:hover {
     align-items: center;
     padding: 10px;
     column-width: 1000px;
+    margin-bottom: 100px;
 }
 
 /* news page */
+#news-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 10px;
+    margin-bottom: 100px;
+}
+
 #wordcloud-container{
     display: flex;
     flex-direction: column;
-    align-items: center;
     padding: 10px;
 }
 
-#wordcloud-title{
-    text-align: center;
+#news-links{
     display: flex;
-    justify-content: center;
     flex-direction: column;
-    align-items: center;
-}
+    padding: 10px;
+    margin-left: 30px;
 
-#wordcloud-chart{
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
 }
 
 /* footer */
 .site-footer {
+  position: fixed;
+  bottom: 0;
+  left:0;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -215,6 +222,7 @@ button:hover {
   background: linear-gradient(to left, #2F80ED, #56CCF2);
   color: white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: none;
 }
 
 .footer-container {
@@ -230,12 +238,13 @@ button:hover {
 .footer-right {
   display: flex;
   justify-content: flex-end;
+  margin-right: 0;
 }
 
 .footer-right a {
   text-decoration: none;
   color: white;
-  margin-left: 20px; 
+  margin-right: 50px; 
   transition: color 0.3s ease;
 }
 

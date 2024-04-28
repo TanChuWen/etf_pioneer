@@ -98,7 +98,7 @@ def standardize_date(date_str):
 # define a function to get news titles
 
 
-def fetch_news_titles(driver, url, title_selector, date_selector):
+def fetch_news_titles(driver, url, title_selector, date_selector, link_selector):
     news_items = []
     try:
         driver.get(url)
@@ -106,17 +106,21 @@ def fetch_news_titles(driver, url, title_selector, date_selector):
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, title_selector)))
         WebDriverWait(driver, 30).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, date_selector)))
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, link_selector)))
 
         title_elements = driver.find_elements(By.CSS_SELECTOR, title_selector)
         date_elements = driver.find_elements(By.CSS_SELECTOR, date_selector)
+        link_elements = driver.find_elements(By.CSS_SELECTOR, link_selector)
 
-        for title, date in zip(title_elements, date_elements):
+        for title, date, link in zip(title_elements, date_elements, link_elements):
 
             news_item = {
                 'news_title': title.text,
                 'news_date': standardize_date(date.text),
                 'website': url,
-                'crawler_date': today
+                'crawler_date': today,
+                'news_link': link.get_attribute('href')
             }
             news_items.append(news_item)
 
@@ -133,24 +137,29 @@ sites_to_crawl = [
     {
         "url": "https://m.cnyes.com/news/cat/etf",
         "title_selector": ".tlhuwq2",
-        "date_selector": ".n1hj6r9n"
+        "date_selector": ".n1hj6r9n",
+        "link_selector": ".list-title > a"
     },
     {
         "url": "https://www.ctee.com.tw/wealth/etf",
         "title_selector": ".news-title",
-        "date_selector": ".news-time"
+        "date_selector": ".news-time",
+        "link_selector": ".news-title > a"
     },
     {
         "url": "https://money.udn.com/search/tagging/1001/ETF",
         "title_selector": ".story__headline",
-        "date_selector": ".story__content > time"
+        "date_selector": ".story__content > time",
+        "link_selector": ".story__content > a"
     }
 ]
 
 try:
     for site in sites_to_crawl:
         news_data.extend(fetch_news_titles(
-            driver, site['url'], site['title_selector'], site['date_selector']))
+            driver, site['url'], site['title_selector'], site['date_selector'], site['link_selector']))
+except Exception as e:
+    logger.error(f"An error occurred: {str(e)}")
 finally:
     driver.quit()
 

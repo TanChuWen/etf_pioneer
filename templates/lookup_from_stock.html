@@ -23,7 +23,8 @@
     function renderPlotlyTable(sortedStockData) {
         const layout = {
             title: stockData[0].component_stock_name + '（代號：' + stockData[0].stock_code + '）股票對應 ETF 佔比表',
-            autosize: true
+            autosize: true,
+            height: 1200
         };
 
         const headerValues = [['ETF 代號'], ['ETF 名稱'], ['佔 ETF 比例'], ['來源資料更新時間']];

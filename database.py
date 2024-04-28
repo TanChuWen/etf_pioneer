@@ -472,8 +472,8 @@ def insert_news_data(connection, news_item):
         with connection.cursor() as cursor:
             # Prepare the INSERT statement without the existence check.
             insert_query = """
-            INSERT INTO news_data (news_title, news_date, website, crawler_date)
-            VALUES (%s, STR_TO_DATE(%s, '%%Y/%%m/%%d'), %s, STR_TO_DATE(%s, '%%Y/%%m/%%d'))
+            INSERT INTO news_data (news_title, news_date, website, crawler_date, news_link)
+            VALUES (%s, STR_TO_DATE(%s, '%%Y/%%m/%%d'), %s, STR_TO_DATE(%s, '%%Y/%%m/%%d'), %s)
             """
             try:
                 # Attempt to insert the new record.
@@ -483,7 +483,8 @@ def insert_news_data(connection, news_item):
                         news_item['news_title'],
                         news_item['news_date'],
                         news_item['website'],
-                        news_item['crawler_date']
+                        news_item['crawler_date'],
+                        news_item['news_link']
                     )
                 )
                 connection.commit()

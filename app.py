@@ -108,7 +108,9 @@ def get_holders_data():
 def get_performance_data():
     return get_data('etf_ranking_performance')
 
-##### generate and upload wordcloud #####
+##### ETF news #####
+
+# generate wordcloud
 
 
 def generate_and_upload_wordcloud(text):
@@ -117,8 +119,8 @@ def generate_and_upload_wordcloud(text):
                      "影片", "直播", "獨家", "專訪", "專家"])
     wordcloud = WordCloud(
         font_path="Noto_Sans_TC/NotoSansTC-VariableFont_wght.ttf",
-        width=1000,
-        height=500,
+        width=600,
+        height=400,
         stopwords=stopwords,
         max_words=30,
         background_color='black'
@@ -143,28 +145,32 @@ def get_news_data():
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             cursor.execute(
-                "SELECT news_title FROM news_data WHERE news_date >= %s AND news_date <= %s", (start_date, end_date))
-            results = cursor.fetchall()
+                "SELECT news_title, news_date, website, news_link FROM news_data WHERE news_date >= %s AND news_date <= %s", (start_date, end_date))
+            news_data = cursor.fetchall()
 
-            if not results:
+            if not news_data:
                 logger.error("No data found")
-                return jsonify({"error": "No data found"}), 404
+                # tell users that no data is found
+                return render_template('error.html', error="No data found", start_date=start_date, end_date=end_date)
 
+            news_list = []
             text = " "
-            for news_item in results:
+            for news_item in news_data:
                 words = jieba.cut(news_item['news_title'])
                 text += " ".join(words) + " "  # Add a space between each word
+                news_list.append(news_item)
 
             # Generate wordcloud
             image_data = generate_and_upload_wordcloud(text)
             logger.info(f"Wordcloud generated from {start_date} to {end_date}")
-            return render_template('news_trend.html', image_data=image_data, start_date=start_date, end_date=end_date)
+            return render_template('news_trend.html', image_data=image_data, start_date=start_date, end_date=end_date, newsList=news_list)
     except Exception as e:
         logger.error(str(e))
         return render_template('error.html', error=str(e), start_date=start_date, end_date=end_date)
     finally:
         if connection:
             connection.close()
+        logger.info("Connection closed")
 
 ##### Route to search for an ETF #####
 

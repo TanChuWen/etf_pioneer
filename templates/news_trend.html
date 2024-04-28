@@ -5,22 +5,37 @@
     <script src="https://cdn.plot.ly/plotly-2.30.0.min.js" charset="utf-8"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script type="text/javascript">
+        let newsList = {{ newsList | tojson | safe  }};
+    </script>
 </head>
 <body>
 {% include 'nav_bar.html' %}
-<main>
-    <h1>ETF 新聞趨勢文字雲({{start_date}} - {{end_date}})</h1>
+<div id="news-container">
+    <div id="wordcloud-container">
+        <h2>ETF 新聞趨勢文字雲({{start_date}} - {{end_date}})</h2>
 
-    {% if image_data %}
-    <img src="{{image_data}}" alt="Word Cloud" style="max-height: 500px; overflow-y: auto;">
-    
-    {%elif error%}
-        <p>{{ error }}</p>
+        {% if image_data %}
+            <img src="{{image_data}}" alt="Word Cloud" style="max-height: 500px; overflow-y: auto;">
+        {%elif error%}
+            <p>{{ error }}</p>
+        {% else %}
+            <p>無法讀取選取日期({{start_date}} - {{end_date}})之文字雲資訊，請重新選擇日期。</p>
+        {% endif %}
+    </div>
+    <div id="news-links">
+        <h2>新聞列表({{start_date}} - {{end_date}})</h2>
+        <ul>
+            {% for news in newsList %}
+            <li>
+                <p>{{ news['news_date'] }}</p>
+                <a href="{{ news['news_link'] }}" target="_blank">{{ news['news_title'] }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+   </div>
 
-    {% else %}
-    <p>無法讀取選取日期({{start_date}} - {{end_date}})之文字雲資訊，請重新選擇日期。</p>
-   {% endif %}
-{% include 'footer.html' %}
 </main>
+{% include 'footer.html' %}
 </body>
 </html>
