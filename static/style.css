@@ -189,6 +189,7 @@ button:hover {
 /* news page */
 #news-container {
     display: flex;
+    justify-content: center;
     flex-direction: row;
     align-items: flex-start;
     padding: 10px;
@@ -203,6 +204,8 @@ button:hover {
 
 #news-links{
     display: flex;
+    justify-content: center;
+    align-items: center;
     flex-direction: column;
     padding: 10px;
     margin-left: 30px;
