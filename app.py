@@ -122,7 +122,7 @@ def generate_and_upload_wordcloud(text):
         width=600,
         height=400,
         stopwords=stopwords,
-        max_words=30,
+        max_words=20,
         background_color='black'
     ).generate(text)
     img = BytesIO()
@@ -140,12 +140,25 @@ def get_news_data():
         'start_date', (datetime.today() - timedelta(days=7)).strftime('%Y-%m-%d'))
     end_date = request.args.get(
         'end_date', datetime.today().strftime('%Y-%m-%d'))
+    min_date = datetime(2024, 4, 28)
+    max_date = datetime.today()
+    start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+    if start_date_obj < min_date:
+        return render_template('error.html', error="選擇的日期不能早於2024-04-28，請重新選擇日期")
+    if start_date_obj > max_date:
+        return render_template('error.html', error="選擇的日期不能晚於今天，請重新選擇日期")
+
     connection = get_db_connection()
 
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-            cursor.execute(
-                "SELECT news_title, news_date, website, news_link FROM news_data WHERE news_date >= %s AND news_date <= %s", (start_date, end_date))
+            query = """
+            SELECT news_title, news_date, website, news_link 
+            FROM news_data 
+            WHERE news_date >= %s AND news_date <= %s
+            ORDER BY news_date DESC
+            """
+            cursor.execute(query, (start_date, end_date))
             news_data = cursor.fetchall()
 
             if not news_data:
@@ -419,7 +432,8 @@ def search_etf_by_stock():
                 """, (stock_code,))
             results = cursor.fetchall()
             if not results:
-                return render_template('error.html', error="No data found")
+                error_message = "本檔股票不屬於任何一檔 ETF 的前十大成分股，請重新查詢"
+                return render_template('error-top10.html', error=error_message)
             return render_template('lookup_from_stock.html', stock_data=results)
             # return results
     except Exception as e:

@@ -27,13 +27,13 @@
                 <p>請輸入 ETF 成分股代號</p>
                 <form id="stockSearchForm">
                     <input type="text" id="stockInput" name="stock_code" required>
-                    <button type="button" onclick="fetchStockETFData()">Search</button>
+                    <button type="submit">Search</button>
                 </form>
             </div>
 
             <div class = "search-item">
                 <label for="startDate">查看新聞（七天）</label>
-                <input type="date" id="startDate" name="startDate">
+                <input type="date" id="startDate" name="startDate" min="2024-04-28" max="{{ max_date }}">
                 <button onclick="fetchNewsTitlesForWordCloud()"> Search </button>
                 <div id="dateRangeDisplay"></div>
             </div>

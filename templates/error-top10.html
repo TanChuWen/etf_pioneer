@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</head>
+<body>
+{% include 'nav_bar.html' %}
+    <div class="error-message">
+        <p>{{error}}</p>
+    </div>
+{% include 'footer.html' %}
+</body>
+</html>

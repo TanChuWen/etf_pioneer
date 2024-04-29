@@ -134,7 +134,7 @@ button:hover {
 .dropdown-content {
     display: none; /* Hidden by default */
     position: absolute;
-    background-color: #f9f9f9; /* Light grey background */
+    background-color: #c3e8f4; /* Light grey background */
     min-width: 160px; /* Minimum width */
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Shadow for 3D effect */
     z-index: 1; /* Makes sure dropdown is on top */
@@ -252,6 +252,12 @@ button:hover {
   color: #a8d0e6; 
 }
 
+/* error page */
+.error-message {
+    text-align: center;
+    color: #397bed;
+    font-size: 30px;
+  }
 
 /* Responsive Design */
 @media screen and (max-width: 600px) {

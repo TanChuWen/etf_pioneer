@@ -17,22 +17,23 @@
 {% include 'footer.html' %}
 <script>
     function sortStockDataByRatio(stockData) {
-    return stockData.sort((a, b) => parseFloat(b.ratio.replace('%', '')) - parseFloat(a.ratio.replace('%', '')));
+        sortedStockData = stockData.sort((a, b) => parseFloat(b.ratio.replace('%', '')) - parseFloat(a.ratio.replace('%', '')));
+    return sortedStockData;
 }
     // Render the table using Plotly
     function renderPlotlyTable(sortedStockData) {
         const layout = {
-            title: stockData[0].component_stock_name + '（代號：' + stockData[0].stock_code + '）股票對應 ETF 佔比表',
+            title: sortedStockData[0].component_stock_name + '（代號：' + sortedStockData[0].stock_code + '）股票對應 ETF 佔比表',
             autosize: true,
             height: 1200
         };
 
         const headerValues = [['ETF 代號'], ['ETF 名稱'], ['佔 ETF 比例'], ['來源資料更新時間']];
         const cellValues = [
-            stockData.map(item => item.symbol),
-            stockData.map(item => item.etf_name),
-            stockData.map(item => item.ratio),
-            stockData.map(item => item.data_updated_date)
+            sortedStockData.map(item => item.symbol),
+            sortedStockData.map(item => item.etf_name),
+            sortedStockData.map(item => item.ratio),
+            sortedStockData.map(item => item.data_updated_date)
         ];
 
         const data = [{
