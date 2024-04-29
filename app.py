@@ -51,8 +51,9 @@ def get_db_connection():
 
 
 @app.route('/')
-def dashboard():
-    return render_template('index.html')
+def home():
+    max_date = datetime.today().strftime('%Y-%m-%d')
+    return render_template('index.html', max_date=max_date)
 
 
 ###### Route to get data from ETF ranking tables ######
@@ -137,16 +138,9 @@ def generate_and_upload_wordcloud(text):
 @app.route('/etf-pioneer/api/news-wordcloud', methods=['GET'])
 def get_news_data():
     start_date = request.args.get(
-        'start_date', (datetime.today() - timedelta(days=7)).strftime('%Y-%m-%d'))
+        'start_date', datetime.today().strftime('%Y-%m-%d'))
     end_date = request.args.get(
         'end_date', datetime.today().strftime('%Y-%m-%d'))
-    min_date = datetime(2024, 4, 28)
-    max_date = datetime.today()
-    start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
-    if start_date_obj < min_date:
-        return render_template('error.html', error="選擇的日期不能早於2024-04-28，請重新選擇日期")
-    if start_date_obj > max_date:
-        return render_template('error.html', error="選擇的日期不能晚於今天，請重新選擇日期")
 
     connection = get_db_connection()
 
@@ -163,7 +157,6 @@ def get_news_data():
 
             if not news_data:
                 logger.error("No data found")
-                # tell users that no data is found
                 return render_template('error.html', error="No data found", start_date=start_date, end_date=end_date)
 
             news_list = []

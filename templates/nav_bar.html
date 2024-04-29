@@ -32,10 +32,18 @@
             </div>
 
             <div class = "search-item">
-                <label for="startDate">查看新聞（七天）</label>
-                <input type="date" id="startDate" name="startDate" min="2024-04-28" max="{{ max_date }}">
-                <button onclick="fetchNewsTitlesForWordCloud()"> Search </button>
-                <div id="dateRangeDisplay"></div>
+                <form action="/etf-pioneer/api/news-wordcloud" method="get">
+                    <p>查看 ETF 新聞</p>
+                    <label for="startDate">開始日期：</label>
+                    <input type="date" id="startDate" name="start_date" min="2024-04-28" max="{{ max_date }}">
+                    
+                    <label for="endDate">結束日期：</label>
+                    <input type="date" id="endDate" name="end_date" min="2024-04-28" max="{{ max_date }}">
+
+                    <button type="submit">Search</button>
+                    <div id="dateRangeDisplay"></div>
+                </form>
+
             </div>
         </div>
 

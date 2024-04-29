@@ -449,22 +449,46 @@ function setupDropdownStock(inputId, dropdownId, optionsList) {
 
 
 // news page
-
-
-function fetchNewsTitlesForWordCloud() {
-    const startDateInput = document.getElementById('startDate');
-    const startDate = startDateInput.value;
-    if (!startDate) {
-        alert('請選擇日期。');
-        return;
+document.addEventListener('DOMContentLoaded', function() {
+    const newsSearchForm = document.getElementById('newsSearchForm');
+    if (newsSearchForm) {
+        newsSearchForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            if (!startDateInput || !endDateInput) {
+                alert('請選擇開始和結束日期。');
+                return
+            } 
+            else if (startDateInput.value > endDateInput.value) {
+            alert('開始日期不能晚於結束日期。');
+            return;
+            }
+            else {
+                setDefaultDate(startDateInput, endDateInput);
+                window.location.href = `/etf-pioneer/api/news-wordcloud?start_date=${startDateInput.value}&end_date=${endDateInput.value}`;
+            }
+        });
     }
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 7); // 7 days after the start date
-    const formattedEndDate = endDate.toISOString().split('T')[0];
+  });
+
+
+
+
+// function fetchNewsTitlesForWordCloud() {
+//     const startDateInput = document.getElementById('startDate');
+//     const startDate = startDateInput.value;
+//     if (!startDate) {
+//         alert('請選擇日期。');
+//         return;
+//     }
+//     const endDate = new Date(startDate);
+//     endDate.setDate(endDate.getDate() + 7); // 7 days after the start date
+//     const formattedEndDate = endDate.toISOString().split('T')[0];
     
-    // redirect to the news page
-    window.location.href = `/etf-pioneer/api/news-wordcloud?start_date=${startDate}&end_date=${formattedEndDate}`;
-}
+//     // redirect to the news page
+//     window.location.href = `/etf-pioneer/api/news-wordcloud?start_date=${startDate}&end_date=${formattedEndDate}`;
+// }
 
 
 // footer display
