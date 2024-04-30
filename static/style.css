@@ -165,7 +165,7 @@ button:hover {
         flex-wrap: wrap;      
 }
 #etf1-container, #etf2-container {
-        flex-basis: 50%;      
+        flex-basis: calc(50% - 20px);
         min-width: 300px;     
         box-sizing: border-box;
         padding: 10px;
