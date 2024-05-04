@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 import pymysql
 from pymysql import Error
 import logging
+import requests
 
 # Load environment variables from .env file
 load_dotenv()
@@ -800,7 +801,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='ETF_info_crawler_dag_v4',
+    dag_id='ETF_info_crawler_dag_v5',
     schedule="30 7 * * *",  # Run the DAG daily at 07:30 UTC
     start_date=datetime.datetime(2024, 5, 1),
     default_args=default_args,
