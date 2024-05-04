@@ -53,7 +53,8 @@ BUCKET_NAME = os.getenv("BUCKET_NAME")
 
 
 def send_slack_message(message):
-    url = 'https://hooks.slack.com/services/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'
+    load_dotenv()
+    url = os.getenv("SLACK_WEBHOOK_URL")
     headers = {'Content-Type': 'application/json'}
     data = {'text': message}
 
