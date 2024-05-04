@@ -144,11 +144,11 @@ def etf_info_crawler():
             # get all the ETFs in the list
             etf_elements = driver.find_elements(
                 By.CSS_SELECTOR, "#etf-overview-region div.table-body-wrapper > ul > li a")
-            etf_limit = 2
+            # etf_limit = 2
             for etf in etf_elements:
-                if etf_limit == 0:
-                    break
-                etf_limit -= 1
+                # if etf_limit == 0:
+                # break
+                # etf_limit -= 1
                 each_etf = {}
                 driver.switch_to.window(original_window)
                 etf.click()
@@ -801,7 +801,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='ETF_info_crawler_dag_v5',
+    dag_id='ETF_info_crawler_dag_v6',
     schedule="30 7 * * *",  # Run the DAG daily at 07:30 UTC
     start_date=datetime.datetime(2024, 5, 1),
     default_args=default_args,

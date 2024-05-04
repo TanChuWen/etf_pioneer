@@ -236,7 +236,7 @@ function renderPerformanceTable(data, tableId,updateTimeId) {
                     [data.YTD, data['1_week'], data['1_month'], data['3_month'], data['6_month'], data['1_year'], data['2_year'], data['3_year'], data['5_year'], data['10_year']]
                 ],
                 align: "center",
-                line: {color: "blue", width: 2},
+                line: {color: "black", width: 2},
                 font: {family: "Arial", size: 18, color: ["black"]},
                 width: [1, 1],
                 height: 30
