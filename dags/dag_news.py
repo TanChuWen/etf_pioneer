@@ -64,7 +64,7 @@ def send_slack_message(message):
 
     # Check for successful response
     if response.status_code == 200:
-        logger.info("Message sent to Slack successfully!")
+        logger.info(f"{message}")
     else:
         logger.error(f"""Failed to send message. Status code: {
             response.status_code}, response text: {response.text}""")
@@ -90,6 +90,11 @@ def news_crawler():
 
     remote_url = 'http://remote_chromedriver:4444/wd/hub'
     driver = webdriver.Remote(
+        command_executor=remote_url, keep_alive=True, options=options)
+
+    options.add_argument(
+        "user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
+    driver2 = webdriver.Remote(
         command_executor=remote_url, keep_alive=True, options=options)
 
     today = datetime.datetime.now().strftime('%Y/%m/%d')
@@ -120,11 +125,16 @@ def news_crawler():
         send_slack_message("News crawler started.")
         for site in sites_to_crawl:
             send_slack_message(f"Fetching news from {site['url']}")
-            news_data.extend(fetch_news_titles(
-                driver, site['url'], site['title_selector'], site['date_selector'], site['link_selector']))
+            if site['url'] == "https://www.ctee.com.tw/wealth/etf":
+                news_data.extend(fetch_news_titles(
+                    driver2, site['url'], site['title_selector'], site['date_selector'], site['link_selector']))
+            else:
+                news_data.extend(fetch_news_titles(
+                    driver, site['url'], site['title_selector'], site['date_selector'], site['link_selector']))
     except Exception as e:
         logger.error(f"An error occurred: {str(e)}")
     finally:
+        driver2.quit()
         driver.quit()
 
     # Save the data to a JSON file and upload to S3
@@ -141,6 +151,7 @@ def news_crawler():
     # Insert the news data into the database
     for news_item in news_data:
         insert_news_data(news_item)
+    send_slack_message("News crawler finished.")
 
 
 def save_data_to_json(data, filename):
@@ -211,12 +222,18 @@ def fetch_news_titles(driver, url, title_selector, date_selector, link_selector)
     news_items = []
     try:
         driver.get(url)
-        WebDriverWait(driver, 60).until(
+        send_slack_message(f"""after get {url} {title_selector} {
+                           date_selector} {link_selector}""")
+        driver.switch_to.default_content()
+        WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, title_selector)))
-        WebDriverWait(driver, 180).until(
+        send_slack_message(f"{title_selector} found")
+        WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, date_selector)))
-        WebDriverWait(driver, 60).until(
+        send_slack_message(f"{date_selector} found")
+        WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, link_selector)))
+        send_slack_message(f"{link_selector} found")
 
         title_elements = driver.find_elements(By.CSS_SELECTOR, title_selector)
         date_elements = driver.find_elements(By.CSS_SELECTOR, date_selector)
@@ -251,8 +268,8 @@ def get_db_connection():
     db_user = os.getenv("DB_USER")
     db_password = os.getenv("DB_PASSWORD")
     db_name = os.getenv("DB_NAME", "dev")
-    send_slack_message(f"""Connecting to database. {
-                       db_host}, {db_user}, {db_name}""")
+    # send_slack_message(f"""Connecting to database. {
+    #                    db_host}, {db_user}, {db_name}""")
     try:
         connection = pymysql.connect(
             host=db_host,
@@ -261,7 +278,7 @@ def get_db_connection():
             database=db_name,
             cursorclass=pymysql.cursors.DictCursor
         )
-        logger.info("Connected to database.")
+        # logger.info("Connected to database.")
         return connection
     except pymysql.MySQLError as e:
         logger.error(f"Error connecting to database: {e}")
@@ -327,7 +344,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='news_crawler_dag_v17',
+    dag_id='news_crawler_dag_v30',
     schedule="0 3 * * *",  # Run the DAG at 3:00 AM UTC every day
     start_date=datetime.datetime(2024, 5, 1),
     default_args=default_args,

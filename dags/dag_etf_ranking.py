@@ -62,7 +62,8 @@ def send_slack_message(message):
 
     # Check for successful response
     if response.status_code == 200:
-        logger.info("Message sent to Slack successfully!")
+        # logger.info("Message sent to Slack successfully!")
+        logger.info(f"{message}")
     else:
         logger.error(f"""Failed to send message. Status code: {
             response.status_code}, response text: {response.text}""")
@@ -130,7 +131,6 @@ def etf_ranking_crawler():
             By.CSS_SELECTOR, 'section#ranking.tabs > ul.nav > li:nth-child(4)')
         fourth_tab.click()
         data4 = scrape_table_data(driver)
-        driver.quit()
 
         # # data mapping
         # data_table_mapping = [
@@ -175,24 +175,29 @@ def etf_ranking_crawler():
             # Insert the data into the database
             # table_name = filename.split(
             # '_')[0]+'_'+filename.split('_')[1]+'_'+filename.split('_')[2]
-            insert_data_etf_ranking(
-                clean_data1,  'etf_ranking_volume')
+            insert_data_etf_ranking(data, s3_directory)
             send_slack_message(f"Data for {filename} has been uploaded to S3.")
 
-            insert_data_etf_ranking(
-                clean_data2,  'etf_ranking_assets')
-            send_slack_message(f"Data for {filename} has been uploaded to S3.")
+            # insert_data_etf_ranking(
+            #     clean_data1,  'etf_ranking_volume')
+            # send_slack_message(f"Data for {filename} has been uploaded to S3.")
 
-            insert_data_etf_ranking(
-                clean_data3,  'etf_ranking_holders')
-            send_slack_message(f"Data for {filename} has been uploaded to S3.")
+            # insert_data_etf_ranking(
+            #     clean_data2,  'etf_ranking_assets')
+            # send_slack_message(f"Data for {filename} has been uploaded to S3.")
 
-            insert_data_etf_ranking(data4, 'etf_ranking_performance')
-            send_slack_message(f"Data for {filename} has been uploaded to S3.")
+            # insert_data_etf_ranking(
+            #     clean_data3,  'etf_ranking_holders')
+            # send_slack_message(f"Data for {filename} has been uploaded to S3.")
+
+            # insert_data_etf_ranking(data4, 'etf_ranking_performance')
+            # send_slack_message(f"Data for {filename} has been uploaded to S3.")
+        send_slack_message("All ETF ranking data has been uploaded to S3.")
     except Exception as e:
         logger.error(f"Error: {str(e)}")
         send_slack_message(f"Error: {str(e)}")
     finally:
+        send_slack_message("driver.quit()")
         driver.quit()
 
 
@@ -399,7 +404,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='etf_ranking_crawler_v9',
+    dag_id='etf_ranking_crawler_v12',
     schedule="40 6 * * *",  # Run the DAG at 6:40 AM UTC every day
     start_date=datetime.datetime(2024, 5, 1),
     default_args=default_args,
