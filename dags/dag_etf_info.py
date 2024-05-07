@@ -63,10 +63,10 @@ def send_slack_message(message):
 
     # Check for successful response
     if response.status_code == 200:
-        print("Message sent to Slack successfully!")
+        logger.info("Message sent to Slack successfully!")
     else:
-        print(f"""Failed to send message. Status code: {
-              response.status_code}, response text: {response.text}""")
+        logger.error(f"""Failed to send message. Status code: {
+            response.status_code}, response text: {response.text}""")
 
 
 def etf_info_crawler():
@@ -83,7 +83,6 @@ def etf_info_crawler():
         "10_year"]
 
     ### Start the web driver ###
-    # driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     options = webdriver.ChromeOptions()
     options.add_argument('--ignore-ssl-errors=yes')
     options.add_argument('--ignore-certificate-errors')
@@ -136,7 +135,7 @@ def etf_info_crawler():
 
             region_tabs[idx].click()
             # driver.execute_script(
-            #     f"document.querySelectorAll('#etf-overview-region .tab-wrapper > button')[{idx}].click();")
+            #     f"""document.querySelectorAll('#etf-overview-region .tab-wrapper > button')[{idx}].click();""")
             time.sleep(1)
             # wait for the ETF list of specific region to be visible
             WebDriverWait(driver, 180).until(EC.visibility_of_element_located(
@@ -145,11 +144,8 @@ def etf_info_crawler():
             # get all the ETFs in the list
             etf_elements = driver.find_elements(
                 By.CSS_SELECTOR, "#etf-overview-region div.table-body-wrapper > ul > li a")
-            # etf_limit = 2
+
             for etf in etf_elements:
-                # if etf_limit == 0:
-                # break
-                # etf_limit -= 1
                 each_etf = {}
                 driver.switch_to.window(original_window)
                 etf.click()
@@ -232,7 +228,6 @@ def etf_info_crawler():
 
                 # get the performance data
                 driver.get(performance_url)
-                # WebDriverWait(driver, 10).until(lambda d: "績效表現" in d.title)
 
                 # get the data updated date
                 try:
@@ -267,7 +262,8 @@ def etf_info_crawler():
                             each_performance_data[performance_map[idx]] = "NULL"
 
                     etf_performance.append(each_performance_data)
-                    # logger.info(f"Performance data for {symbol} has been added")
+                    logger.info(f"""Performance data for {
+                                symbol} has been added""")
                 else:
                     etf_performance.append({
                         "symbol": symbol,
@@ -289,7 +285,6 @@ def etf_info_crawler():
 
                 ### get industry and stock composition data ###
                 driver.get(holding_url)
-                # WebDriverWait(driver, 10).until(lambda d: "持股分析" in d.title)
 
                 each_industry_data = {"symbol": symbol}
 
@@ -334,7 +329,8 @@ def etf_info_crawler():
                                 "data_updated_date": updated_date_industry,
                                 "crawler_date": today
                             })
-                            # logger.info(f"Industry data for {symbol} has been added")
+                            logger.info(f"""Industry data for {
+                                        symbol} has been added""")
                 else:
                     etf_industry.append({
                         "symbol": symbol,
@@ -343,7 +339,7 @@ def etf_info_crawler():
                         "data_updated_date": updated_date_industry,
                         "crawler_date": today
                     })
-                    # logger.info(f"Industry data for {symbol} has been added")
+                    logger.info(f"Industry data for {symbol} has been added")
 
                 # etf top 10 stock composition data
                 each_stock_composition_data = {"symbol": symbol}
@@ -413,8 +409,8 @@ def etf_info_crawler():
 
                 driver.close()
     except Exception as e:
-        print(f"Error: {str(e)}")
         logger.error(f"Error: {str(e)}")
+        send_slack_message(f"Error: {str(e)}")
     finally:
         driver.quit()
 
@@ -465,7 +461,6 @@ def upload_file_to_s3(filepath, bucket_name, s3_directory):
         logger.info(f"Successfully uploaded")
         send_slack_message(f"Successfully uploaded {filepath}")
     except Exception as e:
-        print(f"Failed to upload {filepath}. Error: {str(e)}")
         logger.error(f"Failed to upload {filepath}. Error: {str(e)}")
         send_slack_message(f"Failed to upload {filepath}. Error: {str(e)}")
 
@@ -602,7 +597,7 @@ def insert_etf_performance_data(data):
                 "SELECT COUNT(*) as cnt FROM temp_etf_performance;")
             result = cursor.fetchone()
             if result['cnt'] == 0:
-                # logger.error("No data in temp_etf_performance table.")
+                logger.error("No data in temp_etf_performance table.")
                 return
 
             # upsert data from temporary table to main table
@@ -681,7 +676,7 @@ def insert_industry_data(data):
                 "SELECT COUNT(*) as cnt FROM temp_top_industry;")
             result = cursor.fetchone()
             if result['cnt'] == 0:
-                # logger.error("No data in temp_top_industry table.")
+                logger.error("No data in temp_top_industry table.")
                 return
 
             # upsert data from temporary table to main table
@@ -802,8 +797,8 @@ default_args = {
 }
 
 with DAG(
-    dag_id='ETF_info_crawler_dag_v6',
-    schedule="30 7 * * *",  # Run the DAG daily at 07:30 UTC
+    dag_id='ETF_info_crawler_dag_v10',
+    schedule="0 7 * * *",  # Run the DAG daily at 07:00 UTC
     start_date=datetime.datetime(2024, 5, 1),
     default_args=default_args,
     catchup=False,

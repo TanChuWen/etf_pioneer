@@ -62,10 +62,10 @@ def send_slack_message(message):
 
     # Check for successful response
     if response.status_code == 200:
-        print("Message sent to Slack successfully!")
+        logger.info("Message sent to Slack successfully!")
     else:
-        print(f"""Failed to send message. Status code: {
-              response.status_code}, response text: {response.text}""")
+        logger.error(f"""Failed to send message. Status code: {
+            response.status_code}, response text: {response.text}""")
 
 
 def etf_ranking_crawler():
@@ -93,7 +93,7 @@ def etf_ranking_crawler():
             By.CSS_SELECTOR, 'section#ranking.tabs > ul.nav > li')
         first_tab.click()
 
-        WebDriverWait(driver, 60).until(EC.visibility_of_element_located(
+        WebDriverWait(driver, 180).until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, 'div.pane.active table tr')))
         data1 = scrape_table_data(driver)
         clean_data1 = []
@@ -190,7 +190,8 @@ def etf_ranking_crawler():
             insert_data_etf_ranking(data4, 'etf_ranking_performance')
             send_slack_message(f"Data for {filename} has been uploaded to S3.")
     except Exception as e:
-        print(e)
+        logger.error(f"Error: {str(e)}")
+        send_slack_message(f"Error: {str(e)}")
     finally:
         driver.quit()
 
@@ -213,8 +214,13 @@ def upload_file_to_s3(filepath, bucket_name, s3_directory):
     s3_key = os.path.join(s3_directory, os.path.basename(filepath))
     try:
         s3_client.upload_file(filepath, bucket_name, s3_key)
+        logger.info(f"""Successfully uploaded {
+                    filepath} to {bucket_name}/{s3_key}""")
+        send_slack_message(f"""Successfully uploaded {
+                           filepath} to {bucket_name}/{s3_key}""")
     except Exception as e:
-        print(f"Failed to upload {filepath}. Error: {str(e)}")
+        logger.error(f"Failed to upload {filepath}. Error: {str(e)}")
+        send_slack_message(f"Failed to upload {filepath}. Error: {str(e)}")
 
 
 def ensure_local_directory_exists(directory):
@@ -271,13 +277,14 @@ def get_db_connection():
             database=db_name,
             cursorclass=pymysql.cursors.DictCursor
         )
-        send_slack_message("Connected to the database.")
+
         logger.info("Connected to the database.")
+        send_slack_message("Connected to the database.")
         return connection
     except pymysql.MySQLError as e:
-        send_slack_message(f"Error connecting to the database: {e}")
+
         logger.error(f"Error connecting to the database: {e}")
-        return None
+        send_slack_message(f"Error connecting to the database: {e}")
 
 
 # Insert data into ETF ranking tables
@@ -369,6 +376,7 @@ def insert_data_etf_ranking(data, table_name):
             """
 
             cursor.executemany(sql_upsert, values_to_insert)
+            logger.info(f"Data for {table_name} has been inserted.")
             send_slack_message(f"Data for {table_name} has been inserted.")
 
         connection.commit()
@@ -391,8 +399,8 @@ default_args = {
 }
 
 with DAG(
-    dag_id='etf_ranking_crawler_v6',
-    schedule="0 7 * * *",  # Run the DAG at 6:00 AM every day
+    dag_id='etf_ranking_crawler_v9',
+    schedule="40 6 * * *",  # Run the DAG at 6:40 AM UTC every day
     start_date=datetime.datetime(2024, 5, 1),
     default_args=default_args,
     catchup=False,

@@ -33,18 +33,18 @@
     <div id="chartContainer" style="position: relative;">
     
     <div class="chart-flex-container">
-        <div id="performance-table" style="max-height: 520px; overflow-y: auto;"></div>
-        <div id="performance-data-updated-time" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+        <div id="performance-table1" style="max-height: 520px; overflow-y: auto;"></div>
+        <div id="performance-data-updated-time1" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
     </div>
     
     <div class="chart-flex-container">
-        <div id="industry-chart" style="max-height: 500px; overflow-y: auto;"></div>
-        <div id="industry-data-updated-time" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+        <div id="industry-chart1" style="max-height: 500px; overflow-y: auto;"></div>
+        <div id="industry-data-updated-time1" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
     </div> 
 
      <div class="chart-flex-container">
-        <div id="stock-chart" style="max-height: 500px; overflow-y: auto;"></div>
-        <div id="stock-data-updated-time" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
+        <div id="stock-chart1" style="max-height: 500px; overflow-y: auto;"></div>
+        <div id="stock-data-updated-time1" style="min-width: max-content; margin-left: auto; padding-top: 20px;"></div>
     </div> 
     </div>
     </div>
@@ -86,9 +86,9 @@
         document.querySelector('#etf2-container').style.display = 'none';
         if(etfData.etf1){
             console.log(etfData.etf1);
-            renderPerformanceTable(etfPerformanceData["etf1"], 'performance-table', 'performance-data-updated-time');
-            renderTopIndustryChart(etfIndustryData["etf1"], 'industry-chart','industry-data-updated-time');
-            renderTop10StockChart(etfStockData["etf1"], 'stock-chart','stock-data-updated-time');
+            renderPerformanceTable(etfPerformanceData["etf1"], 'performance-table1', 'performance-data-updated-time1');
+            renderTopIndustryChart(etfIndustryData["etf1"], 'industry-chart1','industry-data-updated-time1');
+            renderTop10StockChart(etfStockData["etf1"], 'stock-chart1','stock-data-updated-time1');
             document.querySelector('#symbolInput').value = etfData.etf1.symbol;
         }
         

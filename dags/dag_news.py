@@ -65,12 +65,9 @@ def send_slack_message(message):
     # Check for successful response
     if response.status_code == 200:
         logger.info("Message sent to Slack successfully!")
-        # print("Message sent to Slack successfully!")
     else:
         logger.error(f"""Failed to send message. Status code: {
             response.status_code}, response text: {response.text}""")
-        # print(f"""Failed to send message. Status code: {
-        #       response.status_code}, response text: {response.text}""")
 
 
 def news_crawler():
@@ -126,7 +123,6 @@ def news_crawler():
             news_data.extend(fetch_news_titles(
                 driver, site['url'], site['title_selector'], site['date_selector'], site['link_selector']))
     except Exception as e:
-        # print(f"An error occurred: {str(e)}")
         logger.error(f"An error occurred: {str(e)}")
     finally:
         driver.quit()
@@ -165,13 +161,12 @@ def upload_file_to_s3(filepath, bucket_name, s3_directory):
     """Uploads a file to an S3 bucket."""
     s3_client = boto3.client('s3')
     s3_key = os.path.join(s3_directory, os.path.basename(filepath))
-    # logger.info(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
+    logger.info(f"Trying to upload {filepath} to {bucket_name} at {s3_key}")
     try:
         s3_client.upload_file(filepath, bucket_name, s3_key)
         logger.info(f"Successfully uploaded")
     except Exception as e:
         logger.error(f"Failed to upload {filepath}. Error: {str(e)}")
-        # print(f"Failed to upload {filepath}. Error: {str(e)}")
 
 
 def ensure_local_directory_exists(directory):
@@ -192,8 +187,6 @@ def standardize_date(date_str):
             elif fmt in ("%m-%d", "%m/%d"):
                 date_obj = datetime.datetime.strptime(date_str, fmt)
                 current_year = datetime.datetime.now().year
-                # formatted_date_str = f"""{
-                #     current_year}/{date_obj.month:02d}/{date_obj.day:02d}"""
                 formatted_date_str = (
                     f"{current_year}/"
                     f"{date_obj.month:02d}/"
@@ -243,11 +236,9 @@ def fetch_news_titles(driver, url, title_selector, date_selector, link_selector)
                                news_item['news_link']}""")
 
     except TimeoutException:
-        # print(f"Timeout while waiting for page to load: {url}")
         driver.get(url)
         logger.error(f"Timeout while waiting for page to load: {url}")
     except Exception as e:
-        # print(f"Error fetching news from {url}: {str(e)}")
         logger.error(f"Error fetching news from {url}: {str(e)}")
 
     send_slack_message(f"Finished fetching news from {url}")
@@ -274,7 +265,6 @@ def get_db_connection():
         return connection
     except pymysql.MySQLError as e:
         logger.error(f"Error connecting to database: {e}")
-        # print(f"Error connecting to database: {e}")
 
 # News data table
 
@@ -282,14 +272,12 @@ def get_db_connection():
 def insert_news_data(news_item):
     connection = get_db_connection()
     if connection is None:
-        # print("Could not connect to the database.")
         logger.error("Could not connect to the database.")
         return
     try:
         with connection.cursor() as cursor:
             if news_item['news_title'] is None or news_item['news_date'] is None or news_item['news_link'] is None:
                 logger.error("Skipping invalid record.")
-                # print("Skipping invalid record.")
                 return
             else:
                 # Prepare the INSERT statement without the existence check.
@@ -298,7 +286,6 @@ def insert_news_data(news_item):
                 VALUES (%s, STR_TO_DATE(%s, '%%Y/%%m/%%d'), %s, STR_TO_DATE(%s, '%%Y/%%m/%%d'), %s)
                 """
                 logger.info(f"Inserting: {news_item['news_title']}")
-                # print(f"Inserting: {news_item['news_title']}")
                 send_slack_message(f"Inserting: {news_item['news_title']}")
                 try:
                     # Attempt to insert the new record.
@@ -313,16 +300,14 @@ def insert_news_data(news_item):
                         )
                     )
                     connection.commit()
-                    # print(f"Inserted: {news_item['news_title']}")
                     logger.info(f"Inserted: {news_item['news_title']}")
                 except pymysql.err.IntegrityError as e:
-                    # print(f"""Skipped duplicate: {
-                    #     news_item['news_title']}, Error: {e}""")
                     # This block will be executed if a duplicate entry is attempted.
                     logger.info(f"""Skipped duplicate: {
                                 news_item['news_title']}, Error: {e}""")
+                    send_slack_message(f"""Skipped duplicate: {
+                        news_item['news_title']}, Error: {e}""")
     except pymysql.MySQLError as e:
-        # print(f"Unexpected error: {e}")
         logger.error(f"Unexpected error: {e}")
         # Rollback the transaction in case of any other error
         connection.rollback()
@@ -342,8 +327,8 @@ default_args = {
 }
 
 with DAG(
-    dag_id='news_crawler_dag_v15',
-    schedule="0 6 * * *",  # Run the DAG at 6:00 AM every day
+    dag_id='news_crawler_dag_v17',
+    schedule="0 3 * * *",  # Run the DAG at 3:00 AM UTC every day
     start_date=datetime.datetime(2024, 5, 1),
     default_args=default_args,
     catchup=False,
