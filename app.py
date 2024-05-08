@@ -428,7 +428,6 @@ def search_etf_by_stock():
                 error_message = "本檔股票不屬於任何一檔 ETF 的前十大成分股，請重新查詢"
                 return render_template('error-top10.html', error=error_message)
             return render_template('lookup_from_stock.html', stock_data=results)
-            # return results
     except Exception as e:
         logger.error(str(e))
         return render_template('error.html', error=str(e))

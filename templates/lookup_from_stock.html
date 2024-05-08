@@ -24,8 +24,9 @@
     function renderPlotlyTable(sortedStockData) {
         const layout = {
             title: sortedStockData[0].component_stock_name + '（代號：' + sortedStockData[0].stock_code + '）股票對應 ETF 佔比表',
+            titlefont: { size: 28},
             autosize: true,
-            height: 1200
+            height: 1700
         };
 
         const headerValues = [['ETF 代號'], ['ETF 名稱'], ['佔 ETF 比例'], ['來源資料更新時間']];
@@ -44,14 +45,15 @@
                 align: 'center',
                 line: {width: 2, color: 'black'},
                 fill: {color: 'skyblue'},
-                font: {family: 'Arial', size: 14, color: 'white'}
+                font: {family: 'Arial', size: 24, color: 'white'},
+                height: 40
             },
             cells: {
                 values: cellValues,
                 align: 'center',
                 line: {color: 'black', width: 2},
-                font: {family: 'Arial', size: 14, color: ['black']},
-                height: 30
+                font: {family: 'Arial', size: 24, color: ['black']},
+                height: 40
             }
         }];
 
@@ -63,6 +65,7 @@
         if (stockData) {
             const sortedStockData = sortStockDataByRatio(stockData);
             renderPlotlyTable(sortedStockData);
+            document.querySelector('#stockInput').value = stockData[0].stock_code;
         }
     });
 </script>

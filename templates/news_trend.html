@@ -13,7 +13,7 @@
 {% include 'nav_bar.html' %}
 <div id="news-container">
     <div id="wordcloud-container">
-        <h2>ETF 新聞趨勢文字雲({{start_date}} - {{end_date}})</h2>
+        <h1>ETF 新聞關鍵字文字雲({{start_date}} - {{end_date}})</h1>
 
         {% if image_data %}
             <img src="{{image_data}}" alt="Word Cloud" style="max-height: 500px; overflow-y: auto;">
@@ -24,7 +24,7 @@
         {% endif %}
     </div>
     <div id="news-links">
-        <h2>新聞列表({{start_date}} - {{end_date}})</h2>
+        <h1>新聞列表({{start_date}} - {{end_date}})</h1>
         <ul>
             {% for news in newsList %}
             <li>

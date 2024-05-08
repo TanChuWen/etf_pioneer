@@ -15,7 +15,7 @@ fetch('/etf-pioneer/api/ranking/volume')
       y: volumeData.map(item => item.today_deal_value/1000000),
       type: 'bar',
       marker: {
-        color: 'skyblue'
+        color: '#ACD6FF'
       },
       hovertext: hoverTexts,
       hoverinfo: 'text',
@@ -31,8 +31,8 @@ fetch('/etf-pioneer/api/ranking/volume')
         title: '今日成交值（新臺幣百萬元）'
       },
       hoverlabel:{
-        bgcolor: 'lightgrey',
-        bordercolor: 'blue'
+        bgcolor: '#E0E0E0',
+        bordercolor: '#0080FF'
       }
     };
     let updateTime = volumeData.length > 0 ? volumeData[0].data_updated_date : '未知';
@@ -55,7 +55,7 @@ fetch('/etf-pioneer/api/ranking/assets')
       y: assetsData.map(item => item.today_total_assets/1000000),
       type: 'bar',
       marker: {
-        color: 'skyblue'
+        color: '#66B3FF'
       },
       hovertext: hoverTexts,
       hoverinfo: 'text',
@@ -71,8 +71,8 @@ fetch('/etf-pioneer/api/ranking/assets')
         title: '今日資產規模（新臺幣百萬元）'
       },
        hoverlabel:{
-        bgcolor: 'lightgrey',
-        bordercolor: 'blue'
+        bgcolor: '#E0E0E0',
+        bordercolor: '#0080FF'
       }
     };
     let updateTime = assetsData.length > 0 ? assetsData[0].data_updated_date : '未知';
@@ -95,7 +95,7 @@ fetch('/etf-pioneer/api/ranking/holders')
       y: holdersData.map(item => item.holders/1000),
       type: 'bar',
       marker: {
-        color: 'skyblue'
+        color: '#46A3FF'
       },
       hovertext: hoverTexts,
       hoverinfo: 'text',
@@ -111,8 +111,8 @@ fetch('/etf-pioneer/api/ranking/holders')
         title: '受益人數（千人）'
       },
        hoverlabel:{
-        bgcolor: 'lightgrey',
-        bordercolor: 'blue'
+        bgcolor: '#E0E0E0',
+        bordercolor: '#0080FF'
       }
     };
     let updatedTime = holdersData.length > 0 ? holdersData[0].data_updated_date : '未知';
@@ -135,7 +135,7 @@ fetch('/etf-pioneer/api/ranking/performance')
       y: performanceData.map(item => item.YTD_performance_rate),
       type: 'bar',
       marker: {
-        color: 'skyblue'
+        color: '#0072E3		'
       },
       hovertext: hoverTexts,
       hoverinfo: 'text',
@@ -151,8 +151,8 @@ fetch('/etf-pioneer/api/ranking/performance')
         title: '年初至今績效排名（%）'
       },
        hoverlabel:{
-        bgcolor: 'lightgrey',
-        bordercolor: 'blue'
+        bgcolor: '#E0E0E0',
+        bordercolor: '#0080FF'
       }
     };
     let updatedTime = performanceData.length > 0 ? performanceData[0].data_updated_date : '未知';
@@ -209,11 +209,14 @@ document.addEventListener('DOMContentLoaded', function() {
 function renderPerformanceTable(data, tableId,updateTimeId) {
         
         const numRows = data.length;
-        const rowHeight =30;
+        const rowHeight =40;
         const graphHeight = numRows * rowHeight;
 
         let layout = {
             title: 'ETF 績效表',
+            titlefont: { 
+                size: 28
+            },
             responsive: true,
             height: graphHeight
         };
@@ -224,9 +227,9 @@ function renderPerformanceTable(data, tableId,updateTimeId) {
                 align: "center",
                 line: {width: 2, color: 'black'},
                 fill: {color: "skyblue"},
-                font: {family: "Arial", size: 20, color: "white"},
+                font: {family: "Arial", size: 24, color: "white"},
                 width: [1, 1],
-                height: 30
+                height: 40
 
 
             },
@@ -237,9 +240,9 @@ function renderPerformanceTable(data, tableId,updateTimeId) {
                 ],
                 align: "center",
                 line: {color: "black", width: 2},
-                font: {family: "Arial", size: 18, color: ["black"]},
+                font: {family: "Arial", size: 24, color: ["black"]},
                 width: [1, 1],
-                height: 30
+                height: 40
             }
         };
         let updateTime = '';
@@ -252,6 +255,17 @@ function renderPerformanceTable(data, tableId,updateTimeId) {
         document.getElementById(updateTimeId).textContent = `來源資料更新時間：${updateTime}`;
 }
 
+// customized the color of the bar chart
+var customizedColors =[
+  '#0066CC','#0072E3', '#0080FF', '#2894FF', '#46A3FF',
+  '#66B3FF','#4A4AFF','#6A6AFF','#7373B9','#8080C0',
+  '#84C1FF','#9393FF', '#97CBFF','#AAAAFF','#B9B9FF',
+  '#6FB7B7','#5CADAD', '#81C0C0','#95CACA','#A3D1D1',
+  '#9999CC', '#A6A6D2', '#B8B8DC',	'#C7C7E2','#B9B973',
+  '#C2C287','#CDCD9A',  '#BDBDBD'
+];
+
+
 function renderTopIndustryChart(data, chartId,updateTimeId) {
         let hoverTexts = data.map(item => {
             return `ETF 代號：${item.symbol}<br>` +
@@ -263,8 +277,19 @@ function renderTopIndustryChart(data, chartId,updateTimeId) {
         }));
         let layout = {
             title: 'ETF 產業分布',
-            responsive: true,
-            autosize: true
+            titlefont: {size: 28},
+            height: 600,  
+            width: 800, 
+            legend: {
+                x: 1.2, 
+                y: 0.5,  
+                orientation: "v" 
+            },
+            margin: {l: 30, r: 300, t: 100, b: 30},
+            domain: {
+              x: [0, 0.75],  
+              y: [0, 1]  
+            }
         };
         let industryPieChart = {
             values: industryData.map(item => item.value),
@@ -273,7 +298,10 @@ function renderTopIndustryChart(data, chartId,updateTimeId) {
             hovertext: hoverTexts,
             hoverinfo: 'text',
             hole: 0.6, // donut chart
-            name: '產業分布'
+            name: '產業分布',
+            marker: {
+                colors: customizedColors
+            }
         };
         let updateTime = data.length > 0 ? data[0].data_updated_date : '未知';
         Plotly.newPlot(chartId, [industryPieChart], layout);
@@ -292,7 +320,19 @@ function renderTop10StockChart(data,chartId, updateTimeId) {
         }));
         let layout = {
             title: 'ETF 前十大成分股',
-            responsive: true
+            titlefont: {size: 28},
+            height: 600,  
+            width: 800, 
+            legend: {
+                x: 1.2, 
+                y: 0.5,  
+                orientation: "v" 
+            },
+            margin: {l: 30, r: 300, t: 100, b: 30},
+            domain: {
+              x: [0, 0.75],  
+              y: [0, 1]  
+            }
         };
         let topStockPieChart = {
             values: stockData.map(item => item.value),
@@ -301,7 +341,10 @@ function renderTop10StockChart(data,chartId, updateTimeId) {
             hovertext: hoverTexts,
             hoverinfo: 'text',
             hole: 0.6, // donut chart
-            name: '前十大成分股'
+            name: '前十大成分股',
+            marker: {
+                colors: customizedColors
+            }
         };
         let updateTime = data.length > 0 ? data[0].data_updated_date : '未知';
         Plotly.newPlot(chartId, [topStockPieChart], layout);
@@ -410,22 +453,22 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function setupDropdownStock(inputId, dropdownId, optionsList) {
-    var input = document.getElementById(inputId);
-    var dropdown = document.createElement("div");
+    let input = document.getElementById(inputId);
+    let dropdown = document.createElement("div");
     dropdown.id = dropdownId;
     dropdown.className = "dropdown-content"; // for css styling
     input.parentNode.insertBefore(dropdown, input.nextSibling);
 
     input.addEventListener("input", function () {
-        var searchValue = this.value.toLowerCase();
+        let searchValue = this.value.toLowerCase();
         dropdown.innerHTML = ""; // clear the dropdown
         if (searchValue) {
             optionsList.forEach(function (option) {
                 if (option.toLowerCase().includes(searchValue)) {
-                    var div = document.createElement("div");
+                    let div = document.createElement("div");
                     div.textContent = option;
                     div.onclick = function () {
-                        var match = option.match(/(\d+)/); // get the stock code
+                        let match = option.match(/(\d+)/); // get the stock code
                         if (match && match[1]) {
                             input.value = match[1];
                         }
