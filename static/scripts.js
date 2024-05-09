@@ -257,12 +257,24 @@ function renderPerformanceTable(data, tableId,updateTimeId) {
 
 // customized the color of the bar chart
 var customizedColors =[
-  '#0066CC','#0072E3', '#0080FF', '#2894FF', '#46A3FF',
-  '#66B3FF','#4A4AFF','#6A6AFF','#7373B9','#8080C0',
-  '#84C1FF','#9393FF', '#97CBFF','#AAAAFF','#B9B9FF',
-  '#6FB7B7','#5CADAD', '#81C0C0','#95CACA','#A3D1D1',
-  '#9999CC', '#A6A6D2', '#B8B8DC',	'#C7C7E2','#B9B973',
-  '#C2C287','#CDCD9A',  '#BDBDBD'
+    '#90DBF4', 
+    '#FBF8CC', 
+    '#FDE4CF', 
+    '#FFCFD2', 
+    '#F1C0E8', 
+    '#CFBAF0', 
+    '#8EECF5', 
+    '#98F5E1',
+    '#B9FBC0',
+    '#FB6107',
+    '#0D3B66', // navy
+    '#70D6FF',
+    '#F3DE2C', 
+    '#7CB518', 
+    '#FBB02D', 
+    '#5C8001', 
+    '#70D6FF', 
+    '#FF70A6'
 ];
 
 
