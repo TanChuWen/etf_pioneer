@@ -548,7 +548,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-  function setDefaultDate(startDateInput, endDateInput) {
+function setDefaultDate(startDateInput, endDateInput) {
     const today = new Date().toISOString().slice(0, 10);
     if (!startDateInput.value) {
         startDateInput.value = today;
@@ -556,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!endDateInput.value) {
         endDateInput.value = today;
     }
-  }
+}
 
 
 // footer display
