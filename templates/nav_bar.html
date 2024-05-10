@@ -33,7 +33,7 @@
         <div class="search-row">
             <div class = "search-item">
                 <p>查看 ETF 新聞</p>
-                <form action="/etf-pioneer/api/news-wordcloud" method="get">
+                <form id="newsSearchForm" action="/etf-pioneer/api/news-wordcloud" method="get">
                     <label for="startDate">開始日期：</label>
                     <input type="date" id="startDate" name="start_date" min="2024-05-02" max="{{ max_date }}">
                     

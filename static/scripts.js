@@ -212,11 +212,18 @@ function renderPerformanceTable(data, tableId,updateTimeId) {
         const rowHeight =40;
         const graphHeight = numRows * rowHeight;
 
+        // handle null value
+        function handleNullValue(value){
+            if (value === 'NULL') {
+                return '暫無資料';
+            } else {
+                return value;
+            }
+        }
+
         let layout = {
-            title: 'ETF 績效表',
-            titlefont: { 
-                size: 28
-            },
+            // title: 'ETF 績效表',
+            // titlefont: { size: 28},
             responsive: true,
             height: graphHeight
         };
@@ -236,7 +243,7 @@ function renderPerformanceTable(data, tableId,updateTimeId) {
             cells: {
                 values: [
                     ['今年至今', '1 週', '1 個月', '3 個月', '6 個月', '1 年（年化報酬率）', '2 年（年化報酬率）', '3 年（年化報酬率）', '5 年（年化報酬率）', '10 年（年化報酬率）'],
-                    [data.YTD, data['1_week'], data['1_month'], data['3_month'], data['6_month'], data['1_year'], data['2_year'], data['3_year'], data['5_year'], data['10_year']]
+                    [data.YTD, data['1_week'], data['1_month'], data['3_month'], data['6_month'], data['1_year'], data['2_year'], data['3_year'], data['5_year'], data['10_year']].map(handleNullValue)
                 ],
                 align: "center",
                 line: {color: "black", width: 2},
@@ -244,29 +251,44 @@ function renderPerformanceTable(data, tableId,updateTimeId) {
                 width: [1, 1],
                 height: 40
             }
-        };
-        let updateTime = '';
-        if (data && data.data_updated_date == 'NULL') {
-            updateTime = '未知';
-        } else if (data) {
-            updateTime = data.data_updated_date;
-        }   
+        };   
+        let updateTime = handleNullValue(data.data_updated_date); //if it is NULL, then shows「暫無資料」
         Plotly.newPlot(tableId, [tableData], layout);
         document.getElementById(updateTimeId).textContent = `來源資料更新時間：${updateTime}`;
 }
 
 // customized the color of the bar chart
 var customizedColors =[
-  '#0066CC','#0072E3', '#0080FF', '#2894FF', '#46A3FF',
-  '#66B3FF','#4A4AFF','#6A6AFF','#7373B9','#8080C0',
-  '#84C1FF','#9393FF', '#97CBFF','#AAAAFF','#B9B9FF',
-  '#6FB7B7','#5CADAD', '#81C0C0','#95CACA','#A3D1D1',
-  '#9999CC', '#A6A6D2', '#B8B8DC',	'#C7C7E2','#B9B973',
-  '#C2C287','#CDCD9A',  '#BDBDBD'
+    '#90DBF4', 
+    '#FBF8CC', 
+    '#FDE4CF', 
+    '#FFCFD2', 
+    '#F1C0E8', 
+    '#CFBAF0', 
+    '#8EECF5', 
+    '#98F5E1',
+    '#B9FBC0',
+    '#FB6107',
+    '#0D3B66', // navy
+    '#70D6FF',
+    '#F3DE2C', 
+    '#7CB518', 
+    '#FBB02D', 
+    '#5C8001', 
+    '#70D6FF', 
+    '#FF70A6'
 ];
 
 
 function renderTopIndustryChart(data, chartId,updateTimeId) {
+        // handle null value
+        function handleNullValue(value){
+            if (value === 'NULL'||!value) {
+                return '暫無資料';
+            } else {
+                return value;
+            }
+        }
         let hoverTexts = data.map(item => {
             return `ETF 代號：${item.symbol}<br>` +
              `產業名稱：${item.industry}<br>`;
@@ -276,10 +298,10 @@ function renderTopIndustryChart(data, chartId,updateTimeId) {
             value: parseFloat(item.ratio)
         }));
         let layout = {
-            title: 'ETF 產業分布',
-            titlefont: {size: 28},
-            height: 600,  
-            width: 800, 
+            // title: 'ETF 產業分布',
+            // titlefont: {size: 28},
+            width: 650, 
+            height: 550,  
             legend: {
                 x: 1.2, 
                 y: 0.5,  
@@ -303,12 +325,20 @@ function renderTopIndustryChart(data, chartId,updateTimeId) {
                 colors: customizedColors
             }
         };
-        let updateTime = data.length > 0 ? data[0].data_updated_date : '未知';
+        let updateTime = handleNullValue(data.length > 0 ? data[0].data_updated_date : 'NULL');
         Plotly.newPlot(chartId, [industryPieChart], layout);
         document.getElementById(updateTimeId).textContent = `來源資料更新時間：${updateTime}`;
      }
 
 function renderTop10StockChart(data,chartId, updateTimeId) {
+        // handle null value
+        function handleNullValue(value){
+            if (value === 'NULL'||!value) {
+                return '暫無資料';
+            } else {
+                return value;
+            }
+        }    
         let hoverTexts = data.map(item => {
             return `前十大成分股排行：${item.ranking}<br>` +
              `股票名稱：${item.stock_name}<br>`+
@@ -319,10 +349,10 @@ function renderTop10StockChart(data,chartId, updateTimeId) {
             value: parseFloat(item.ratio)
         }));
         let layout = {
-            title: 'ETF 前十大成分股',
-            titlefont: {size: 28},
-            height: 600,  
-            width: 800, 
+            // title: 'ETF 前十大成分股',
+            // titlefont: {size: 28},
+            width: 650, 
+            height: 550,
             legend: {
                 x: 1.2, 
                 y: 0.5,  
@@ -346,7 +376,7 @@ function renderTop10StockChart(data,chartId, updateTimeId) {
                 colors: customizedColors
             }
         };
-        let updateTime = data.length > 0 ? data[0].data_updated_date : '未知';
+        let updateTime = handleNullValue(data.length > 0 ? data[0].data_updated_date : 'NULL');
         Plotly.newPlot(chartId, [topStockPieChart], layout);
         document.getElementById(updateTimeId).textContent = `來源資料更新時間：${updateTime}`;
     }
@@ -386,8 +416,8 @@ let optionsList = ["元大台灣50【0050】","元大中型100【0051】", "富�
 "FT臺灣Smart【00905】","永豐優息存股【00907】","富邦入息REITs+【00908】","國泰數位支付服務【00909】","第一金太空衛星【00910】","兆豐洲際半導體【00911】","中信臺灣智慧50【00912】","兆豐台灣晶圓製造【00913】",
 "凱基優選高股息30【00915】","國泰全球品牌50【00916】","中信特選金融【00917】","大華優利高填息30【00918】","群益台灣精選高息【00919】","富邦ESG綠色電力【00920】","兆豐龍頭等權重【00921】","國泰台灣領袖50【00922】",
 "群益台ESG低碳50【00923】","復華S&P500成長【00924】","新光標普電動車【00925】","凱基全球菁英55【00926】","群益半導體收益【00927】","中信上櫃ESG30【00928】","復華台灣科技優息【00929】","永豐ESG低碳高息【00930】",
-"統一美債20年【00931B】","兆豐永續高息等權【00932】","國泰10Y+金融債【00933B】","中信成長高股息【00934】","野村臺灣新科技50【00935】","台新永續高息中小【00936】","統一台灣高息動能【00939】",
-"元大台灣價值高息【00940】", "中信上游半導體【00941】"];
+"統一美債20年【00931B】","兆豐永續高息等權【00932】","國泰10Y+金融債【00933B】","中信成長高股息【00934】","野村臺灣新科技50【00935】","台新永續高息中小【00936】","群益ESG投等債20+【00937B】","統一台灣高息動能【00939】",
+"元大台灣價值高息【00940】", "中信上游半導體【00941】","台新美A公司債20+【00942B】","野村趨勢動能高息【00944】","凱基美國非投等債【00945B】","群益科技高息成長【00946】"];
 function setupDropdown(inputId, dropdownId) {
     let input = document.getElementById(inputId);
     let dropdown = document.createElement("div");
@@ -499,22 +529,34 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             const startDateInput = document.getElementById('startDate');
             const endDateInput = document.getElementById('endDate');
-            if (!startDateInput || !endDateInput) {
+            const today = new Date().toISOString().slice(0, 10);
+
+            if (!startDateInput.value || !endDateInput.value) {
                 alert('請選擇開始和結束日期。');
-                return
-            } 
-            else if (startDateInput.value > endDateInput.value) {
-            alert('開始日期不能晚於結束日期。');
-            return;
-            }
-            else {
-                setDefaultDate(startDateInput, endDateInput);
+                return;
+            } else if (startDateInput.value > endDateInput.value) {
+                alert('開始日期不能晚於結束日期。');
+                return;
+            } else if (startDateInput.value > today || endDateInput.value > today) {
+                alert('日期不能晚於今天。');
+                return;
+            } else {
                 window.location.href = `/etf-pioneer/api/news-wordcloud?start_date=${startDateInput.value}&end_date=${endDateInput.value}`;
             }
         });
     }
-  });
+});
 
+
+  function setDefaultDate(startDateInput, endDateInput) {
+    const today = new Date().toISOString().slice(0, 10);
+    if (!startDateInput.value) {
+        startDateInput.value = today;
+    }
+    if (!endDateInput.value) {
+        endDateInput.value = today;
+    }
+  }
 
 
 // footer display
