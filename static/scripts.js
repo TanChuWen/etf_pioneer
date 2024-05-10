@@ -213,10 +213,8 @@ function renderPerformanceTable(data, tableId,updateTimeId) {
         const graphHeight = numRows * rowHeight;
 
         let layout = {
-            title: 'ETF 績效表',
-            titlefont: { 
-                size: 28
-            },
+            // title: 'ETF 績效表',
+            // titlefont: { size: 28},
             responsive: true,
             height: graphHeight
         };
@@ -288,8 +286,8 @@ function renderTopIndustryChart(data, chartId,updateTimeId) {
             value: parseFloat(item.ratio)
         }));
         let layout = {
-            title: 'ETF 產業分布',
-            titlefont: {size: 28},
+            // title: 'ETF 產業分布',
+            // titlefont: {size: 28},
             width: 650, 
             height: 550,  
             legend: {
@@ -331,8 +329,8 @@ function renderTop10StockChart(data,chartId, updateTimeId) {
             value: parseFloat(item.ratio)
         }));
         let layout = {
-            title: 'ETF 前十大成分股',
-            titlefont: {size: 28},
+            // title: 'ETF 前十大成分股',
+            // titlefont: {size: 28},
             width: 650, 
             height: 550,
             legend: {
@@ -539,32 +537,6 @@ document.addEventListener('DOMContentLoaded', function() {
         endDateInput.value = today;
     }
   }
-
-
-
-// document.addEventListener('DOMContentLoaded', function() {
-//     const newsSearchForm = document.getElementById('newsSearchForm');
-    
-//     if (newsSearchForm) {
-//         newsSearchForm.addEventListener('submit', function(event) {
-//             event.preventDefault();
-//             const startDateInput = document.getElementById('startDate');
-//             const endDateInput = document.getElementById('endDate');
-//             if (!startDateInput || !endDateInput) {
-//                 alert('請選擇開始和結束日期。');
-//                 return
-//             } 
-//             else if (startDateInput.value > endDateInput.value) {
-//             alert('開始日期不能晚於結束日期。');
-//             return;
-//             }
-//             else {
-//                 setDefaultDate(startDateInput, endDateInput);
-//                 window.location.href = `/etf-pioneer/api/news-wordcloud?start_date=${startDateInput.value}&end_date=${endDateInput.value}`;
-//             }
-//         });
-//     }
-//   });
 
 
 // footer display

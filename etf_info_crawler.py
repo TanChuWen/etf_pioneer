@@ -190,7 +190,7 @@ for idx in range(region_tabs_len):
             data_updated_date = data_updated_date_before_formatting.split('|')[
                 1].strip(' 更新')
         else:
-            data_updated_date = "無資料"  # "NULL"
+            data_updated_date = "NULL"
 
         each_etf = {
             "etf_name": etf_name,
