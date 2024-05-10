@@ -25,10 +25,10 @@
     <div id="etf1-container" style="flex: 1; min-width: 50%;">
     <div id="resultsContainer">
         <h1>ETF 名稱: {{etfData.etf1.etf_name}} ｜ 代號: {{etfData.etf1.symbol}}</h1>
-            <h3>今天價格: {{etfData.etf1.price_today}}</h3>
+            <h3>今天價格: {{etfData.etf1.price_today if etfData.etf1.price_today != '0.00' else '暫無資料'}}</h3>
             <h3>與前一個交易日價格差距: {{etfData.etf1.up_down_change}}</h3>
             <h3>與前一個交易日價格差距百分比: {{etfData.etf1.up_down_percentage}}</h3>
-            <h3>來源資料更新時間: {{etfData.etf1.data_updated_date}}</h3>
+            <h3>來源資料更新時間: {{etfData.etf1.data_updated_date if etfData.etf1.data_updated_date != '-' else '暫無資料'}}</h3>
     </div>
     <div id="chartContainer" style="position: relative;">
     
@@ -56,10 +56,10 @@
     <div id="etf2-container" style="flex: 1; min-width: 50%; display: none;">
     <div id="resultsContainer2">
          <h1>ETF 名稱: {{etfData.etf2.etf_name}} ｜ 代號: {{etfData.etf2.symbol}}</h1>
-            <h3>今天價格: {{etfData.etf2.price_today}}</h3>
+            <h3>今天價格: {{etfData.etf2.price_today if etfData.etf2.price_today != 0.00 else '暫無資料'}}</h3>
             <h3>與前一個交易日價格差距: {{etfData.etf2.up_down_change}}</h3>
             <h3>與前一個交易日價格差距百分比: {{etfData.etf2.up_down_percentage}}</h3>
-            <h3>來源資料更新時間: {{etfData.etf2.data_updated_date}}</h3>
+            <h3>來源資料更新時間: {{etfData.etf2.data_updated_date if etfData.etf2.data_updated_date != '-' else '暫無資料'}}</h3>
     </div>
     <div id="chartContainer2" style="position: relative;">
 
