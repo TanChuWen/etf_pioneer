@@ -511,22 +511,60 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             const startDateInput = document.getElementById('startDate');
             const endDateInput = document.getElementById('endDate');
-            if (!startDateInput || !endDateInput) {
+            const today = new Date().toISOString().slice(0, 10);
+
+            if (!startDateInput.value || !endDateInput.value) {
                 alert('請選擇開始和結束日期。');
-                return
-            } 
-            else if (startDateInput.value > endDateInput.value) {
-            alert('開始日期不能晚於結束日期。');
-            return;
-            }
-            else {
-                setDefaultDate(startDateInput, endDateInput);
+                return;
+            } else if (startDateInput.value > endDateInput.value) {
+                alert('開始日期不能晚於結束日期。');
+                return;
+            } else if (startDateInput.value > today || endDateInput.value > today) {
+                alert('日期不能晚於今天。');
+                return;
+            } else {
                 window.location.href = `/etf-pioneer/api/news-wordcloud?start_date=${startDateInput.value}&end_date=${endDateInput.value}`;
             }
         });
     }
-  });
+});
 
+
+  function setDefaultDate(startDateInput, endDateInput) {
+    const today = new Date().toISOString().slice(0, 10);
+    if (!startDateInput.value) {
+        startDateInput.value = today;
+    }
+    if (!endDateInput.value) {
+        endDateInput.value = today;
+    }
+  }
+
+
+
+// document.addEventListener('DOMContentLoaded', function() {
+//     const newsSearchForm = document.getElementById('newsSearchForm');
+    
+//     if (newsSearchForm) {
+//         newsSearchForm.addEventListener('submit', function(event) {
+//             event.preventDefault();
+//             const startDateInput = document.getElementById('startDate');
+//             const endDateInput = document.getElementById('endDate');
+//             if (!startDateInput || !endDateInput) {
+//                 alert('請選擇開始和結束日期。');
+//                 return
+//             } 
+//             else if (startDateInput.value > endDateInput.value) {
+//             alert('開始日期不能晚於結束日期。');
+//             return;
+//             }
+//             else {
+//                 setDefaultDate(startDateInput, endDateInput);
+//                 window.location.href = `/etf-pioneer/api/news-wordcloud?start_date=${startDateInput.value}&end_date=${endDateInput.value}`;
+//             }
+//         });
+//     }
+//   });
 
 
 // footer display

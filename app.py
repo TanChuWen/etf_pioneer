@@ -141,6 +141,7 @@ def get_news_data():
         'start_date', datetime.today().strftime('%Y-%m-%d'))
     end_date = request.args.get(
         'end_date', datetime.today().strftime('%Y-%m-%d'))
+    max_date = datetime.today().strftime('%Y-%m-%d')
 
     connection = get_db_connection()
 
@@ -169,7 +170,7 @@ def get_news_data():
             # Generate wordcloud
             image_data = generate_and_upload_wordcloud(text)
             logger.info(f"Wordcloud generated from {start_date} to {end_date}")
-            return render_template('news_trend.html', image_data=image_data, start_date=start_date, end_date=end_date, newsList=news_list)
+            return render_template('news_trend.html', image_data=image_data, start_date=start_date, end_date=end_date, newsList=news_list, max_date=max_date)
     except Exception as e:
         logger.error(str(e))
         return render_template('error.html', error=str(e), start_date=start_date, end_date=end_date)
@@ -210,7 +211,9 @@ def search_results():
             top_industry_data["etf2"] = {}
             top10_stock_data["etf2"] = {}
 
-        return render_template('search_results.html', symbol=symbol, etfData=etf_overview_data, etfPerformanceData=etf_performance_data, etfIndustryData=top_industry_data, etfStockData=top10_stock_data)
+        max_date = datetime.today().strftime('%Y-%m-%d')
+
+        return render_template('search_results.html', symbol=symbol, etfData=etf_overview_data, etfPerformanceData=etf_performance_data, etfIndustryData=top_industry_data, etfStockData=top10_stock_data, max_date=max_date)
 
     except Exception as e:
         logger.error(str(e))
@@ -424,10 +427,12 @@ def search_etf_by_stock():
                 WHERE A.stock_code = %s
                 """, (stock_code,))
             results = cursor.fetchall()
+            max_date = datetime.today().strftime('%Y-%m-%d')
             if not results:
                 error_message = "本檔股票不屬於任何一檔 ETF 的前十大成分股，請重新查詢"
-                return render_template('error-top10.html', error=error_message)
-            return render_template('lookup_from_stock.html', stock_data=results)
+                return render_template('error-top10.html', error=error_message, max_date=max_date)
+
+            return render_template('lookup_from_stock.html', stock_data=results, max_date=max_date)
     except Exception as e:
         logger.error(str(e))
         return render_template('error.html', error=str(e))
