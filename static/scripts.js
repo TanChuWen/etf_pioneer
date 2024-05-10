@@ -290,8 +290,8 @@ function renderTopIndustryChart(data, chartId,updateTimeId) {
         let layout = {
             title: 'ETF 產業分布',
             titlefont: {size: 28},
-            height: 600,  
-            width: 800, 
+            width: 650, 
+            height: 550,  
             legend: {
                 x: 1.2, 
                 y: 0.5,  
@@ -333,8 +333,8 @@ function renderTop10StockChart(data,chartId, updateTimeId) {
         let layout = {
             title: 'ETF 前十大成分股',
             titlefont: {size: 28},
-            height: 600,  
-            width: 800, 
+            width: 650, 
+            height: 550,
             legend: {
                 x: 1.2, 
                 y: 0.5,  

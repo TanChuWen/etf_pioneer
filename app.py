@@ -124,7 +124,7 @@ def generate_and_upload_wordcloud(text):
         height=400,
         stopwords=stopwords,
         max_words=20,
-        background_color='black'
+        background_color='white'
     ).generate(text)
     img = BytesIO()
     wordcloud.to_image().save(img, format='PNG')
