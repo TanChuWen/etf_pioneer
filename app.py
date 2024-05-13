@@ -441,6 +441,11 @@ def search_etf_by_stock():
             connection.close()
 
 
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('error.html'), 404
+
+
 @app.route('/test-error')
 def test_error():
     return render_template('error.html')
