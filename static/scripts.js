@@ -261,15 +261,15 @@ function renderPerformanceTable(data, tableId,updateTimeId) {
 var customizedColors =[
     '#90DBF4', 
     '#FBF8CC', 
-    '#FDE4CF', 
-    '#FFCFD2', 
-    '#F1C0E8', 
-    '#CFBAF0', 
+    '#FDE4CF',  
+    '#FFCFD2',  
+    '#F1C0E8',  
+    '#CFBAF0',  
     '#8EECF5', 
-    '#98F5E1',
-    '#B9FBC0',
+    '#e3eefc', 
+    '#B9FBC0', 
     '#FB6107',
-    '#0D3B66', // navy
+    '#0D3B66', 
     '#70D6FF',
     '#F3DE2C', 
     '#7CB518', 
@@ -548,7 +548,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-  function setDefaultDate(startDateInput, endDateInput) {
+function setDefaultDate(startDateInput, endDateInput) {
     const today = new Date().toISOString().slice(0, 10);
     if (!startDateInput.value) {
         startDateInput.value = today;
@@ -556,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!endDateInput.value) {
         endDateInput.value = today;
     }
-  }
+}
 
 
 // footer display
