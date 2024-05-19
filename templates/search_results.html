@@ -7,10 +7,9 @@
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
     <script>
     var etfData = {{ etfData | tojson | safe }};
-    var etfPerformanceData = {{ etfPerformanceData | tojson | safe }};
-    var etfIndustryData = {{ etfIndustryData | tojson | safe }};
-    var etfStockData = {{ etfStockData | tojson | safe }};
-
+    var etfPerformanceData = {{ etfPerformanceData | tojson | default({}, true) | safe }};
+    var etfIndustryData = {{ etfIndustryData | tojson | default({}, true) | safe }};
+    var etfStockData = {{ etfStockData | tojson | default({}, true) | safe }};
 
 </script>
 </head>
