@@ -81,20 +81,27 @@ button:hover {
 }
 
 /* home page */
-.ranking-dashboard {
+   
+#ranking-dashboard {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-align: center;
+}
+
+#ranking-dashboard h1{
+    text-align: center;
+    font-size: 30px;
+    margin: 20px 0;
 }
 
 .ranking-row{
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
     margin-bottom: 20px;
 }
 
@@ -118,7 +125,7 @@ button:hover {
 #performance-chart{
     align-self: center;
     width: 100%;
-    height: 90%;
+    height: 450px;
 }
 
 #volume-data-updated-time, 
@@ -278,6 +285,8 @@ button:hover {
     color: #397bed;
     font-size: 30px;
   }
+
+
 
 /* Responsive Design */
 @media screen and (max-width: 600px) {

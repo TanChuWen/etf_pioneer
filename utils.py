@@ -34,6 +34,22 @@ def get_db_connection():
         cursorclass=pymysql.cursors.DictCursor
     )
 
+
+# def test_db_connection():
+#     try:
+#         connection = pymysql.connect(
+#             host=DB_HOST,
+#             user=DB_USER,
+#             password=DB_PASSWORD,
+#             db=DB_NAME,
+#             cursorclass=pymysql.cursors.DictCursor
+#         )
+#         print("Database connection successful!")
+#         connection.close()
+#     except Exception as e:
+#         print(f"Database connection failed: {e}")
+
+
 # Utility functions
 
 
@@ -74,3 +90,7 @@ def generate_wordcloud(text):
     img.seek(0)
     img_data = base64.b64encode(img.getvalue()).decode()
     return f"data:image/png;base64,{img_data}"
+
+
+# if __name__ == "__main__":
+#     test_db_connection()
