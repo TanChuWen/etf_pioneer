@@ -35,7 +35,7 @@ Aiming to solve the time-consuming and inflexible search challenges posed by lar
 * **ETF 排名**
   以成交金額、資產規模、受益人數、年初至今績效視覺化呈現 ETF 排名。
   Visualize ETF rankings based on multiple performance indicators.  
-  Live Demo: [ETF 排名 ETF Rankings](#etf-排名以成交金額資產規模受益人數年初至今績效進行排名)
+  Live Demo: [ETF 排名 ETF Rankings](#ETF 排名：以成交金額、資產規模、受益人數、年初至今績效進行排名)
 
 * **搜尋 ETF**
   輸入 ETF 名稱或是代號進行搜尋。
