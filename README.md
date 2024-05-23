@@ -9,7 +9,7 @@ Full Demo: [https://youtu.be/m-WIfyfHKTk?si=-9hdtTWSlbcSWTtb](https://youtu.be/m
 * [Features](#features)
 * [Architecture](#architecture)
 * [Live Demo](#live-demo)
-* [Technologies and Tools Used](#technologies-and-tools-used)
+* [Tools Used](#technologies-and-tools-used)
 * [Contact](#contact)
 
 
@@ -81,7 +81,7 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
   
 
 
-## Technologies and Tools Used
+## Tools Used
 * Programming Languages: Python, JavaScript
 * Database: MySQL
 * Container: Docker
