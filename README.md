@@ -5,10 +5,34 @@ ETF Pioneer is a website featuring ETF rankings, data search, comparison, stock 
 Website: [https://etf-pioneer.services/](https://etf-pioneer.services/)
 
 ## Table of Contents
+* Features
+* Architecture
+* Live Demo
+* Technologies and Tools Used
+* Contact
 
 ## Features
 
+* **ETF 排名**  
+  Visualize ETF rankings based on multiple performance indicators.  
+  See the live demo: [ETF 排名](#users-can-visualize-etf-rankings-based-on-multiple-performance-indicators)
 
+* **搜尋 ETF**  
+  Search for ETFs by name or ticker.  
+  See the live demo: [搜尋 ETF](#users-can-search-for-etfs-by-name-or-ticker)
+
+* **比較 ETF**  
+  Compare ETFs side-by-side.  
+  See the live demo: [比較 ETF](#users-can-compare-etfs-side-by-side)
+
+* **從股票找到 ETF**  
+  Identify ETFs containing specific stocks.  
+  See the live demo: [從股票找到 ETF](#users-can-identify-etfs-containing-specific-stocks)
+
+* **ETF 新聞聚合與關鍵字文字雲**  
+  Stay updated with ETF-related news.  
+  See the live demo: [ETF 新聞聚合與關鍵字文字雲](#users-can-stay-updated-with-etf-related-news)
+  
 ## Architecture
 
 System Architecture Overview
@@ -60,16 +84,18 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
   
 
 
-## Technologies Used
+## Technologies and Tools Used
 * Programming Languages: Python, JavaScript
 * Database: MySQL
+* Container: Docker
 * Frameworks: Flask
-* Web Server: Nginx
+* Reverse Proxy: Nginx
 * Data Visualization Tool: Plotly
 * Cloud Engineering - AWS: EC2, S3, RDS
 * Monitoring Tools - AWS: CloudWatch
 * Notification: Slack
 * CI/CD Tools: GitHub Actions
+  
 ## Contact
 
 Chuwen Tan 
