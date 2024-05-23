@@ -31,5 +31,8 @@ def get_news_data_route():
         image_data = generate_wordcloud(text)
         logger.info(f"Wordcloud generated from {start_date} to {end_date}")
         return render_template('news_trend.html', image_data=image_data, start_date=start_date, end_date=end_date, newsList=news_data, max_date=max_date)
+    except Exception as e:
+        logger.error(f"Error occurred: {e}")
+        return render_template('error.html', error=e)
     finally:
         connection.close()

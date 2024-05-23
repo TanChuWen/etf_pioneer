@@ -44,6 +44,9 @@ def get_data(table_name):
 
         logger.info(f"Data fetched from {table_name}")
         return jsonify(data)
+    except Exception as e:
+        logger.error(str(e))
+        return jsonify({"error": str(e)}), 500
     finally:
         connection.close()
 
@@ -121,5 +124,8 @@ def search_etf_by_stock():
             return render_template('error-top10.html', error=error_message, max_date=max_date)
 
         return render_template('lookup_from_stock.html', stock_data=results, max_date=max_date)
+    except Exception as e:
+        logger.error(str(e))
+        return render_template('error.html', error=str(e))
     finally:
         connection.close()
