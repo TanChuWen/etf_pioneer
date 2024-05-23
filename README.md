@@ -35,27 +35,29 @@ Aiming to solve the time-consuming and inflexible search challenges posed by lar
 * **ETF 排名**
   以成交金額、資產規模、受益人數、年初至今績效視覺化呈現 ETF 排名。
   Visualize ETF rankings based on multiple performance indicators.  
-  Live Demo: [ETF 排名 ETF Rankings](#users-can-visualize-etf-rankings-based-on-multiple-performance-indicators)
+  Live Demo: [ETF 排名 ETF Rankings](#etf-排名以成交金額資產規模受益人數年初至今績效進行排名)
 
 * **搜尋 ETF**
   輸入 ETF 名稱或是代號進行搜尋。
   Search for ETFs by name or ticker.  
-  Live Demo: [搜尋 ETF](#users-can-search-for-etfs-by-name-or-ticker)
+  Live Demo: [搜尋 ETF Search for ETFs](#搜尋-etf輸入-etf-名稱或是代號進行搜尋)
 
 * **比較 ETF**
   同時比較兩檔 ETF 數據。
   Compare ETFs side-by-side.  
-  Live Demo: [比較 ETF](#users-can-compare-etfs-side-by-side)
+  Live Demo: [比較 ETF Compare ETFs](#比較-etf同時比較兩檔-etf-數據)
 
 * **個股反查 ETF**
   輸入個股名稱或代號反查 ETF 中含有該檔個股的比例。
   Identify ETFs containing specific stocks.  
-  Live Demo: [個股反查 ETF](#users-can-identify-etfs-containing-specific-stocks)
+  Live Demo: [從股票找到 ETF Find ETFs from Stocks](#從股票反查-etf輸入個股名稱或代號反查哪些-etf-中含有該檔個股比例)
+
 
 * **ETF 新聞整合與關鍵字文字雲**
   ETF 新聞整合與關鍵字文字雲呈現。
   Stay updated with ETF-related news.  
-  Live Demo: [ETF 新聞整合與關鍵字文字雲](#users-can-stay-updated-with-etf-related-news)
+  Live Demo: [ETF 新聞整合與關鍵字雲 ETF News Aggregation and Keyword Cloud](#etf-新聞整合與關鍵字文字雲選擇時間範圍查看特定區間內的-etf-相關新聞並可直接點擊新聞關鍵字文字雲作為投資參考依據)
+
   
 ## 架構 Architecture
 
