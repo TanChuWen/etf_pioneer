@@ -41,14 +41,19 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
 ## Features
 
 #### Users can visualize ETF rankings based on multiple performance indicators.
+![System Architecture Diagram](ReadmeMaterial/feature_1_ETF_ranking.mov)
 
 #### Users can search for ETFs by name or ticker.
+![System Architecture Diagram](ReadmeMaterial/feature_2_search_an_ETF.mov)
 
 #### Users can compare ETFs side-by-side.
+![System Architecture Diagram](ReadmeMaterial/feature_3_compare_ETFs.mov)
 
 #### Users can identify ETFs containing specific stocks.
+![System Architecture Diagram](ReadmeMaterial/feature_4_find_ETF_from_stock.mov)
 
 #### Users can stay updated with ETF-related news.
+![System Architecture Diagram](ReadmeMaterial/feature_5_ETF_news_aggregation_and_keyword_word_cloud.mov)
 
 ## Demo
 
