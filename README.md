@@ -4,9 +4,8 @@
 ETF Pioneer 是一個提供 ETF 排名、資料搜尋、比較、個股反查和 ETF 新聞整合的綜合資訊服務網站，旨在提升使用者的投資決策能力。
 
 ETF Pioneer is a website featuring ETF rankings, data search, comparison, stock lookup, and news aggregation to enhance user investment decisions.
-[Website](https://etf-pioneer.services/)
-Website: [https://etf-pioneer.services/](https://etf-pioneer.services/)
-Full Demo: [https://youtu.be/m-WIfyfHKTk?si=-9hdtTWSlbcSWTtb](https://youtu.be/m-WIfyfHKTk?si=-9hdtTWSlbcSWTtb)
+* Website: [https://etf-pioneer.services/](https://etf-pioneer.services/)
+* Full Demo: [https://youtu.be/m-WIfyfHKTk?si=-9hdtTWSlbcSWTtb](https://youtu.be/m-WIfyfHKTk?si=-9hdtTWSlbcSWTtb)
 
 ## 目錄 Table of Contents
 - [問題陳述 Problem Statement](#問題陳述-problem-statement)
@@ -94,25 +93,25 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
 
 ## Live Demo
 
-#### ETF 排名
+#### ETF 排名 (ETF Rankings)
 以成交金額、資產規模、受益人數、年初至今績效進行排名。 Users can visualize ETF rankings based on multiple performance indicators. 
 ![Feature 1: ETF 排名](ReadmeMaterial/feature_1_ETF_ranking_updated.gif)
 
-#### 搜尋 ETF
+#### 搜尋 ETF (Search ETFs)
 輸入 ETF 名稱或是代號搜尋最近交易日的交易價格、不同時間尺度下的績效數據、ETF 組成的產業佔比、 ETF 前十大成分股佔比。 Users can search for ETFs by name or ticker. 
 ![Feature 2: 搜尋 ETF](ReadmeMaterial/feature_2_search_an_ETF_updated.gif)
 
-#### 比較 ETF
+#### 比較 ETF (Compare ETFs)
 同時比較兩檔 ETF 數據。 Users can compare ETFs side-by-side. 
 ![Feature 3: 比較 ETF](ReadmeMaterial/feature_3_compare_ETFs.gif)
 
 
-#### 個股反查 ETF
+#### 個股反查 ETF (Find ETFs from Stocks)
 輸入個股名稱或代號，反查哪些 ETF 中含有該檔個股。 Users can identify ETFs containing specific stocks. 
 ![Feature 4: 從股票反查 ETF](ReadmeMaterial/feature_4_find_ETF_from_stock_updated.gif)
 
   
-#### ETF 新聞整合與關鍵字文字雲
+#### ETF 新聞整合與關鍵字文字雲 (ETF News Aggregation and Keyword Cloud)
 選擇時間，查看特定區間下的 ETF 相關新聞並可點選查看新聞內文，並輔以新聞關鍵字文字雲，作為投資參考依據。 Users can stay updated with ETF-related news. 
 - [Feature 5: ETF 新聞整合與關鍵字文字雲](ReadmeMaterial/feature_5_ETF_news_aggregation_and_keyword_word_cloud.mov)
   
