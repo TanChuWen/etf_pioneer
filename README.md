@@ -26,7 +26,7 @@ Amazon CloudWatch is used to monitor the data pipeline and server, logging error
 #### Data Backup
 Processed data, in addition to being stored in the MySQL database, is also backed up to Amazon S3 to ensure data security and persistence.
 
-##### DevOps
+#### DevOps
 GitHub Actions is utilized for Continuous Integration (CI) and Continuous Deployment (CD) to verify error-free code passing unit tests. Upon successful test completion, the next deployment job is triggered to deploy the code to an AWS EC2 server.
 
 This architecture ensures a seamless and reliable flow from data crawling to frontend presentation, including data processing, backup, monitoring, and automated deployment, ensuring the entire system runs smoothly and efficiently.
