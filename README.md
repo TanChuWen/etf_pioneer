@@ -41,15 +41,20 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
 ## Features
 
 #### Users can visualize ETF rankings based on multiple performance indicators.
+- [Feature 1: ETF 排名](ReadmeMaterial/feature_1_ETF_ranking.mov)
 
 #### Users can search for ETFs by name or ticker.
+- [Feature 2: 搜索 ETF](ReadmeMaterial/feature_2_search_an_ETF.mov)
 
 #### Users can compare ETFs side-by-side.
+- [Feature 3: 比較 ETF](ReadmeMaterial/feature_3_compare_ETFs.mov)
 
 #### Users can identify ETFs containing specific stocks.
-
+- [Feature 4: 從股票找到 ETF](ReadmeMaterial/feature_4_find_ETF_from_stock.mov)
+  
 #### Users can stay updated with ETF-related news.
-
+- [Feature 5: ETF 新聞整合與關鍵字文字雲](ReadmeMaterial/feature_5_ETF_news_aggregation_and_keyword_word_cloud.mov)
+  
 ## Demo
 
 Insert gif or link to demo
