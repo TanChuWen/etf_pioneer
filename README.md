@@ -2,9 +2,12 @@
 # ETF Pioneer
 
 ETF Pioneer is a website featuring ETF rankings, data search, comparison, stock lookup, and news aggregation to enhance user investment decisions.
-
+Website: [https://etf-pioneer.services/](https://etf-pioneer.services/)
 
 ## Table of Contents
+
+## Features
+
 
 ## Architecture
 
@@ -37,8 +40,7 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
 
 
 
-
-## Features
+## Live Demo
 
 #### Users can visualize ETF rankings based on multiple performance indicators.
 ![Feature 1: ETF 排名](ReadmeMaterial/feature_1_ETF_ranking_updated.gif)
@@ -56,10 +58,6 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
 #### Users can stay updated with ETF-related news.
 - [Feature 5: ETF 新聞整合與關鍵字文字雲](ReadmeMaterial/feature_5_ETF_news_aggregation_and_keyword_word_cloud.mov)
   
-  
-## Demo
-
-Insert gif or link to demo
 
 
 ## Technologies Used
