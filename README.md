@@ -9,6 +9,7 @@ ETF Pioneer is a website featuring ETF rankings, data search, comparison, stock 
 ## Architecture
 
 System Architecture Overview
+![System Architecture Diagram](ReadmeMaterial/Architecture.png)
 
 
 
