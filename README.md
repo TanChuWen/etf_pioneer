@@ -11,9 +11,7 @@ ETF Pioneer is a website featuring ETF rankings, data search, comparison, stock 
 - [問題陳述 Problem Statement](#問題陳述-problem-statement)
 - [功能 Features](#功能-features)
 - [架構 Architecture](#架構-architecture)
-- [資料流 Data Pipeline](#資料流-data-pipeline)
-- [現場演示 Live Demo](#現場演示-live-demo)
-- [維護 Maintenance](#維護-maintenance)
+- [Live Demo](#live-demo)
 - [工具 Tools](#工具-tools)
 - [聯繫 Contact](#聯繫-contact)
 
@@ -117,7 +115,7 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
   
 
 
-## 工具 Tools Used
+## 工具 Tools
 * 程式語言 Programming Languages: Python, JavaScript
 * 流程管理 Workflow Management: Apache Airflow
 * 資料庫 Database: MySQL
