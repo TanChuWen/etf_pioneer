@@ -113,7 +113,7 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
   
 #### ETF 新聞整合與關鍵字文字雲 (ETF News Aggregation and Keyword Cloud)
 選擇時間，查看特定區間下的 ETF 相關新聞並可點選查看新聞內文，並輔以新聞關鍵字文字雲，作為投資參考依據。 Users can stay updated with ETF-related news. 
-- [Feature 5: ETF 新聞整合與關鍵字文字雲](ReadmeMaterial/feature_5_ETF_news_aggregation_and_keyword_word_cloud.mov)
+![Feature 5: ETF 新聞整合與關鍵字文字雲](ReadmeMaterial/feature_5_ETF_news_aggregation_and_keyword_word_cloud.gif)
   
 
 
