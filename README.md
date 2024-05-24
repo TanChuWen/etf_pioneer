@@ -96,20 +96,22 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
 #### ETF 排名 (ETF Rankings)
 以成交金額、資產規模、受益人數、年初至今績效進行排名。 Users can visualize ETF rankings based on multiple performance indicators. 
 ![Feature 1: ETF 排名](ReadmeMaterial/feature_1_ETF_ranking_updated.gif)
+[top](#功能-features)
 
 #### 搜尋 ETF (Search ETFs)
 輸入 ETF 名稱或是代號搜尋最近交易日的交易價格、不同時間尺度下的績效數據、ETF 組成的產業佔比、 ETF 前十大成分股佔比。 Users can search for ETFs by name or ticker. 
 ![Feature 2: 搜尋 ETF](ReadmeMaterial/feature_2_search_an_ETF_updated.gif)
+[top](#功能-features)
 
 #### 比較 ETF (Compare ETFs)
 同時比較兩檔 ETF ，輸入之後可以查看兩檔 ETF 的績效以及產業分布與前十大成分股組成，例如追蹤大盤的「0050 元大台灣50」以及以高股息為主要特色的「0056 元大高股息」，在不同指標上便能立即顯示差異。 Users can compare ETFs side-by-side. 
 ![Feature 3: 比較 ETF](ReadmeMaterial/feature_3_compare_ETFs.gif)
-
+[top](#功能-features)
 
 #### 個股反查 ETF (Find ETFs from Stocks)
 輸入個股名稱或代號，反查哪些 ETF 中含有該檔個股，以台積電（代號：2330）為例，按下搜尋後會出現含有台積電的各檔 ETF 並按照比例由大到小排列。 Users can identify ETFs containing specific stocks. 
 ![Feature 4: 從股票反查 ETF](ReadmeMaterial/feature_4_find_ETF_from_stock_updated.gif)
-
+[top](#功能-features)
   
 #### ETF 新聞整合與關鍵字文字雲 (ETF News Aggregation and Keyword Cloud)
 選擇時間，查看特定區間下的 ETF 相關新聞並可點選查看新聞內文，並輔以新聞關鍵字文字雲，作為投資參考依據。 Users can stay updated with ETF-related news. 
