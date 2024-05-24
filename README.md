@@ -25,7 +25,7 @@ Aiming to solve the time-consuming and inflexible search challenges posed by lar
 
 
 
-
+[back to content](#目錄-table-of-contents)
 
 ## 功能 Features
 
@@ -55,6 +55,7 @@ Aiming to solve the time-consuming and inflexible search challenges posed by lar
   Live Demo: [ETF 新聞整合與關鍵字雲 (ETF News Aggregation and Keyword Cloud)](#etf-新聞整合與關鍵字文字雲-etf-news-aggregation-and-keyword-cloud)
 
 
+[back to content](#目錄-table-of-contents)
   
 ## 架構 Architecture
 
@@ -88,6 +89,7 @@ GitHub Actions is utilized for Continuous Integration (CI) and Continuous Deploy
 此架構確保從資料爬取到前端展示的順暢和可靠的流程，包括資料處理、備份、監控和自動化部署，確保整個系統運行順暢且高效。
 This architecture ensures a seamless and reliable flow from data crawling to frontend presentation, including data processing, backup, monitoring, and automated deployment, ensuring the entire system runs smoothly and efficiently.
 
+[back to content](#目錄-table-of-contents)
 
 ## Live Demo
 
@@ -113,7 +115,7 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
 選擇時間，查看特定區間下的 ETF 相關新聞並可點選查看新聞內文，並輔以新聞關鍵字文字雲，作為投資參考依據。 Users can stay updated with ETF-related news. 
 ![Feature 5: ETF 新聞整合與關鍵字文字雲](ReadmeMaterial/feature_5_ETF_news_aggregation_and_keyword_word_cloud.gif)
   
-
+[back to content](#目錄-table-of-contents)
 
 ## 工具 Tools
 * 程式語言 Programming Languages: Python, JavaScript
@@ -127,6 +129,8 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
 * 監控 Monitoring Tools - AWS: CloudWatch
 * 通知 Notification: Slack
 * 自動化 CI/CD Tools: GitHub Actions
+
+[back to content](#目錄-table-of-contents)
   
 ## 聯繫 Contact
 
