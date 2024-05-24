@@ -119,6 +119,7 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
 
 ## 工具 Tools Used
 * 程式語言 Programming Languages: Python, JavaScript
+* 流程管理 Workflow Management: Apache Airflow
 * 資料庫 Database: MySQL
 * 容器化服務Container: Docker
 * 框架 Frameworks: Flask
