@@ -100,12 +100,12 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
 ![Feature 2: 搜尋 ETF](ReadmeMaterial/feature_2_search_an_ETF_updated.gif)
 
 #### 比較 ETF (Compare ETFs)
-同時比較兩檔 ETF 數據。 Users can compare ETFs side-by-side. 
+同時比較兩檔 ETF ，輸入之後可以查看兩檔 ETF 的績效以及產業分布與前十大成分股組成，例如追蹤大盤的「0050 元大台灣50」以及以高股息為主要特色的「0056 元大高股息」，在不同指標上便能立即顯示差異。 Users can compare ETFs side-by-side. 
 ![Feature 3: 比較 ETF](ReadmeMaterial/feature_3_compare_ETFs.gif)
 
 
 #### 個股反查 ETF (Find ETFs from Stocks)
-輸入個股名稱或代號，反查哪些 ETF 中含有該檔個股。 Users can identify ETFs containing specific stocks. 
+輸入個股名稱或代號，反查哪些 ETF 中含有該檔個股，以台積電（代號：2330）為例，按下搜尋後會出現含有台積電的各檔 ETF 並按照比例由大到小排列。 Users can identify ETFs containing specific stocks. 
 ![Feature 4: 從股票反查 ETF](ReadmeMaterial/feature_4_find_ETF_from_stock_updated.gif)
 
   
