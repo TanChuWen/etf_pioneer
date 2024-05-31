@@ -131,6 +131,7 @@ This architecture ensures a seamless and reliable flow from data crawling to fro
 * 監控 Monitoring Tools - AWS: CloudWatch
 * 通知 Notification: Slack
 * 自動化 CI/CD Tools: GitHub Actions
+* 資料爬蟲 Data Crawling: Selenium, BeautifulSoup 
 
 [top](#目錄-table-of-contents)
   
