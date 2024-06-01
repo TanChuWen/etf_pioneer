@@ -30,7 +30,7 @@ jobs:
       run: |
         echo "Deploying to EC2"
         ssh -o StrictHostKeyChecking=no -v $EC2_USER@$EC2_HOST << 'EOF'
-          cd /home/ec2-user/Personal-Project/etf_pioneer
+          cd /home/ec2-user/Personal-Project/new_etf_pioneer
           git pull origin main
           # Other deploy steps, e.g., restarting services
         EOF
