@@ -14,7 +14,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.5.4
+      uses: webfactory/ssh-agent@v0.7.0
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
     
@@ -24,7 +24,7 @@ jobs:
         EC2_USER: ${{ secrets.EC2_USER }}
       run: |
         echo "Deploying to EC2"
-        ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+        ssh -v -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
           cd /home/ec2-user/Personal-Project/etf_pioneer
           git pull origin main
           # Other deploy steps, e.g., restarting services
