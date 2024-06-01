@@ -18,13 +18,18 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
     
+    - name: Test SSH connection
+      run: |
+        echo "Testing SSH connection"
+        ssh -o StrictHostKeyChecking=no -v ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo SSH connection successful"
+
     - name: Deploy to EC2
       env:
         EC2_HOST: ${{ secrets.EC2_HOST }}
         EC2_USER: ${{ secrets.EC2_USER }}
       run: |
         echo "Deploying to EC2"
-        ssh -v -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+        ssh -o StrictHostKeyChecking=no -v $EC2_USER@$EC2_HOST << 'EOF'
           cd /home/ec2-user/Personal-Project/etf_pioneer
           git pull origin main
           # Other deploy steps, e.g., restarting services
