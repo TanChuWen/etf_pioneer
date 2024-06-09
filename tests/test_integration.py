@@ -23,9 +23,9 @@ class TestFlaskApp(unittest.TestCase):
         def mock_fetchone(*args):
             query = args[0]
             if "FROM etf_overview_data" in query:
-                return {'etf_name': '元大台灣50', 'symbol': '0050', 'price_today': 100, 'up_down': 'up', 'up_down_change': 1, 'up_down_percentage': 1.0, 'data_updated_date': '2023-06-01', 'crawler_date': '2023-06-01'}
+                return {'etf_name': '元大台灣50', 'symbol': '0050', 'price_today': 100, 'up_down_change': 1, 'up_down_percentage': 1.0, 'data_updated_date': '2023-06-01'}
             elif "FROM etf_performance" in query:
-                return {'symbol': '0050', 'data_updated_date': '2023-06-01', 'crawler_date': '2023-06-01', '1_week': 1.5, '1_month': 2.0, '3_month': 3.5, '6_month': 4.0, 'YTD': 5.0, '1_year': 6.0, '2_year': 7.0, '3_year': 8.0, '5_year': 9.0, '10_year': 10.0}
+                return {'symbol': '0050', '1_week': 1.5, '1_month': 2.0, '3_month': 3.5, '6_month': 4.0, 'YTD': 5.0, '1_year': 6.0, '2_year': 7.0, '3_year': 8.0, '5_year': 9.0, '10_year': 10.0, 'data_updated_date': '2023-06-01'}
             elif "SUM(ratio)" in query:
                 return {'total_ratio': 30}  # 用於計算 top_industry 的其他比率
             return None
@@ -35,16 +35,16 @@ class TestFlaskApp(unittest.TestCase):
             if "FROM top_industry" in query:
                 return [
                     {'symbol': '0050', 'industry': 'Technology',
-                        'ratio': 20, 'data_updated_date': '2023-06-01', 'crawler_date': '2023-06-01'},
+                        'ratio': 20, 'data_updated_date': '2023-06-01'},
                     {'symbol': '0050', 'industry': 'Healthcare',
-                        'ratio': 10, 'data_updated_date': '2023-06-01', 'crawler_date': '2023-06-01'}
+                        'ratio': 10, 'data_updated_date': '2023-06-01'}
                 ]
             elif "FROM top10_stock" in query:
                 return [
                     {'symbol': '0050', 'ranking': 1, 'stock_name': 'TSMC',
-                        'ratio': 10, 'data_updated_date': '2023-06-01', 'crawler_date': '2023-06-01'},
+                        'ratio': 10, 'data_updated_date': '2023-06-01'},
                     {'symbol': '0050', 'ranking': 2, 'stock_name': 'Foxconn',
-                        'ratio': 5, 'data_updated_date': '2023-06-01', 'crawler_date': '2023-06-01'}
+                        'ratio': 5, 'data_updated_date': '2023-06-01'}
                 ]
             return []
 
@@ -63,7 +63,7 @@ class TestFlaskApp(unittest.TestCase):
         self.assertIn('元大台灣50', html_content)  # 檢查 ETF 名稱
         self.assertIn('Technology', html_content)  # 檢查行業數據
         self.assertIn('TSMC', html_content)        # 檢查前十大持股
-        # self.assertIn('今年至今', html_content)        # 檢查 10 年的表現數據
+        self.assertIn('10年', html_content)        # 檢查 10 年的表現數據
 
     @patch('pymysql.connect')  # 模擬 pymysql.connect 函數
     def test_search_results_no_data(self, mock_connect):
