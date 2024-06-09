@@ -50,6 +50,9 @@ class TestETFTop10Stocks(unittest.TestCase):
         mock_cursor.fetchone.side_effect = mock_fetchone
         mock_cursor.fetchall.side_effect = mock_fetchall
 
+        # 確保執行查詢的模擬行為
+        mock_cursor.execute.side_effect = lambda query, args=None: None
+
         # 發送 HTTP GET 請求到 /search-results?symbol=0050
         response = self.app.get('/search-results?symbol=0050')
         assert response.status_code == 200  # 確認 HTTP 響應狀態碼為 200
