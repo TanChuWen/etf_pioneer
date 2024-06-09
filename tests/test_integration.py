@@ -19,20 +19,36 @@ class TestETFTop10Stocks(unittest.TestCase):
         mock_cursor = MagicMock()
         mock_connection.cursor.return_value = mock_cursor
 
-        # 設置 cursor 執行 SQL 查詢時的返回值
-        mock_cursor.fetchall.side_effect = [
-            [{'etf_name': '元大台灣50', 'symbol': '0050', 'price_today': 100, 'up_down_change': 1,
-                'up_down_percentage': 1.0, 'data_updated_date': '2023-06-01'}],  # get_etf_overview
-            [{'symbol': '0050', '1_week': 1.5, '1_month': 2.0, '3_month': 3.5, '6_month': 4.0, 'YTD': 5.0, '1_year': 6.0,
-                # get_etf_performance
-                '2_year': 7.0, '3_year': 8.0, '5_year': 9.0, '10_year': 10.0, 'data_updated_date': '2023-06-01'}],
-            [{'symbol': '0050', 'industry': 'Technology', 'ratio': 20, 'data_updated_date': '2023-06-01'},
-                # get_top_industry
-                {'symbol': '0050', 'industry': 'Healthcare', 'ratio': 10, 'data_updated_date': '2023-06-01'}],
-            [{'symbol': '0050', 'ranking': 1, 'stock_name': 'TSMC', 'ratio': 10, 'data_updated_date': '2023-06-01'},
-                # get_top10_stock
-                {'symbol': '0050', 'ranking': 2, 'stock_name': 'Foxconn', 'ratio': 5, 'data_updated_date': '2023-06-01'}]
-        ]
+        # 配置 fetchone 和 fetchall 的 side_effect
+        def mock_fetchone(*args):
+            if "FROM etf_overview_data" in args[0]:
+                return {'etf_name': '元大台灣50', 'symbol': '0050', 'price_today': 100, 'up_down_change': 1, 'up_down_percentage': 1.0, 'data_updated_date': '2023-06-01'}
+            elif "FROM etf_performance" in args[0]:
+                return {'symbol': '0050', '1_week': 1.5, '1_month': 2.0, '3_month': 3.5, '6_month': 4.0, 'YTD': 5.0, '1_year': 6.0, '2_year': 7.0, '3_year': 8.0, '5_year': 9.0, '10_year': 10.0, 'data_updated_date': '2023-06-01'}
+            elif "SUM(ratio)" in args[0]:
+                return {'total_ratio': 30}
+            return None
+
+        def mock_fetchall(*args):
+            if "FROM top_industry" in args[0]:
+                return [
+                    {'symbol': '0050', 'industry': 'Technology',
+                        'ratio': 20, 'data_updated_date': '2023-06-01'},
+                    {'symbol': '0050', 'industry': 'Healthcare',
+                        'ratio': 10, 'data_updated_date': '2023-06-01'}
+                ]
+            elif "FROM top10_stock" in args[0]:
+                return [
+                    {'symbol': '0050', 'ranking': 1, 'stock_name': 'TSMC',
+                        'ratio': 10, 'data_updated_date': '2023-06-01'},
+                    {'symbol': '0050', 'ranking': 2, 'stock_name': 'Foxconn',
+                        'ratio': 5, 'data_updated_date': '2023-06-01'}
+                ]
+            return []
+
+        # 設置 cursor 的 fetchone 和 fetchall 的 side_effect
+        mock_cursor.fetchone.side_effect = mock_fetchone
+        mock_cursor.fetchall.side_effect = mock_fetchall
 
         # 發送 HTTP GET 請求到 /search-results?symbol=0050
         response = self.app.get('/search-results?symbol=0050')
