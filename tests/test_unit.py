@@ -1,7 +1,9 @@
+from app import app
 import unittest
 from unittest.mock import patch, MagicMock
 from utils import generate_wordcloud
 from models.news_model import get_news_data
+from models.etf_model import get_etf_overview, get_etf_performance, get_top_industry
 
 
 class TestGenerateWordCloud(unittest.TestCase):
