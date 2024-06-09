@@ -11,6 +11,6 @@ webdriver-manager==4.0.1
 jieba==0.42.1
 wordcloud==1.9.3
 # testing
-pytest==8.2.1 #6.2.4
-pytest-cov==2.12.1
+pytest==8.2.1
+pytest-cov==4.0.0
 coverage==5.5

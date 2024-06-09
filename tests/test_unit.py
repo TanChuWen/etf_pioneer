@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 from utils import generate_wordcloud
 from models.news_model import get_news_data
-from models.etf_model import get_etf_data, get_etf_stock_data, get_etf_stock_data_by_date, get_etf_stock_data_by_symbol
+from models.etf_model import get_etf_overview, get_etf_performance, get_top_industry, get_top10_stock
 
 
 class TestGenerateWordCloud(unittest.TestCase):
