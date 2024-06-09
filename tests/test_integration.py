@@ -64,7 +64,8 @@ class TestETFTop10Stocks(unittest.TestCase):
         # 確認頁面上存在 ETF 的名稱
         etf_name_element = soup.find('h1')  # 查找 HTML 中的 <h1> 標籤
         assert etf_name_element is not None  # 確認 <h1> 標籤存在
-        assert '元大台灣50' in etf_name_element.text  # 確認 <h1> 標籤的文本中包含 '元大台灣50'
+        # 確認 <h1> 標籤的文本中包含 '元大台灣50'
+        assert 'ETF 名稱: 元大台灣50 ｜ 代號: 0050' in etf_name_element.text
 
 
 if __name__ == '__main__':
