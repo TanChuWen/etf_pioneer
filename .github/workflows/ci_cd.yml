@@ -27,11 +27,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      
-      - name: Set up PYTHONPATH
-        run: |
-          echo "PYTHONPATH=$(pwd):$(pwd)/controllers:$(pwd)/models" >> $GITHUB_ENV
-          echo "PYTHONPATH set to $(pwd) and its subdirectories"
 
       - name: Run tests with coverage
         run: |
