@@ -66,9 +66,13 @@ def search_results():
         top10_stock_data = {}
 
         etf_overview_data["etf1"] = get_etf_overview(connection, symbol)
+        print(etf_overview_data["etf1"])
         etf_performance_data["etf1"] = get_etf_performance(connection, symbol)
+        print(etf_performance_data["etf1"])
         top_industry_data["etf1"] = get_top_industry(connection, symbol)
+        print(top_industry_data["etf1"])
         top10_stock_data["etf1"] = get_top10_stock(connection, symbol)
+        print(top10_stock_data["etf1"])
 
         if symbol_compare:
             etf_overview_data["etf2"] = get_etf_overview(
