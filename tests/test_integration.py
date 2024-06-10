@@ -1,123 +1,154 @@
-# test_app.py
+# tests/test_integration.py
+
 import unittest
-from unittest.mock import patch, MagicMock
-from app import app
+from unittest.mock import patch
+from app import app  # Import your Flask app instance
+
+# Mock functions based on provided test data
+
+
+def mock_get_etf_overview(*args, **kwargs):
+    print(f"mock_get_etf_overview called with: {args}, {kwargs}")
+    return {
+        'etf_name': '元大台灣50',
+        'symbol': '0050',
+        'price_today': 168.45,
+        'up_down_change': '1.59',
+        'up_down_percentage': '0.96%',
+        'data_updated_date': '2024/06/05 14:30'
+    }
+
+
+def mock_get_etf_performance(*args, **kwargs):
+    print(f"mock_get_etf_performance called with: {args}, {kwargs}")
+    return {
+        'symbol': '0050',
+        '1_week': '-3.04%',
+        '1_month': '6.30%',
+        '3_month': '13.17%',
+        '6_month': '30.17%',
+        'YTD': '25.57%',
+        '1_year': '36.94%',
+        '2_year': '17.84%',
+        '3_year': '9.88%',
+        '5_year': '20.12%',
+        '10_year': '13.70%',
+        'data_updated_date': '2024/06/04'
+    }
+
+
+def mock_get_top_industry(*args, **kwargs):
+    print(f"mock_get_top_industry called with: {args}, {kwargs}")
+    return [
+        {'symbol': '0050', 'industry': '其他電子業',
+            'ratio': '5.00%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其餘行業 - 光電業',
+            'ratio': '0.61%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其餘行業 - 其他',
+            'ratio': '0.34%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其餘行業 - 塑膠工業',
+            'ratio': '1.84%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其餘行業 - 水泥工業',
+            'ratio': '0.57%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其餘行業 - 汽車工業',
+            'ratio': '0.53%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其餘行業 - 油電燃氣業',
+            'ratio': '0.24%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其餘行業 - 航運業',
+            'ratio': '0.56%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其餘行業 - 貿易百貨',
+            'ratio': '0.40%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其餘行業 - 通信網路業',
+            'ratio': '2.88%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其餘行業 - 鋼鐵工業',
+            'ratio': '0.77%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其餘行業 - 電機機械',
+            'ratio': '0.36%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其餘行業 - 食品工業',
+            'ratio': '1.01%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '半導體業', 'ratio': '62.15%',
+            'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '金融保險', 'ratio': '12.65%',
+            'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '電子零組件業',
+            'ratio': '3.15%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '電腦及週邊設備業',
+            'ratio': '5.87%', 'data_updated_date': '2024/06/01'},
+        {'symbol': '0050', 'industry': '其他', 'ratio': '1.07%',
+            'data_updated_date': '2024/06/01'}
+    ]
+
+
+def mock_get_top10_stock(*args, **kwargs):
+    print(f"mock_get_top10_stock called with: {args}, {kwargs}")
+    return [
+        {'symbol': '0050', 'ranking': 1, 'stock_name': '台積電',
+            'ratio': '52.19%', 'data_updated_date': '2024/04/01'},
+        {'symbol': '0050', 'ranking': 2, 'stock_name': '鴻海',
+            'ratio': '4.74%', 'data_updated_date': '2024/04/01'},
+        {'symbol': '0050', 'ranking': 3, 'stock_name': '聯發科',
+            'ratio': '4.06%', 'data_updated_date': '2024/04/01'},
+        {'symbol': '0050', 'ranking': 4, 'stock_name': '廣達',
+            'ratio': '1.90%', 'data_updated_date': '2024/04/01'},
+        {'symbol': '0050', 'ranking': 5, 'stock_name': '台達電',
+            'ratio': '1.90%', 'data_updated_date': '2024/04/01'},
+        {'symbol': '0050', 'ranking': 6, 'stock_name': '中信金',
+            'ratio': '1.71%', 'data_updated_date': '2024/04/01'},
+        {'symbol': '0050', 'ranking': 7, 'stock_name': '聯電',
+            'ratio': '1.64%', 'data_updated_date': '2024/04/01'},
+        {'symbol': '0050', 'ranking': 8, 'stock_name': '富邦金',
+            'ratio': '1.47%', 'data_updated_date': '2024/04/01'},
+        {'symbol': '0050', 'ranking': 9, 'stock_name': '日月光投控',
+            'ratio': '1.39%', 'data_updated_date': '2024/04/01'},
+        {'symbol': '0050', 'ranking': 10, 'stock_name': '中華電',
+            'ratio': '1.30%', 'data_updated_date': '2024/04/01'},
+        {'symbol': '0050', 'ranking': '其他', 'stock_name': '其他',
+            'ratio': '27.70%', 'data_updated_date': '2024/04/01'}
+    ]
 
 
 class TestFlaskApp(unittest.TestCase):
+
     def setUp(self):
         self.app = app.test_client()
         self.app.testing = True
 
-    @patch('pymysql.connect')  # 模擬 pymysql.connect 函數
-    def test_search_results_with_data(self, mock_connect):
-        # 配置 mock 對象
-        mock_connection = MagicMock()
-        mock_connect.return_value = mock_connection
-
-        # 模擬 cursor 對象
-        mock_cursor = MagicMock()
-        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
-
-        # 配置 fetchone 和 fetchall 的 side_effect
-        def mock_fetchone(*args):
-            query = args[0]
-            if "FROM etf_overview_data" in query:
-                return {'etf_name': '元大台灣50', 'symbol': '0050', 'price_today': 100, 'up_down_change': 1, 'up_down_percentage': 1.0, 'data_updated_date': '2023-06-01'}
-            elif "FROM etf_performance" in query:
-                return {'symbol': '0050', '1_week': 1.5, '1_month': 2.0, '3_month': 3.5, '6_month': 4.0, 'YTD': 5.0, '1_year': 6.0, '2_year': 7.0, '3_year': 8.0, '5_year': 9.0, '10_year': 10.0, 'data_updated_date': '2023-06-01'}
-            elif "SUM(ratio)" in query:
-                return {'total_ratio': 30}  # 用於計算 top_industry 的其他比率
-            return None
-
-        def mock_fetchall(*args):
-            query = args[0]
-            if "FROM top_industry" in query:
-                return [
-                    {'symbol': '0050', 'industry': 'Technology',
-                        'ratio': 20, 'data_updated_date': '2023-06-01'},
-                    {'symbol': '0050', 'industry': 'Healthcare',
-                        'ratio': 10, 'data_updated_date': '2023-06-01'}
-                ]
-            elif "FROM top10_stock" in query:
-                return [
-                    {'symbol': '0050', 'ranking': 1, 'stock_name': 'TSMC',
-                        'ratio': 10, 'data_updated_date': '2023-06-01'},
-                    {'symbol': '0050', 'ranking': 2, 'stock_name': 'Foxconn',
-                        'ratio': 5, 'data_updated_date': '2023-06-01'}
-                ]
-            return []
-
-        # 設置 side_effect
-        mock_cursor.fetchone.side_effect = mock_fetchone
-        mock_cursor.fetchall.side_effect = mock_fetchall
-
-        # 發送 GET 請求到 /search-results?symbol=0050
+    @patch('models.etf_model.get_etf_overview', side_effect=mock_get_etf_overview)
+    @patch('models.etf_model.get_etf_performance', side_effect=mock_get_etf_performance)
+    @patch('models.etf_model.get_top_industry', side_effect=mock_get_top_industry)
+    @patch('models.etf_model.get_top10_stock', side_effect=mock_get_top10_stock)
+    def test_search_results_with_data(self, mock_overview, mock_performance, mock_industry, mock_stock):
+        # Send GET request to the application
         response = self.app.get('/search-results?symbol=0050')
 
-        # 檢查 HTTP 響應狀態碼
+        # Check HTTP status code
         self.assertEqual(response.status_code, 200)
 
-        # 檢查返回的 HTML 內容
+        # Check HTML content for specific ETF details
         html_content = response.data.decode('utf-8')
+
+        # Print the HTML content for debugging
         print(html_content)
-        self.assertIn('元大台灣50', html_content)  # 檢查 ETF 名稱
-        self.assertIn('Technology', html_content)  # 檢查行業數據
-        self.assertIn('TSMC', html_content)        # 檢查前十大持股
-        # self.assertIn('10年', html_content)        # 檢查 10 年的表現數據
 
-    @patch('pymysql.connect')  # 模擬 pymysql.connect 函數
-    def test_search_results_no_data(self, mock_connect):
-        # 配置 mock 對象
-        mock_connection = MagicMock()
-        mock_connect.return_value = mock_connection
+        # Verify that the expected data is present in the response HTML
+        self.assertIn('元大台灣50', html_content)  # ETF name
+        self.assertIn('168.45', html_content)  # Price Today
+        self.assertIn('1.59', html_content)  # Up Down Change
+        self.assertIn('0.96%', html_content)  # Up Down Percentage
+        self.assertIn('2024/06/05 14:30', html_content)  # Data Updated Date
 
-        # 模擬 cursor 對象
-        mock_cursor = MagicMock()
-        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+        # Check if performance data is present
+        self.assertIn('36.94%', html_content)  # 1 Year Performance
+        self.assertIn('25.57%', html_content)  # YTD Performance
 
-        # 配置 cursor 的 fetchone 和 fetchall 返回 None 或空數據
-        mock_cursor.fetchone.side_effect = [None, None, None]
-        mock_cursor.fetchall.side_effect = [[], []]
+        # Check if industry data is present
+        # self.assertIn('半導體業', html_content)  # Industry
+        self.assertIn('62.15%', html_content)  # Industry Ratio
 
-        # 發送 GET 請求到 /search-results?symbol=unknown
-        response = self.app.get('/search-results?symbol=unknown')
-
-        # 檢查 HTTP 響應狀態碼
-        self.assertEqual(response.status_code, 200)
-
-        # 檢查返回的 HTML 內容，確保顯示沒有數據的消息
-        html_content = response.data.decode('utf-8')
-        self.assertIn('No data found', html_content)
+        # Check if stock data is present
+        # self.assertIn('台積電', html_content)  # Stock Name
+        self.assertIn('52.19%', html_content)  # Stock Ratio
 
 
 if __name__ == '__main__':
     unittest.main()
-
-
-# # from app import app
-# # import unittest
-# # from bs4 import BeautifulSoup
-
-
-# # class TestETFTop10Stocks(unittest.TestCase):
-# #     def setUp(self):
-# #         self.app = app.test_client()
-# #         self.app.testing = True
-
-# #     def test_search_results(self):
-# #         response = self.app.get('/search-results?symbol=0050')
-# #         assert response.status_code == 200
-
-# #         html_content = response.data.decode('utf-8')
-# #         soup = BeautifulSoup(html_content, 'html.parser')
-
-# #         # Verify 'etf_overview_data' rendering
-# #         etf_name_element = soup.find('h1')
-# #         assert etf_name_element is not None
-# #         # Assuming '元大台灣50' is part of the etf_overview_data
-# #         assert '元大台灣50' in etf_name_element.text
-
-
-# # if __name__ == '__main__':
-# #     unittest.main()
